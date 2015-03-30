@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="file">
+    
+    <import file="../build.xml"/>
+    
+    <target name="compile-selected" depends="init">
+        <fail unless="includes">Must set property 'includes'</fail>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" source="1.5" 
+               debug="${build.debug}" includes="${includes}">
+            <classpath refid="compile.classpath"/>
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+    
+    <target name="compile-selected-test" depends="compile">
+        <fail unless="includes">Must set property 'includes'</fail>
+        <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" source="1.5" 
+               debug="${build.debug}" includes="${includes}">
+            <classpath refid="test.classpath"/>
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+    
+    <target name="run-selected-tests" depends="-prepare-test, build">
+        <fail unless="includes">Must set property 'includes'</fail>
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <!--
+            <test name="">
+                <fileset dir="${test.src.dir}" includes="${includes}"/>
+            </test>
+            -->
+            <jvmarg value="-Djava.util.logging.config.class=bart.utility.JavaUtilLoggingConfig"/>
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.src.dir}" includes="${includes}"/>
+            </batchtest>
+            <formatter type="xml" useFile="true"/>
+            <formatter type="plain" usefile="false" />            
+            <!--<formatter type="brief" usefile="false"/>-->
+        </junit>
+        <fail if="test.failed">
+            Test failed
+        </fail>
+    </target>
+    
+    
+    
+</project>

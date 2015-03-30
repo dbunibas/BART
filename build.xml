@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="bart" default="build">
+    
+    <property file="./project.properties" />
+
+    <target name="-init-classpath" depends="-init-folders">
+        <property name="build.sysclasspath" value="ignore" />
+        <path id="compile.classpath">
+            <pathelement location="${build.dir}" />
+            <!--<pathelement location="${lib.dir}/lunaticEngine-${lunaticEngine.ver}.jar" />-->
+            <pathelement location="${lib.dir}/slf4j-api-${slf4j.ver}.jar" />
+            <pathelement location="${lib.dir}/logback-core-${logback.ver}.jar" />
+            <pathelement location="${lib.dir}/logback-classic-${logback.ver}.jar" />
+            <pathelement location="${lib.dir}/jdom.jar" />
+            <pathelement location="${lib.dir}/xercesImpl.jar" />
+            <pathelement location="${lib.dir}/antlr-3.1.1-runtime.jar" />            
+            <pathelement location="${lib.dir}/mybatis-3.1.1.jar" />
+            <pathelement location="${lib.dir}/jep-${jep.ver}.jar" />    
+            <pathelement location="${lib.dir}/js.jar" />  
+            <pathelement location="${lib.dir}/js-engine.jar" />  
+            <pathelement location="${lib.dir}/simmetrics-1.6.2.jar" />  
+            <pathelement location="${lib.dir}/jgrapht-core-${jgrapht-core.ver}.jar" />  
+            <pathelement location="${lib.dir}/c3p0-${c3p0.ver}.jar" />  
+            <pathelement location="${lib.dir}/mchange-commons-java-${mchange.ver}.jar" />  
+            <pathelement location="${lib.dir}/commons-io-2.4.jar" />  
+            <pathelement location="${lib.dir}/jcs-1.3.jar" />  
+            <pathelement location="${lib.dir}/concurrent.jar" />  
+            <pathelement location="${lib.dir}/commons-logging-${commons-logging.ver}.jar" />
+            <!-- JDBC Drivers -->
+            <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />
+            <pathelement location="${lib.dir}/h2-1.4.182.jar" />
+        </path>
+        <path id="test.classpath">
+            <path refid="compile.classpath" />
+            <pathelement location="${test.build.dir}" />
+            <pathelement location="${lib.dir}/junit-4.11.jar" />
+            <pathelement location="${lib.dir}/hamcrest-core-1.3.jar" />
+        </path>
+    </target>
+    
+    <target name="-create-manifest" depends="init, -init-version">
+        <pathconvert property="run.jar.classpath.manifest" pathsep="" refid="compile.classpath">
+            <chainedmapper>
+                <flattenmapper/>
+                <globmapper from="*" to=" lib/*"/>
+            </chainedmapper>
+        </pathconvert>
+        <manifest file="${dist.dir}/MANIFEST.MF" >
+            <attribute name="Built-by" value="${user.name}" />
+            <attribute name="Implementation-Version" value="${major.version}.${minor.version}-build${build.number}" />
+            <attribute name="Main-Class" value="${main.class}" />
+            <attribute name="Class-Path" value="${run.jar.classpath.manifest}" />
+        </manifest>
+    </target>
+ 
+
+    <!-- ***************************************************
+              TESTS
+    *************************************************** -->
+
+    <target name="test" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/Test*.class" />
+                    <exclude name="**/experiments/**"/>
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
+    </target>  
+    
+    <target name="test-single" depends="-prepare-test, build">
+        <echo>Executing test ${testcase} with max-memory ${junit.maxmemory}</echo>
+        <junit haltonfailure="true"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <test todir="${test.report.dir}" name="${testcase}" if="testcase" />
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+    </target>
+
+    
+    <!-- ***************************************************
+          SUPPORTING TARGET
+    *************************************************** -->
+    
+    <target name="-init-folders" depends="">
+        <!-- Folders -->
+        <property name="src.dir" location="./src" />
+        <property name="test.src.dir" location="./test" />
+        <property name="build.dir" location="./build/classes" />
+        <property name="test.dir" location="./build/test" />
+        <property name="test.build.dir" location="${test.dir}/classes" />
+        <!-- <property name="test.report.dir" location="${test.dir}/report" /> -->
+        <property name="test.report.dir" location="${test.dir}/results" />
+        <property name="test.data.dir" location="${test.src.dir}/testdata" />
+        <property name="dist.dir" location="./dist" />
+        <property name="javadoc.dir" location="./dist/javadoc" />
+        <property name="misc.dir" location="./misc" />
+        <property name="resources.dir" location="${misc.dir}/resources" />
+        <property name="build.resources.dir" location="${build.dir}/resources" />
+        <property name="conf.dir" location="${src.dir}/conf" />
+        <property name="test.conf.dir" location="${test.src.dir}/conf" />
+        <condition property="test.data.dir.present">
+            <available file="${test.data.dir}" type="dir" />    
+        </condition>
+        <condition property="resources.dir.present">
+            <available file="${resources.dir}" type="dir" />    
+        </condition>
+        <condition property="conf.dir.present">
+            <available file="${conf.dir}" type="dir" />    
+        </condition>
+        <condition property="test.conf.dir.present">
+            <available file="${test.conf.dir}" type="dir" />    
+        </condition>
+    </target>   
+    
+    <target name="-init-release" if="release.build" depends="">
+        <echo message="Build di release" />
+        <property name="build.debug" value="off" />
+        <property name="build.debuglevel" value="lines" />
+        <property name="build.optimize" value="on" />
+    </target>
+    
+    <target name="-init-debug" unless="release.build" depends="">
+        <property name="build.debug" value="on" />
+        <property name="build.debuglevel" value="lines,vars,source" />
+        <property name="build.optimize" value="off" />
+    </target>
+    
+    <target name="init" depends="-init-folders, -init-classpath, -init-release, -init-debug" description="inizializza le proprieta' e i path">
+    </target>    
+    
+    <!-- ***************************************************
+           Clean
+    *************************************************** -->
+    <target name="clean" depends="init" description="ripulisce le cartelle riproducibili">
+        <delete dir="${build.dir}" />
+        <delete dir="${test.dir}" />
+    </target>
+    
+    <!-- ***************************************************
+           Preparazione
+    *************************************************** -->    
+    <target name="-create-misc-dir" depends="init">
+        <mkdir dir="${misc.dir}" />
+    </target>
+    
+    <target name="-create-test-data-dir" depends="init" unless="test.data.dir.present">
+        <mkdir dir="${test.data.dir}" />
+    </target>
+    
+    <target name="-create-resources-dir" depends="init" unless="resources.dir.present">
+        <mkdir dir="${resources.dir}" />
+    </target>
+    
+    <target name="-prepare-resources" depends="prepare,-create-resources-dir">
+        <copy todir="${build.resources.dir}">
+            <fileset dir="${resources.dir}" />
+        </copy>
+    </target>
+    
+    <target name="-prepare-conf" depends="prepare" if="conf.dir.present">
+        <copy todir="${build.dir}">
+            <fileset dir="${conf.dir}" includes="*.*" />
+        </copy>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" includes="**/*.properties" />
+        </copy>
+    </target>
+    
+    <target name="prepare" depends="-create-misc-dir" description="ricrea le cartelle riproducibili">
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${test.build.dir}" />
+        <mkdir dir="${test.report.dir}" />
+        <mkdir dir="${dist.dir}" />
+    </target>
+    
+    <target name="-prepare-test-conf" depends="prepare" if="test.conf.dir.present">
+        <copy todir="${test.build.dir}">
+            <fileset dir="${test.conf.dir}" includes="*.*" />
+        </copy>
+    </target>
+    
+    <target name="-prepare-test" depends="prepare,-create-test-data-dir, -prepare-test-conf">
+        <copy todir="${test.build.dir}/testdata">
+            <fileset dir="${test.data.dir}" />
+        </copy>
+    </target>
+    
+    <!-- ***************************************************
+                    Compilazione 
+    *************************************************** -->
+    <target name="compile" depends="prepare, -prepare-resources, -prepare-conf" description="compila il codice">
+        <javac srcdir="${src.dir}"
+               destdir="${build.dir}"
+               classpathref="compile.classpath" 
+               debug="${build.debug}"
+               debuglevel="${build.debuglevel}"
+               optimize="${build.optimize}">
+            <compilerarg value="-Xlint:unchecked" />
+        </javac>
+    </target>
+    
+    <target name="compile-test" depends="compile" description="compila i test">
+        <javac srcdir="${test.src.dir}"
+               destdir="${test.build.dir}"
+               classpathref="test.classpath"
+               debug="${build.debug}"
+               debuglevel="${build.debuglevel}">
+            <compilerarg value="-Xlint:unchecked" />
+        </javac>
+    </target>
+    
+    <!-- ***************************************************
+              Build
+    *************************************************** -->
+
+    <target name="build" depends="compile, compile-test" description="compila ed esegue i test">
+    </target>
+    
+    <target name="rebuild" depends="clean, build" description="ripulisce e ricostruisce">
+    </target>
+    
+    
+    <!-- ***************************************************
+              Run
+    *************************************************** -->
+    
+    <target name="run" depends="compile" description="Run the application">
+        <java classname="${main.class}" fork="yes">
+            <classpath refid="compile.classpath" />
+            <arg value="${arg0}"/>
+        </java>
+    </target>
+    
+    <target name="checkCleanInstance" depends="compile" description="Run the application">
+        <java classname="${main.class}" fork="yes">
+            <classpath refid="compile.classpath" />
+            <arg value="${arg0}"/>
+            <arg value="-removeExistingDB"/>
+            <arg value="-checkCleanInstance"/>
+        </java>
+    </target>
+    
+    <!-- ***************************************************
+              Distribuzione
+    *************************************************** -->
+    <target name="-clean-dist-dir" depends="init">        
+        <delete dir="${dist.dir}" />     
+    </target>
+    
+    <target name="javadoc" depends="compile">
+        <javadoc destdir="${javadoc.dir}" 
+                 sourcepath="${src.dir}"
+                 defaultexcludes="yes"
+                 packagenames="*">
+            <classpath refid="compile.classpath" />
+        </javadoc>
+    </target>
+
+    <!-- light deploy -->
+        
+    <target name="-light-init-version" depends="init">
+        <property file="build.properties" />    
+    </target>
+
+    <target name="-check-manifest" depends="init">
+        <condition property="manifest.present">
+            <available file="${dist.dir}/MANIFEST.MF" type="file" />    
+        </condition>
+    </target>
+
+    <!-- deploy -->
+
+    <target name="-init-version" depends="init">
+        <buildnumber file="build.properties" />
+        <property file="build.properties" />    
+    </target>
+
+    <target name="jar" depends="-clean-dist-dir, -init-version, rebuild, -create-manifest" description="crea il jar">
+        <jar destfile="${dist.dir}/${ant.project.name}-${major.version}.${minor.version}.jar"
+             manifest="${dist.dir}/MANIFEST.MF">
+            <fileset dir="${build.dir}">
+                <include name="**/*.*" />
+                <exclude name="**/conf/**" />
+                <exclude name="**/resources/**" />
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="deploy" depends="jar" description="copia il jar sul classpath">
+        <copy todir="${lib.dir}">
+            <fileset dir="${dist.dir}">
+                <include name="${ant.project.name}-*.jar" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="dist" depends="-clean-dist-dir, rebuild, -init-version, jar, javadoc" description="crea lo zip distribuibile">
+        <zip zipfile="${dist.dir}/${ant.project.name}-java-${major.version}.${minor.version}-build${build.number}.zip">
+            <!-- jar -->
+            <zipfileset dir="${dist.dir}" prefix="${ant.project.name}-java" includes="*.jar" />
+            <!-- jar -->
+            <zipfileset dir="${lib.dir}" prefix="${ant.project.name}-java/lib" includes="co.jar" />
+            <!-- sorgenti -->
+            <zipfileset dir="${src.dir}" prefix="${ant.project.name}-java/src" />
+            <!-- test -->
+            <zipfileset dir="${test.src.dir}" prefix="${ant.project.name}-java/test" />
+            <!-- javadoc -->
+            <zipfileset dir="${javadoc.dir}" prefix="${ant.project.name}-java/javadoc" />
+            <!-- varie -->
+            <zipfileset dir="${misc.dir}" prefix="${ant.project.name}-java/varie" />
+            <!-- build -->
+            <zipfileset dir="." prefix="${ant.project.name}-java" includes="*.*" />
+        </zip>
+    </target>
+    
+    <!-- ***************************************************
+             Target particolari
+    *************************************************** -->
+
+    <target name="all" depends="deploy">
+    </target>
+    
+    <target name="debug" depends="init">
+        <echoproperties />
+    </target>
+    
+    <target name="default" depends="build">
+    </target>
+    
+    <!-- ***************************************************
+             Target for the FreeForm project
+    *************************************************** -->
+    <target name="gfp" depends="generate-freeform-properties"/>
+
+    <target name="generate-freeform-properties" depends="init, prepare">
+        <pathconvert property="compile.classpath.property" dirsep="/" pathsep=";">
+            <path refid="compile.classpath"/>
+        </pathconvert>
+        <pathconvert property="test.classpath.property" dirsep="/" pathsep=";">
+            <path refid="test.classpath"/>
+        </pathconvert>
+        <echo file="nbproject/nbproject.properties">
+            src.dir            = src
+            build.top.dir      = build
+            build.dir          = build/classes
+            resources.dir      = misc/resources
+            experiments.dir    = misc/experiments
+            test.src.dir       = test
+            test.build.dir     = build/test/classes
+            dist.dir           = dist
+            javadoc.dir        = dist/javadoc
+            jar.file           = dist/${ant.project.name}*.jar
+            
+            compile.classpath  = ${compile.classpath.property}
+            test.classpath     = ${test.classpath.property}
+            run.classpath      = ${compile.classpath.property}    
+        </echo>
+    </target>
+
+</project>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE doc [
+<!ENTITY SIZE "50k">
+<!ENTITY dependencies SYSTEM "./dependencies.xml">
+<!ENTITY configuration SYSTEM "configuration.xml">
+]>
+<task>
+  <source>
+    <type>DBMS</type>
+    <access-configuration>
+      <driver>org.postgresql.Driver</driver>
+      <uri>jdbc:postgresql:bart_customers_&SIZE;</uri>
+      <schema>source</schema>
+      <login>pguser</login>
+      <password>pguser</password>
+    </access-configuration>
+    <import-xml createTables="true">
+      <input>./xml/consttablecf1.xml</input>
+      <input>./xml/&SIZE;_master.xml</input>
+    </import-xml>
+  </source>
+  <target> 
+    <type>DBMS</type>
+    <access-configuration>
+      <driver>org.postgresql.Driver</driver>
+      <uri>jdbc:postgresql:bart_customers_&SIZE;</uri>
+      <schema>target</schema>
+      <login>pguser</login>
+      <password>pguser</password>
+    </access-configuration>
+    <import-xml>
+      <input>./xml/&SIZE;_customers.xml</input>
+      <input>./xml/&SIZE;_treatments.xml</input>
+    </import-xml>
+  </target>
+<dependencies>
+<![CDATA[
+DCs:
+//MasterData: CUST[SSN,PHONE],MD[SSN,PHONE] -> NAME,STREET,CITY
+md1: customers(ssn: $ssn1, name: $name1, phone: $phone1, cfphone: $cfphone1, str: $str1, city: $city1, cc: $cc1),
+masterdata(ssn: $ssn2, name: $name2, phone: $phone2, str: $str2, city: $city2), 
+    $ssn1 == $ssn2, $phone1 == $phone2, $name1 != $name2 -> #fail.
+md2: customers( ssn: $ssn1, name: $name1, phone: $phone1, cfphone: $cfphone1, str: $str1, city: $city1, cc: $cc1),
+masterdata(ssn: $ssn2, name: $name2, phone: $phone2, str: $str2, city: $city2), 
+  $ssn1 == $ssn2, $phone1 == $phone2, $str1 != $str2 -> #fail.
+md3: customers( ssn: $ssn1, name: $name1, phone: $phone1, cfphone: $cfphone1, str: $str1, city: $city1, cc: $cc1),
+masterdata(ssn: $ssn2, name: $name2, phone: $phone2, str: $str2, city: $city2), 
+  $ssn1 == $ssn2, $phone1 == $phone2, $city1 != $city2 -> #fail.
+
+//CFD: INSUR[Abx] -> TREAT[Dental]
+cfd1: treatments(ssn: $ssn1, salary: $salary1, insurance: $insur1, treatment: $treat1, date: $date1),
+  consttablecf1(insurance: $insur2, treatment: $treat2), 
+  $insur1 == $insur2, $treat1 != $treat2 -> #fail.
+
+//FD: SSN,NAME -> PHONE 
+fd1: customers(ssn: $ssn1, name: $name1,  phone: $phone1, cfphone: $cfphone1, str: $str1, city: $city1, cc: $cc1),
+customers(ssn: $ssn2, name: $name2,  phone: $phone2, cfphone: $cfphone2, str: $str2, city: $city2, cc: $cc2),
+    $ssn1 == $ssn2, $name1 == $name2, $phone1 != $phone2 -> #fail.
+
+//FD: SSN,NAME -> CC 
+fd3: customers(ssn: $ssn1, name: $name1,  phone: $phone1, cfphone: $cfphone1, str: $str1, city: $city1, cc: $cc1),
+customers(ssn: $ssn2, name: $name2,  phone: $phone2, cfphone: $cfphone2, str: $str2, city: $city2, cc: $cc2),
+    $ssn1 == $ssn2, $name1 == $name2, $cc1 != $cc2 -> #fail.
+
+//Currency
+//FD: SSN -> SALARY 
+fd2: treatments(ssn: $ssn1, salary: $salary1, insurance: $insur1, treatment: $treat1, date: $date1),
+    treatments(ssn: $ssn2, salary: $salary2, insurance: $insur2, treatment: $treat2, date: $date2),
+    $ssn1 == $ssn2, $salary1 != $salary2 -> #fail.
+]]>
+  </dependencies>
+<authoritativeSources>
+    <source>masterdata</source>
+    <source>consttablecf1</source>
+</authoritativeSources>
+
+  <!-- ****************************************************
+            CONFIGURATION
+       **************************************************** -->
+<configuration>
+  <printLog>true</printLog>
+  <!-- To load DB only the first time and then generate a copy with changes -->
+  <recreateDBOnStart>false</recreateDBOnStart>
+  <applyCellChanges>true</applyCellChanges>
+  <cloneTargetSchema>true</cloneTargetSchema>
+  <useDeltaDBForChanges>true</useDeltaDBForChanges>
+  <checkChanges>true</checkChanges>
+
+  <!-- To load DB every time on start and then apply changes without copying -->
+  <!--
+  <recreateDBOnStart>false</recreateDBOnStart>
+  <applyCellChanges>true</applyCellChanges>
+  <cloneTargetSchema>true</cloneTargetSchema>
+  -->
+
+  <!-- To generate all possible changes (default = false - slow, only for toy examples)-->
+  <!--<generateAllChanges>true</generateAllChanges>-->
+
+  <!-- Avoid interactions among changes. (default = true) -->
+  <!--<avoidInteractions>false</avoidInteractions>-->
+
+  <!-- Error percentages for dependencies and comparisons 
+         All percentages are wrt table sizes (# tuples) -->
+  <errorPercentages>
+     <defaultPercentage>0.0</defaultPercentage>  
+    <vioGenQueries>    
+      <vioGenQuery id="fd2">
+        <comparison>(salary1 != salary2)</comparison>
+        <percentage>5</percentage>
+      </vioGenQuery>
+    </vioGenQueries>
+  </errorPercentages>
+</configuration>
+</task>

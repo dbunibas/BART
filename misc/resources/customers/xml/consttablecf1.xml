@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<consttablecf1>
+	<consttablecf1>
+		<insurance>Abx</insurance>
+		<treatment>Dental</treatment>
+	</consttablecf1>
+	<consttablecf1>
+		<insurance>Cis</insurance>
+		<treatment>Cholest.</treatment>
+	</consttablecf1>
+	<consttablecf1>
+		<insurance>Med</insurance>
+		<treatment>Blood Test</treatment>
+	</consttablecf1>
+</consttablecf1>

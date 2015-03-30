@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<emp>
+	<emp>
+		<name>Mario</name>
+		<dept>CS</dept>
+		<salary type="double">1918</salary>
+		<manager>Paolo</manager>
+	</emp>
+	<emp>
+		<name>Mario</name>
+		<dept>CS</dept>
+		<salary type="double">2000</salary>
+		<manager>Paolo</manager>
+	</emp>
+	<emp>
+		<name>Paolo</name>
+		<dept>AI</dept>
+		<salary type="double">93860</salary>
+		<manager>Luca</manager>
+	</emp>
+	<emp>
+		<name>Gianni</name>
+		<dept>CS</dept>
+		<salary type="double">2617</salary>
+		<manager>Andrea</manager>
+	</emp>
+	<emp>
+		<name>Anna</name>
+		<dept>NA</dept>
+		<salary type="double">4153</salary>
+		<manager>Lucia</manager>
+	</emp>
+	<emp>
+		<name>Tizio</name>
+		<dept>DD04207</dept>
+		<salary type="double">2905</salary>
+		<manager>Laura</manager>
+	</emp>
+</emp>

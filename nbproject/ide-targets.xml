@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="BART-IDE">
+    <import file="../build.xml"/>
+    <target name="-profile-check">
+        <startprofiler freeform="true"/>
+    </target>
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://netbeans.org/kb/articles/freeform-config.html#profilej2se) -->
+    <target depends="-profile-check" description="esegue l'applicazione" if="profiler.configured" name="profile-nb">
+        <java classname="${main.class}" fork="true">
+            <classpath refid="compile.classpath"/>
+            <jvmarg value="-Djava.util.logging.config.class=bart.utility.JavaUtilLoggingConfig"/>
+            <assertions>
+                <enable/>
+            </assertions>
+            <jvmarg line="${agent.jvmargs}"/>
+        </java>
+    </target>
+</project>
