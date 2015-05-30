@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+    <source>    
+        <type>GENERATE</type>
+        <generate>
+<![CDATA[
+SCHEMA:
+md(name, salary, manager)
+INSTANCE:
+md(name: "Bob", salary: "1000.0", manager: "John")
+]]>
+        </generate>
+    </source>
+    <target>    
+        <type>GENERATE</type>
+        <generate>
+<![CDATA[
+SCHEMA:
+emp(name, dept, salary, manager)
+INSTANCE:
+emp(name: "Bob", dept: "Marketing", salary: "1000.0", manager: "John")
+emp(name: "John", dept: "Marketing", salary: "2000.0", manager: "Carl")
+emp(name: "John", dept: "Marketing", salary: "3000.0", manager: "Carl")
+emp(name: "Mark", dept: "Staff", salary: "1000.0", manager: "Frank")
+emp(name: "Frank", dept: "Sales", salary: "2000.0", manager: "Carl")
+emp(name: "Frank", dept: "Sales", salary: "2500.0", manager: "Carl")
+emp(name: "Frank", dept: "Sales", salary: "3500.0", manager: "Carl")
+emp(name: "Carl", dept: "Managment", salary: "5000.0", manager: "Carl")
+]]>
+        </generate>
+    </target>
+    <dependencies>
+<![CDATA[
+DCs:
+e1: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $d1 != $d2 -> #fail.
+
+e2: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $d1 == $d2, $d1 == "Sales", $m1 != $m2 -> #fail.
+
+e3: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+        $d1 == "Staff", $s1 != 1000 -> #fail.
+
+e4: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    md(name: $n2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $m1 != $m2 -> #fail.
+
+e5: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $m1 == $n2, $s2 < $s1 -> #fail.
+]]>
+    </dependencies>
+    <authoritativeSources>
+        <source>md</source>
+    </authoritativeSources>
+    <configuration>
+       <randomErrors>
+            <tables>
+                <table name="emp"> 
+                    <percentage>10</percentage> <!-- Percentage is wrt attributes to dirty in the table -->
+                    <attributes>
+                        <attribute>name</attribute>
+                        <attribute>salary</attribute>
+                        <attribute>manager</attribute>
+                    </attributes>
+                </table>
+            </tables>
+        </randomErrors>
+    </configuration>
+</task>

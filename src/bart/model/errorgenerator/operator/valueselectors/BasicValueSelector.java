@@ -1,12 +1,11 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.BartConstants;
 import bart.model.EGTask;
+import bart.model.database.Cell;
 import bart.model.database.ConstantValue;
 import bart.model.database.IValue;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.ICellChange;
 import bart.model.errorgenerator.ValueConstraint;
-import bart.model.errorgenerator.VioGenCell;
 import bart.model.errorgenerator.operator.IntersectValueConstraints;
 import bart.persistence.Types;
 import java.util.Random;
@@ -21,8 +20,8 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
 //    private double doubleErrorRange = 99999;
     private int doubleErrorRange = 100;
 
-    public IValue generateNewValuesForContext(VioGenCell vioGenCell, CellChange change, EGTask task) {
-        if (logger.isDebugEnabled()) logger.debug("Generating new value for vioGenCell " + vioGenCell.toString());
+    public IValue generateNewValuesForContext(Cell originalCell, ICellChange change, EGTask task) {
+        if (logger.isDebugEnabled()) logger.debug("Generating new value for cell " + originalCell.toString());
         ValueConstraint whiteValueConstraint = valueIntersector.intersect(change.getWhiteList());
         if (whiteValueConstraint == null) {
             if (logger.isDebugEnabled()) logger.debug("Discarding context with incompatible white values...\n" + change);
@@ -36,7 +35,7 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         }
         if (whiteValueConstraint.isStarConstraint()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for star value");
-            return generateNewValueForStar(whiteValueConstraint, vioGenCell);
+            return generateNewValueForStar(whiteValueConstraint, originalCell);
         } else if (!whiteValueConstraint.isNumeric()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for whitelist " + change.getWhiteList());
             return new ConstantValue(whiteValueConstraint.toString());
@@ -46,11 +45,11 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         }
     }
 
-    private IValue generateNewValueForStar(ValueConstraint valueConstraint, VioGenCell vioGenCell) {
+    private IValue generateNewValueForStar(ValueConstraint valueConstraint, Cell cell) {
         if (!valueConstraint.isNumeric()) {
-            return new ConstantValue(vioGenCell.getCell().getValue() + "-*");
+            return new ConstantValue(cell.getValue() + "-*");
         }
-        String oldValue = vioGenCell.getCell().getValue().toString();
+        String oldValue = cell.getValue().toString();
         double oldDouble = Double.parseDouble(oldValue);
         int error = new Random().nextInt(doubleErrorRange);
         double newValue = oldDouble + error;

@@ -1,6 +1,7 @@
 package bart.model.errorgenerator.operator;
 
 import bart.BartConstants;
+import bart.IInitializableOperator;
 import bart.model.dependency.operators.ExtractFormulaSampling;
 import bart.OperatorFactory;
 import bart.model.EGTask;
@@ -18,8 +19,7 @@ import bart.model.dependency.FormulaSampling;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;
 import bart.model.dependency.PositiveFormula;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ISampleStrategy;
 import bart.model.errorgenerator.SampleParameters;
@@ -35,13 +35,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGenQueryExecutor {
+public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGenQueryExecutor, IInitializableOperator {
 
     private static Logger logger = LoggerFactory.getLogger(ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery.class);
 
     private BuildAlgebraTree treeBuilder = new BuildAlgebraTree();
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private ISampleStrategy sampleStrategy;
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -93,7 +92,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
                 discardedTuples.add(pivotTuple);
                 continue;
             }
-            if (!ExecuteVioGenQueryUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
+            if (!BartUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
                 discardedTuples.add(pivotTuple);
                 continue;
             }
@@ -135,22 +134,13 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         while (it.hasNext()) {
             Tuple tuple = it.next();
             if (logger.isDebugEnabled()) logger.debug("Tuple: " + tuple);
-            List<CellChange> changesForTuple = generateChangeForTuple(vioGenQuery, tuple, allCellChanges, task);
+            List<VioGenQueryCellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);
             if (!changesForTuple.isEmpty()) {
+                changesGenerator.addChanges(changesForTuple, allCellChanges);
                 break;
             }
         }
         it.close();
-    }
-
-    private List<CellChange> generateChangeForTuple(VioGenQuery vioGenQuery, Tuple tuple, CellChanges allCellChanges, EGTask task) {
-        List<CellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);
-        if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-            aPrioriRepairabilityEstimator.estimateRepairabilityFromGeneratingContext(changesForTuple, vioGenQuery);
-        }
-        changesGenerator.filterChanges(changesForTuple, task);
-        changesGenerator.addChanges(changesForTuple, allCellChanges);
-        return changesForTuple;
     }
 
     private PositiveFormula buildFormulaForTuple(FormulaSampling formulaSampling, Tuple tuple) {

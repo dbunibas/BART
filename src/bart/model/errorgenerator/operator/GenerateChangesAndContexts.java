@@ -17,13 +17,12 @@ import bart.model.dependency.IFormula;
 import bart.model.dependency.IFormulaAtom;
 import bart.model.dependency.RelationalAtom;
 import bart.model.dependency.VariableEquivalenceClass;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ValueConstraint;
 import bart.model.errorgenerator.VioGenCell;
 import bart.model.errorgenerator.ViolationContext;
 import bart.model.errorgenerator.VioGenQuery;
-import bart.model.errorgenerator.operator.changeselectors.ChangeSelectorFactory;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
 import bart.persistence.Types;
 import bart.utility.BartUtility;
@@ -31,7 +30,6 @@ import bart.utility.DependencyUtility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -54,32 +52,22 @@ public class GenerateChangesAndContexts {
         return false;
     }
 
-    public void addChanges(List<CellChange> changes, CellChanges allCellChanges) {
-        for (CellChange change : changes) {
+    public void addChanges(List<VioGenQueryCellChange> changes, CellChanges allCellChanges) {
+        for (VioGenQueryCellChange change : changes) {
             allCellChanges.addChange(change);
-            allCellChanges.addAllCellsInViolationContext(change.getGeneratingContext().getCells());
-        }
-    }
-
-    public void filterChanges(List<CellChange> changes, EGTask task) {
-        for (Iterator<CellChange> iterator = changes.iterator(); iterator.hasNext();) {
-            CellChange change = iterator.next();
-            boolean accepted = ChangeSelectorFactory.getChangeSelector(change, task).acceptChange(change);
-            if (!accepted) {
-                iterator.remove();
-            }
+            allCellChanges.addAllCellsInViolationContext(change.getContext().getCells());
         }
     }
 
     /////////////////////////////////////////////////////////////////////////
     /////////////     CONTEXT AND CHANGE FOR STANDARD TUPLE
     /////////////////////////////////////////////////////////////////////////
-    public List<CellChange> generateChangesForStandardTuple(VioGenQuery vioGenQuery, Tuple tuple, CellChanges allCellChanges, INewValueSelectorStrategy valueSelector, EGTask task) {
-        List<CellChange> allChanges = new ArrayList<CellChange>();
+    public List<VioGenQueryCellChange> generateChangesForStandardTuple(VioGenQuery vioGenQuery, Tuple tuple, CellChanges allCellChanges, INewValueSelectorStrategy valueSelector, EGTask task) {
+        List<VioGenQueryCellChange> allChanges = new ArrayList<VioGenQueryCellChange>();
         if (logger.isInfoEnabled()) logger.info("Generating changes for tuple " + tuple);
         FormulaVariable firstVariable = vioGenQuery.getVioGenComparison().getVariables().get(0);
         if (logger.isInfoEnabled()) logger.info("First variable: " + firstVariable);
-        List<CellChange> changesForFirstVariable = generateChangesForVariable(firstVariable, tuple, vioGenQuery, allCellChanges, valueSelector, task);
+        List<VioGenQueryCellChange> changesForFirstVariable = generateChangesForVariable(firstVariable, tuple, vioGenQuery, allCellChanges, valueSelector, task);
         allChanges.addAll(changesForFirstVariable);
         if (logger.isInfoEnabled()) logger.info("Changes for first variable:\n" + BartUtility.printCollection(allChanges, "\t"));
         if (!useSecondVariable(firstVariable, changesForFirstVariable, vioGenQuery, task)) {
@@ -87,13 +75,13 @@ public class GenerateChangesAndContexts {
         }
         FormulaVariable secondVariable = vioGenQuery.getVioGenComparison().getVariables().get(1);
         if (logger.isInfoEnabled()) logger.info("Second variable: " + secondVariable);
-        List<CellChange> changesForSecondVariable = generateChangesForVariable(secondVariable, tuple, vioGenQuery, allCellChanges, valueSelector, task);
+        List<VioGenQueryCellChange> changesForSecondVariable = generateChangesForVariable(secondVariable, tuple, vioGenQuery, allCellChanges, valueSelector, task);
         if (logger.isInfoEnabled()) logger.info("Changes for second variable:\n" + BartUtility.printCollection(changesForSecondVariable, "\t"));
         allChanges.addAll(changesForSecondVariable);
         return allChanges;
     }
 
-    private boolean useSecondVariable(FormulaVariable firstVariable, List<CellChange> changesForFirstVariable, VioGenQuery vioGenQuery, EGTask task) {
+    private boolean useSecondVariable(FormulaVariable firstVariable, List<VioGenQueryCellChange> changesForFirstVariable, VioGenQuery vioGenQuery, EGTask task) {
         if (vioGenQuery.getVioGenComparison().getVariables().size() == 1) {
             return false;
         }
@@ -114,15 +102,15 @@ public class GenerateChangesAndContexts {
     }
 
     @SuppressWarnings("unchecked")
-    private List<CellChange> generateChangesForVariable(FormulaVariable variable, Tuple tuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, INewValueSelectorStrategy valueSelector, EGTask task) {
+    private List<VioGenQueryCellChange> generateChangesForVariable(FormulaVariable variable, Tuple tuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, INewValueSelectorStrategy valueSelector, EGTask task) {
         Set<AttributeRef> variableOccurrences = extractOccurrencesForVariable(variable);
         if (logger.isInfoEnabled()) logger.info("Target occurrences " + variableOccurrences);
         if (containsSourceOccurrences(variableOccurrences)) {
             return Collections.EMPTY_LIST;
         }
-        List<CellChange> changesForOccurrences = new ArrayList<CellChange>();
+        List<VioGenQueryCellChange> changesForOccurrences = new ArrayList<VioGenQueryCellChange>();
         for (AttributeRef occurrence : variableOccurrences) {
-            CellChange change = buildCellChangeForStandardTuple(tuple, occurrence, allCellChanges, vioGenQuery, valueSelector, task);
+            VioGenQueryCellChange change = buildCellChangeForStandardTuple(tuple, occurrence, allCellChanges, vioGenQuery, valueSelector, task);
             if (change == null) {
                 break;
             }
@@ -151,7 +139,7 @@ public class GenerateChangesAndContexts {
         return false;
     }
 
-    private CellChange buildCellChangeForStandardTuple(Tuple tuple, AttributeRef targetAttributeOccurrence, CellChanges allCellChanges, VioGenQuery vioGenQuery, INewValueSelectorStrategy valueSelector, EGTask task) {
+    private VioGenQueryCellChange buildCellChangeForStandardTuple(Tuple tuple, AttributeRef targetAttributeOccurrence, CellChanges allCellChanges, VioGenQuery vioGenQuery, INewValueSelectorStrategy valueSelector, EGTask task) {
         Cell cell = tuple.getCell(targetAttributeOccurrence);
         TupleOID originalOid = new TupleOID(BartUtility.getOriginalOid(tuple, targetAttributeOccurrence.getTableAlias()));
         cell = new Cell(originalOid, cell.getAttributeRef(), cell.getValue());
@@ -162,8 +150,8 @@ public class GenerateChangesAndContexts {
             if (logger.isDebugEnabled()) logger.debug("Discarding vioGenCell " + vioGenCell + "...");
             return null;
         }
-        CellChange cellChange = buildCellChange(vioGenCell, context, tuple, vioGenQuery.getFormula(), task);
-        IValue newValue = valueSelector.generateNewValuesForContext(vioGenCell, cellChange, task);
+        VioGenQueryCellChange cellChange = buildCellChange(vioGenCell, context, tuple, vioGenQuery.getFormula(), task);
+        IValue newValue = valueSelector.generateNewValuesForContext(vioGenCell.getCell(), cellChange, task);
         if (logger.isInfoEnabled()) logger.info("New value for context: " + newValue);
         if (newValue == null) {
             return null;
@@ -201,8 +189,8 @@ public class GenerateChangesAndContexts {
         return context;
     }
 
-    private CellChange buildCellChange(VioGenCell vioGenCell, ViolationContext context, Tuple tuple, IFormula formula, EGTask task) {
-        CellChange cellChange = new CellChange(vioGenCell, context, vioGenCell.getVioGenQuery());
+    private VioGenQueryCellChange buildCellChange(VioGenCell vioGenCell, ViolationContext context, Tuple tuple, IFormula formula, EGTask task) {
+        VioGenQueryCellChange cellChange = new VioGenQueryCellChange(vioGenCell, context, vioGenCell.getVioGenQuery());
         ComparisonAtom targetComparison = vioGenCell.getVioGenQuery().getVioGenComparison();
         if (logger.isInfoEnabled()) logger.info("Generating VioGenContext for cell " + vioGenCell.getCell() + " and target comparison " + targetComparison + " in tuple\n\t" + tuple);
         List<VariableEquivalenceClass> variablesForCell = findVariableForCellInOriginalFormula(vioGenCell, tuple);
@@ -242,7 +230,7 @@ public class GenerateChangesAndContexts {
         return result;
     }
 
-    private void findValueConstraintsInComparisonsWithConstant(List<VariableEquivalenceClass> variablesForCell, IFormula formula, CellChange cellChange, ComparisonAtom targetComparison) {
+    private void findValueConstraintsInComparisonsWithConstant(List<VariableEquivalenceClass> variablesForCell, IFormula formula, VioGenQueryCellChange cellChange, ComparisonAtom targetComparison) {
         for (IFormulaAtom atom : formula.getAtoms()) {
             if (atom.isRelational()) {
                 continue;
@@ -274,7 +262,7 @@ public class GenerateChangesAndContexts {
         }
     }
 
-    private void findWhiteListBlackListForInequalities(VioGenCell vioGenCell, CellChange cellChange, ComparisonAtom targetComparison, Tuple tuple, EGTask task) {
+    private void findWhiteListBlackListForInequalities(VioGenCell vioGenCell, VioGenQueryCellChange cellChange, ComparisonAtom targetComparison, Tuple tuple, EGTask task) {
         if (logger.isInfoEnabled()) logger.info("Adding white/black list for comparison " + targetComparison);
         IValue vioGenCellValue = vioGenCell.getCell().getValue();
         AttributeRef attributeRef = vioGenCell.getCell().getAttributeRef();
@@ -293,7 +281,7 @@ public class GenerateChangesAndContexts {
         }
     }
 
-    private void findWhiteListBlackListForNumericalConstraints(VioGenCell vioGenCell, CellChange cellChange, ComparisonAtom targetComparison, Tuple tuple, EGTask task) {
+    private void findWhiteListBlackListForNumericalConstraints(VioGenCell vioGenCell, VioGenQueryCellChange cellChange, ComparisonAtom targetComparison, Tuple tuple, EGTask task) {
         AttributeRef attributeRef = vioGenCell.getCell().getAttributeRef();
         Attribute attribute = BartUtility.getAttribute(attributeRef, task);
         String type = attribute.getType();
@@ -343,21 +331,18 @@ public class GenerateChangesAndContexts {
     /////////////////////////////////////////////////////////////////////////
     /////////////     CONTEXT AND CHANGE FOR TUPLE PAIRS
     /////////////////////////////////////////////////////////////////////////
-    public List<CellChange> handleTuplePair(Tuple firstTuple, Tuple secondTuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, INewValueSelectorStrategy valueSelector, EGTask task) {
+    public void handleTuplePair(Tuple firstTuple, Tuple secondTuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<Tuple> usedTuples, INewValueSelectorStrategy valueSelector, EGTask task) {
         Tuple mergedTuple = tupleMerger.generateTuple(firstTuple, secondTuple);
-        return generateChangesForStandardTuple(vioGenQuery, mergedTuple, allCellChanges, valueSelector, task);
-    }
-
-    public void addTuplePairChanges(List<CellChange> changesForTuple, Tuple firstTuple, Tuple secondTuple, CellChanges allCellChanges, Set<Tuple> usedTuples, EGTask task) {
-        filterChanges(changesForTuple, task);
-        if (!changesForTuple.isEmpty()) {
-            addChanges(changesForTuple, allCellChanges);
-            if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(firstTuple, changesForTuple)) {
-                usedTuples.add(firstTuple);
-            }
-            if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(secondTuple, changesForTuple)) {
-                usedTuples.add(secondTuple);
-            }
+        List<VioGenQueryCellChange> changesForTuple = generateChangesForStandardTuple(vioGenQuery, mergedTuple, allCellChanges, valueSelector, task);
+        if (changesForTuple.isEmpty()) {
+            return;
+        }
+        addChanges(changesForTuple, allCellChanges);
+        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(firstTuple, changesForTuple)) {
+            usedTuples.add(firstTuple);
+        }
+        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(secondTuple, changesForTuple)) {
+            usedTuples.add(secondTuple);
         }
     }
 

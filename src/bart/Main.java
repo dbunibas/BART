@@ -6,8 +6,8 @@ import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
 import bart.model.detection.operator.DetectViolations;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import bart.model.errorgenerator.operator.APrioriGenerator;
 import bart.utility.ErrorGeneratorStats;
 import bart.persistence.DAOEGTask;
@@ -96,7 +96,7 @@ public class Main {
         System.out.println("*** Execution time: " + executionTime + " sec");
         System.out.println("*** Cell changes: " + changes.getChanges().size());
         if (changes.getChanges().size() < 50) {
-            for (CellChange change : changes.getChanges()) {
+            for (ICellChange change : changes.getChanges()) {
                 System.out.println(change);
             }
         }

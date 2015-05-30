@@ -15,8 +15,9 @@ import bart.model.database.Tuple;
 import bart.model.database.TupleOID;
 import bart.model.database.mainmemory.datasource.IntegerOIDGenerator;
 import bart.model.database.operators.IDatabaseManager;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import bart.utility.BartUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChang
     }
 
     private void applyChangesOnDeltaDB(CellChanges cellChanges, IDatabase deltaDB, String dirtyStepID, EGTask task) {
-        for (CellChange change : cellChanges.getChanges()) {
+        for (ICellChange change : cellChanges.getChanges()) {
             if (logger.isInfoEnabled()) logger.info("Applying change " + change);
             String tableName = change.getCell().getAttributeRef().getTableName();
             String attributeName = change.getCell().getAttributeRef().getName();

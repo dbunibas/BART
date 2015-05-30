@@ -8,8 +8,6 @@ import bart.model.database.Tuple;
 import bart.model.database.operators.IRunQuery;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaWithAdornments;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.EquivalenceClass;
 import bart.model.errorgenerator.EquivalenceClassQuery;
@@ -31,7 +29,6 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
 
     private ExtractEquivalenceClasses equivalenceClassExtractor = new ExtractEquivalenceClasses();
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private GenerateAlgebraTreeForSymmetricQuery symmetricQueryBuilder = new GenerateAlgebraTreeForSymmetricQuery();
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -92,15 +89,13 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
                 if (task.getConfiguration().isAvoidInteractions() && usedTuples.contains(firstTuple)) {
                     continue;
                 }
+//                TuplePair tuplePair = new TuplePair(firstTuple, secondTuple);
+//                boolean verified = (inequalityVariables.size() <= 1) || ExecuteVioGenQueryUtility.verifyInequalitiesOnTuplePair(inequalityVariables, tuplePair, equivalenceClassForIntersection);
                 boolean verified = (inequalityVariables.size() <= 1) || AlgebraUtility.verifyComparisonsOnTuplePair(firstTuple, secondTuple, vioGenQuery.getFormula(), task);
                 if (!verified) {
                     continue;
                 }
-                List<CellChange> changes = changesGenerator.handleTuplePair(firstTuple, secondTuple, vioGenQuery, allCellChanges, valueSelector, task);
-                if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-                    aPrioriRepairabilityEstimator.estimateRepairabilityInEquivalenceClass(changes, equivalenceClassForIntersection, vioGenQuery);
-                }
-                changesGenerator.addTuplePairChanges(changes, firstTuple, secondTuple, allCellChanges, usedTuples, task);
+                changesGenerator.handleTuplePair(firstTuple, secondTuple, vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
             }
         }
     }

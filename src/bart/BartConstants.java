@@ -2,7 +2,6 @@ package bart;
 
 import bart.model.database.ConstantValue;
 import bart.model.database.IValue;
-import bart.model.errorgenerator.ValueConstraint;
 
 public class BartConstants {
 
@@ -42,6 +41,11 @@ public class BartConstants {
     public static String STEP = "step";
 
     public static String DC = "DC";
+    
+    // CELL CHANGE TYPES
+    public static final String VIOGEN_CHANGE = "Viogen change";
+    public static final String OUTLIER_CHANGE = "Outlier change";
+    public static final String RANDOM_CHANGE = "Random change";
 
 //    public static String WORK_SCHEMA = "work";
     public static String CHASE_FORWARD = "f";

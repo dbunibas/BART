@@ -12,14 +12,13 @@ import bart.model.database.Tuple;
 import bart.model.database.operators.IRunQuery;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.CrossProductFormulas;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ISampleStrategy;
 import bart.model.errorgenerator.SampleParameters;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
 import bart.utility.AlgebraUtility;
+import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,7 +32,6 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
     private static Logger logger = LoggerFactory.getLogger(ExecuteVioGenQueryInequalityRAMRandomCP.class);
 
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private ISampleStrategy sampleStrategy;
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -109,7 +107,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
                     discardedTuples.add(tuplePair);
                     continue;
                 }
-                if (!ExecuteVioGenQueryUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
+                if (!BartUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
                     discardedTuples.add(tuplePair);
                     continue;
                 }
@@ -118,21 +116,13 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
                     continue;
                 }
                 if (logger.isInfoEnabled()) logger.info("Tuple pair to handle " + tuplePair);
-                generateChangeForTuples(tuplePair, vioGenQuery, allCellChanges, task, usedTuples);
+                changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
                 if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                     if (logger.isInfoEnabled()) logger.info("All changes generated!");
                     return;
                 }
             }
         }
-    }
-
-    private void generateChangeForTuples(CrossProductTuplePair tuplePair, VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task, Set<Tuple> usedTuples) {
-        List<CellChange> changes = changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, valueSelector, task);
-        if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-            aPrioriRepairabilityEstimator.estimateRepairabilityFromGeneratingContext(changes, vioGenQuery);
-        }
-        changesGenerator.addTuplePairChanges(changes, tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), allCellChanges, usedTuples, task);
     }
 
     private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, int initialChanges, int sampleSize, EGTask task) {
@@ -146,7 +136,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
             if (!verified) {
                 continue;
             }
-            generateChangeForTuples(tuplePair, vioGenQuery, allCellChanges, task, usedTuples);
+            changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 return;
             }

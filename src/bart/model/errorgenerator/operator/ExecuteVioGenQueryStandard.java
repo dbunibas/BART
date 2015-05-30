@@ -8,8 +8,7 @@ import bart.model.algebra.operators.BuildAlgebraTree;
 import bart.model.algebra.operators.ITupleIterator;
 import bart.model.database.Tuple;
 import bart.model.database.operators.IRunQuery;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
@@ -24,7 +23,6 @@ public class ExecuteVioGenQueryStandard implements IVioGenQueryExecutor, IInitia
     private static Logger logger = LoggerFactory.getLogger(ExecuteVioGenQueryStandard.class);
 
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private BuildAlgebraTree treeBuilder = new BuildAlgebraTree();
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -49,18 +47,12 @@ public class ExecuteVioGenQueryStandard implements IVioGenQueryExecutor, IInitia
         if (logger.isDebugEnabled()) logger.debug(BartUtility.printIterator(tupleIterator));
         while (tupleIterator.hasNext()) {
             Tuple tuple = tupleIterator.next();
-            generateChangeForTuple(vioGenQuery, tuple, allCellChanges, task);
+            List<VioGenQueryCellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);
+            if (!changesForTuple.isEmpty()) {
+                changesGenerator.addChanges(changesForTuple, allCellChanges);
+            }
         }
         tupleIterator.close();
-    }
-
-    private void generateChangeForTuple(VioGenQuery vioGenQuery, Tuple tuple, CellChanges allCellChanges, EGTask task) {
-        List<CellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);
-        if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-            aPrioriRepairabilityEstimator.estimateRepairabilityFromGeneratingContext(changesForTuple, vioGenQuery);
-        }
-        changesGenerator.filterChanges(changesForTuple, task);
-        changesGenerator.addChanges(changesForTuple, allCellChanges);
     }
 
     public void intitializeOperators(EGTask task) {

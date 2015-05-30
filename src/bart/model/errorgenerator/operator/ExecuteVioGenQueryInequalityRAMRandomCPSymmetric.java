@@ -14,14 +14,13 @@ import bart.model.database.operators.IRunQuery;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaWithAdornments;
 import bart.model.dependency.PositiveFormula;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ISampleStrategy;
 import bart.model.errorgenerator.SampleParameters;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
 import bart.utility.AlgebraUtility;
+import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,7 +35,6 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
 
     private BuildAlgebraTree treeBuilder = new BuildAlgebraTree();
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private ISampleStrategy sampleStrategy;
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -101,7 +99,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
                     discardedTuples.add(tuplePair);
                     continue;
                 }
-                if (!ExecuteVioGenQueryUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
+                if (!BartUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries())) {
                     discardedTuples.add(tuplePair);
                     continue;
                 }
@@ -109,20 +107,12 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
                 if (!verified) {
                     continue;
                 }
-                generateChangeForTuples(tuplePair, vioGenQuery, allCellChanges, task, usedTuples);
+                changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
                 if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                     return;
                 }
             }
         }
-    }
-
-    private void generateChangeForTuples(TuplePair tuplePair, VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task, Set<Tuple> usedTuples) {
-        List<CellChange> changes = changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, valueSelector, task);
-        if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-            aPrioriRepairabilityEstimator.estimateRepairabilityFromGeneratingContext(changes, vioGenQuery);
-        }
-        changesGenerator.addTuplePairChanges(changes, tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), allCellChanges, usedTuples, task);
     }
 
     private int computeOffset(VioGenQuery vioGenQuery, EGTask task) {
@@ -177,7 +167,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
             if (!verified) {
                 continue;
             }
-            generateChangeForTuples(tuplePair, vioGenQuery, allCellChanges, task, usedTuples);
+            changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 return;
             }

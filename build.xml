@@ -26,6 +26,8 @@
             <pathelement location="${lib.dir}/jcs-1.3.jar" />  
             <pathelement location="${lib.dir}/concurrent.jar" />  
             <pathelement location="${lib.dir}/commons-logging-${commons-logging.ver}.jar" />
+            <pathelement location="${lib.dir}/commons-math3-${commons-math3.ver}.jar" />
+
             <!-- JDBC Drivers -->
             <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />
             <pathelement location="${lib.dir}/h2-1.4.182.jar" />
@@ -305,6 +307,7 @@
                 <include name="**/*.*" />
                 <exclude name="**/conf/**" />
                 <exclude name="**/resources/**" />
+                <exclude name="logback.xml" />
             </fileset>
         </jar>
     </target>

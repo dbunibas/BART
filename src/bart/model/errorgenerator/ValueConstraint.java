@@ -2,7 +2,7 @@ package bart.model.errorgenerator;
 
 import bart.BartConstants;
 import bart.model.database.IValue;
-import bart.persistence.Types;
+import bart.utility.BartUtility;
 
 public class ValueConstraint {
 
@@ -21,7 +21,7 @@ public class ValueConstraint {
     public ValueConstraint(IValue start, String type) {
         this.start = start;
         this.type = type;
-        if (isNumeric(type)) {
+        if (BartUtility.isNumeric(type)) {
             this.end = start;
         }
     }
@@ -89,11 +89,7 @@ public class ValueConstraint {
     }
 
     public boolean isNumeric() {
-        return isNumeric(type);
-    }
-
-    private boolean isNumeric(String type) {
-        return (type.equals(BartConstants.NUMERIC) || type.equals(Types.LONG) || type.equals(Types.DOUBLE) || type.equals(Types.INTEGER));
+        return BartUtility.isNumeric(type);
     }
 
     public double getRange() {

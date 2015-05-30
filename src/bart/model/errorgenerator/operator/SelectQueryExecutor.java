@@ -9,9 +9,11 @@ import bart.model.detection.operator.DetectViolationStandard;
 import bart.model.detection.operator.DetectViolationsSymmetric;
 import bart.model.detection.operator.IDetectViolations;
 import bart.model.errorgenerator.VioGenQuery;
+import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,10 @@ public class SelectQueryExecutor {
     }
 
     private IVioGenQueryExecutor getExecutorForRandom(VioGenQuery vioGenQuery, EGTask task) {
+//        if(vioGenQuery.toShortString().equals("dc1(!=,==,!=)[(state1 != state2)]") || vioGenQuery.toShortString().equals("dc2(!=,!=,==)[(state1 != state2)]")){
+//            System.out.println("**** TEST ****");
+//            return getVioGenQueryExecutor(ExecuteVioGenQueryInequalityRAMRandomCPSymmetric.class);
+//        }
         if (vioGenQuery.getConfiguration().getQueryExecutor() != null) {
             return getVioGenQueryExecutor(vioGenQuery.getConfiguration().getQueryExecutor());
         }
@@ -76,6 +82,7 @@ public class SelectQueryExecutor {
         }
     }
 
+//    private IVioGenQueryExecutor getVioGenQueryExecutor(Class executorClass) {
     private IVioGenQueryExecutor getVioGenQueryExecutor(String executorClass) {
         try {
             IVioGenQueryExecutor executor = vioGenQueryExecutor.get(executorClass);
@@ -99,6 +106,7 @@ public class SelectQueryExecutor {
             IDetectViolations executor = dependencyExecutor.get(executorClass.getName());
             if (executor == null) {
                 executor = (IDetectViolations) executorClass.newInstance();
+                dependencyExecutor.put(executorClass.getName(), executor);
             }
             return executor;
         } catch (InstantiationException ex) {

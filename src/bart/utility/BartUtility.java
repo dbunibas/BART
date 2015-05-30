@@ -27,13 +27,15 @@ import bart.model.database.CellRef;
 import bart.model.database.IDatabase;
 import bart.model.database.ITable;
 import bart.model.database.TableAlias;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
+import bart.persistence.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 
@@ -180,7 +182,7 @@ public class BartUtility {
         return result.toString();
     }
 
-    public static String printCellChangesToLongString(List<CellChange> cellChanges) {
+    public static String printCellChangesToLongString(List<VioGenQueryCellChange> cellChanges) {
         if (cellChanges == null) {
             return "(null)";
         }
@@ -188,7 +190,7 @@ public class BartUtility {
             return "(empty collection)";
         }
         StringBuilder result = new StringBuilder();
-        for (CellChange cellChange : cellChanges) {
+        for (VioGenQueryCellChange cellChange : cellChanges) {
             result.append(cellChange.toLongString()).append("\n");
         }
         result.deleteCharAt(result.length() - 1);
@@ -341,5 +343,15 @@ public class BartUtility {
         }
         return BartConstants.DIRTY_SUFFIX;
     }
+    
+    // NUMERICAL METHOD
+    
+    public static boolean isNumeric(String type) {
+        return (type.equals(BartConstants.NUMERIC) || type.equals(Types.LONG) || type.equals(Types.DOUBLE) || type.equals(Types.INTEGER));
+    }
 
+    public static boolean pickRandom(double probability) {
+        double random = new Random().nextDouble();
+        return random < probability;
+    }
 }

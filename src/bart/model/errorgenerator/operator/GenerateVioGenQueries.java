@@ -3,7 +3,6 @@ package bart.model.errorgenerator.operator;
 import bart.exceptions.DAOException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
-import bart.model.RepairabilityRange;
 import bart.model.VioGenQueryConfiguration;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.Dependency;
@@ -54,10 +53,6 @@ public class GenerateVioGenQueries {
             if (executor != null) {
                 defaultVioGenQueryConfiguration.setQueryExecutor(executor);
             }
-            RepairabilityRange repairabilityRange = findQueryRepairabilityRange(dependency, originalComparison, task.getConfiguration());
-            if (repairabilityRange != null) {
-                defaultVioGenQueryConfiguration.setRepairabilityRange(repairabilityRange);
-            }
             VioGenQuery vioGenQuery = new VioGenQuery(dependency, invertedDipendency.getPremise(), invertedComparison, defaultVioGenQueryConfiguration);
             equivalenceClassFinder.findVariableEquivalenceClasses(invertedDipendency.getPremise());
             symmetryFinder.findFormulaWithAdornments(vioGenQuery.getFormula().getPositiveFormula(), task);
@@ -105,11 +100,6 @@ public class GenerateVioGenQueries {
     private String findQueryExecutor(Dependency dependency, ComparisonAtom comparison, EGTaskConfiguration configuration) {
         String vioGenKey = BartUtility.getVioGenQueryKey(dependency.getId(), comparison.toString());
         return configuration.getVioGenQueryStrategy().get(vioGenKey);
-    }
-
-    private RepairabilityRange findQueryRepairabilityRange(Dependency dependency, ComparisonAtom comparison, EGTaskConfiguration configuration) {
-        String vioGenKey = BartUtility.getVioGenQueryKey(dependency.getId(), comparison.toString());
-        return configuration.getVioGenQueryRepairabilityRanges().get(vioGenKey);
     }
 
     private void setErrorPercentageConfiguration(List<VioGenQuery> vioGenQueries, EGTaskConfiguration configuration) {

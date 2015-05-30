@@ -10,8 +10,6 @@ import bart.model.database.Tuple;
 import bart.model.database.operators.IRunQuery;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaWithAdornments;
-import bart.model.detection.operator.EstimateRepairabilityAPriori;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.EquivalenceClass;
 import bart.model.errorgenerator.EquivalenceClassQuery;
@@ -20,6 +18,7 @@ import bart.model.errorgenerator.SampleParameters;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
 import bart.utility.AlgebraUtility;
+import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,7 +34,6 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
     private ExtractEquivalenceClasses equivalenceClassExtractor = new ExtractEquivalenceClasses();
     private ISampleStrategy sampleStrategy;
     private GenerateChangesAndContexts changesGenerator = new GenerateChangesAndContexts();
-    private EstimateRepairabilityAPriori aPrioriRepairabilityEstimator = new EstimateRepairabilityAPriori();
     private GenerateAlgebraTreeForSymmetricQuery symmetricQueryBuilder = new GenerateAlgebraTreeForSymmetricQuery();
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
@@ -127,11 +125,11 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
                     discardedTuples.add(new DiscardedTuplePair(tuplePair, equivalenceClassForIntersection));
                     continue;
                 }
-                if (!ExecuteVioGenQueryUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForSymmetricQueries())) {
+                if (!BartUtility.pickRandom(vioGenQuery.getConfiguration().getProbabilityFactorForSymmetricQueries())) {
                     discardedTuples.add(new DiscardedTuplePair(tuplePair, equivalenceClassForIntersection));
                     continue;
                 }
-                generateChangeForTuple(tuplePair, vioGenQuery, allCellChanges, usedTuples, task, equivalenceClassForIntersection);
+                changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
                 if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                     return;
                 }
@@ -149,19 +147,11 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
             if (usedTuples.contains(tuplePair.getFirstTuple()) || usedTuples.contains(tuplePair.getSecondTuple())) {
                 continue;
             }
-            generateChangeForTuple(tuplePair, vioGenQuery, allCellChanges, usedTuples, task, equivalenceClass);
+            changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 return;
             }
         }
-    }
-
-    private void generateChangeForTuple(TuplePair tuplePair, VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<Tuple> usedTuples, EGTask task, EquivalenceClass equivalenceClassForIntersection) {
-        List<CellChange> changes = changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, valueSelector, task);
-        if (task.getConfiguration().isEstimateAPrioriRepairability()) {
-            aPrioriRepairabilityEstimator.estimateRepairabilityInEquivalenceClass(changes, equivalenceClassForIntersection, vioGenQuery);
-        }
-        changesGenerator.addTuplePairChanges(changes, tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), allCellChanges, usedTuples, task);
     }
 
     /////////////////////////////

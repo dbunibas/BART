@@ -2,8 +2,9 @@ package bart.model.errorgenerator.operator;
 
 import bart.exceptions.DAOException;
 import bart.model.database.Cell;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +26,7 @@ public class ExportCellChangesCSV {
             File outFile = new File(path);
             outFile.getParentFile().mkdirs();
             out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
-            for (CellChange change : cellChanges.getChanges()) {
+            for (ICellChange change : cellChanges.getChanges()) {
                 out.write(changeToCSV(change));
                 out.write("\n");
             }
@@ -42,7 +43,7 @@ public class ExportCellChangesCSV {
         }
     }
     
-    private String changeToCSV(CellChange change) {
+    private String changeToCSV(ICellChange change) {
         StringBuilder sb = new StringBuilder();
         Cell originalCell = change.getCell();
         sb.append(originalCell.getTupleOID()).append(".").append(originalCell.getAttribute());

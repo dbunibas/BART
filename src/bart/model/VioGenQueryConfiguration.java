@@ -2,6 +2,7 @@ package bart.model;
 
 public class VioGenQueryConfiguration implements Cloneable {
 
+//    private int sampleSize = 10;
     private double percentage;
     private double sizeFactorForStandardQueries = 1.5;
     private double sizeFactorForSymmetricQueries = 0.5;
@@ -28,7 +29,6 @@ public class VioGenQueryConfiguration implements Cloneable {
     private boolean useOffsetInSymmetricQueries = false;
     private boolean useOffsetInInequalityQueries = true;
     private boolean useOffsetInSingleTupleQueries = false;
-    private RepairabilityRange repairabilityRange = null;
     private String queryExecutor;
 
     public double getPercentage() {
@@ -39,6 +39,13 @@ public class VioGenQueryConfiguration implements Cloneable {
         this.percentage = percentage;
     }
 
+//    public int getSampleSize() {
+//        return sampleSize;
+//    }
+//
+//    public void setSampleSize(int sampleSize) {
+//        this.sampleSize = sampleSize;
+//    }
     public double getSizeFactorForStandardQueries() {
         return sizeFactorForStandardQueries;
     }
@@ -254,14 +261,8 @@ public class VioGenQueryConfiguration implements Cloneable {
     public void setQueryExecutor(String queryExecutor) {
         this.queryExecutor = queryExecutor;
     }
-
-    public RepairabilityRange getRepairabilityRange() {
-        return repairabilityRange;
-    }
-
-    public void setRepairabilityRange(RepairabilityRange repairabilityRange) {
-        this.repairabilityRange = repairabilityRange;
-    }
+    
+    
 
     @Override
     public String toString() {
@@ -290,7 +291,6 @@ public class VioGenQueryConfiguration implements Cloneable {
                 + "\n\t offsetFactorForSymmetricQueries=" + offsetFactorForSymmetricQueries
                 + "\n\t offsetFactorForInequalityQueries=" + offsetFactorForInequalityQueries
                 + "\n\t offsetFactorForSingleTupleQueries=" + offsetFactorForSingleTupleQueries
-                + "\n\t repairabilityRange=" + repairabilityRange
                 + "\n\t queryExecutor=" + queryExecutor;
     }
 

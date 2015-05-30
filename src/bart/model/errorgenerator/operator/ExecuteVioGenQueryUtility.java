@@ -23,7 +23,7 @@ import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaWithAdornments;
 import bart.model.dependency.IFormula;
 import bart.model.dependency.VariableEquivalenceClass;
-import bart.model.errorgenerator.CellChange;
+import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.EquivalenceClass;
 import bart.model.errorgenerator.EquivalenceClassQuery;
@@ -218,11 +218,7 @@ public class ExecuteVioGenQueryUtility {
         return (executedChanges >= sampleSize);
     }
 
-    public static boolean pickRandom(double probability) {
-        if (logger.isDebugEnabled()) logger.debug("Probability: " + probability);
-        double random = new Random().nextDouble();
-        return random < probability;
-    }
+
 
     public static int computeSampleSize(VioGenQuery vioGenQuery, EGTask task) {
         VioGenQueryConfiguration configuration = vioGenQuery.getConfiguration();
@@ -266,8 +262,8 @@ public class ExecuteVioGenQueryUtility {
         return result;
     }
 
-    public static boolean isUsingInChanges(Tuple tuple, List<CellChange> changesForTuple) {
-        for (CellChange change : changesForTuple) {
+    public static boolean isUsingInChanges(Tuple tuple, List<VioGenQueryCellChange> changesForTuple) {
+        for (VioGenQueryCellChange change : changesForTuple) {
             String changedTable = change.getCell().getAttributeRef().getTableName();
             TupleOID changedTupleOID = change.getCell().getTupleOID();
             for (Cell cell : tuple.getCells()) {

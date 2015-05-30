@@ -7,8 +7,8 @@ import bart.model.algebra.operators.IUpdateCell;
 import bart.model.database.CellRef;
 import bart.model.database.IDatabase;
 import bart.model.database.operators.IDatabaseManager;
-import bart.model.errorgenerator.CellChange;
 import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import bart.utility.BartUtility;
 
 public class ApplyCellChanges implements IChangeApplier, IInitializableOperator {
@@ -28,7 +28,7 @@ public class ApplyCellChanges implements IChangeApplier, IInitializableOperator 
             dirtyTarget = databaseManager.cloneTarget(task, dirtySuffix);
             task.setDirtyTarget(dirtyTarget);
         }
-        for (CellChange cellChange : cellChanges.getChanges()) {
+        for (ICellChange cellChange : cellChanges.getChanges()) {
             cellUpdater.execute(new CellRef(cellChange.getCell()), cellChange.getNewValue(), dirtyTarget);
         }
     }

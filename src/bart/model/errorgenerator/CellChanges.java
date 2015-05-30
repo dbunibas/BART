@@ -1,5 +1,6 @@
 package bart.model.errorgenerator;
 
+import bart.BartConstants;
 import bart.model.database.Cell;
 import bart.model.database.IValue;
 import bart.utility.BartUtility;
@@ -12,19 +13,21 @@ import org.slf4j.LoggerFactory;
 
 public class CellChanges {
 
-    private static Logger logger = LoggerFactory.getLogger(CellChanges.class);
-    private Set<CellChange> changes = new HashSet<CellChange>();
-    private Map<Cell, VioGenCell> changedCells = new HashMap<Cell, VioGenCell>();
-    private Map<Cell, IValue> newValues = new HashMap<Cell, IValue>();
-    private Set<Cell> violationContextCells = new HashSet<Cell>();
+    private final static Logger logger = LoggerFactory.getLogger(CellChanges.class);
+    private final Set<ICellChange> changes = new HashSet<ICellChange>();
+    private final Map<Cell, VioGenCell> changedCells = new HashMap<Cell, VioGenCell>();
+    private final Map<Cell, IValue> newValues = new HashMap<Cell, IValue>();
+    private final Set<Cell> violationContextCells = new HashSet<Cell>();
 
-    public Set<CellChange> getChanges() {
+    public Set<ICellChange> getChanges() {
         return changes;
     }
 
-    public void addChange(CellChange cellChange) {
+    public void addChange(ICellChange cellChange) {
         this.changes.add(cellChange);
-        this.changedCells.put(cellChange.getCell(), cellChange.getVioGenCell());
+        if (cellChange.getType().equals(BartConstants.VIOGEN_CHANGE)) {
+            this.changedCells.put(cellChange.getCell(), ((VioGenQueryCellChange) cellChange).getVioGenCell());
+        }
         this.newValues.put(cellChange.getCell(), cellChange.getNewValue());
     }
 
@@ -35,7 +38,7 @@ public class CellChanges {
     public void addAllCellsInViolationContext(Set<Cell> cells) {
         this.violationContextCells.addAll(cells);
     }
-
+    
     public boolean isViolationContextCell(Cell cell) {
         if (logger.isDebugEnabled()) logger.debug("Checking if cell " + cell + " is in violation context\n\t" + BartUtility.printCollection(violationContextCells, "\t"));
         if (logger.isDebugEnabled()) logger.debug("# Result: " + violationContextCells.contains(cell));
@@ -53,8 +56,9 @@ public class CellChanges {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CellChanges:\n");
-        for (CellChange cellChange : changes) {
-            sb.append(cellChange.toString()).append(" [").append(cellChange.getVioGenQuery().getDependency().getId()).append("]\n");
+        for (ICellChange cellChange : changes) {
+//            sb.append(cellChange.toString()).append(" [").append(cellChange.getVioGenQuery().getDependency().getId()).append("]\n");
+            sb.append(cellChange.toString()).append("\n");
         }
         return sb.toString();
     }

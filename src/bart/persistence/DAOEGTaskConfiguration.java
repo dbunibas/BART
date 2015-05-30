@@ -2,10 +2,12 @@ package bart.persistence;
 
 import bart.exceptions.DAOException;
 import bart.model.EGTaskConfiguration;
-import bart.model.RepairabilityRange;
+import bart.model.OutlierErrorConfiguration;
 import bart.persistence.xml.DAOXmlUtility;
 import bart.utility.BartUtility;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -124,10 +126,6 @@ public class DAOEGTaskConfiguration {
             Element defaultPercentageElement = getMandatoryElement(randomConfigurationElement, "defaultPercentage");
             double defaultPercentage = Double.parseDouble(defaultPercentageElement.getText());
             conf.getDefaultVioGenQueryConfiguration().setPercentage(defaultPercentage);
-            RepairabilityRange defaultRepairabilityRange = readRepairabilityRange(randomConfigurationElement.getChild("defaultRepairabilityRange"));
-            if (defaultRepairabilityRange != null) {
-                conf.getDefaultVioGenQueryConfiguration().setRepairabilityRange(defaultRepairabilityRange);
-            }
             Element vioGenQueriesElement = randomConfigurationElement.getChild("vioGenQueries");
             if (vioGenQueriesElement != null) {
                 for (Element vioGenQueryElement : (List<Element>) vioGenQueriesElement.getChildren("vioGenQuery")) {
@@ -135,11 +133,7 @@ public class DAOEGTaskConfiguration {
                     Element comparisonElement = getMandatoryElement(vioGenQueryElement, "comparison");
                     Element percentageElement = getMandatoryElement(vioGenQueryElement, "percentage");
                     String vioGenKey = BartUtility.getVioGenQueryKey(idAttribute.getValue(), comparisonElement.getText());
-                    conf.addVioGenQueryProbability(vioGenKey, Double.parseDouble(percentageElement.getText()));
-                    RepairabilityRange vioGenQueryRepairabilityRange = readRepairabilityRange(vioGenQueryElement.getChild("repairabilityRange"));
-                    if (vioGenQueryRepairabilityRange != null) {
-                        conf.addVioGenQueryRepairabilityRange(vioGenKey, vioGenQueryRepairabilityRange);
-                    }
+                    conf.addVioGenQueryProbabilities(vioGenKey, Double.parseDouble(percentageElement.getText()));
                 }
             }
         }
@@ -156,25 +150,54 @@ public class DAOEGTaskConfiguration {
                 }
             }
         }
+        Element randomErrorsConfiguration = configurationElement.getChild("randomErrors");
+        if (randomErrorsConfiguration != null) {
+            conf.setRandomErrors(true);
+            if (logger.isDebugEnabled()) logger.debug("* Generating Random Errors " + conf.isRandomErrors());
+            Element tablesElement = getMandatoryElement(randomErrorsConfiguration, "tables");
+            List<Element> tables = getMandatoryElements(tablesElement, "table");
+            for (Element table : tables) {
+                Attribute tableName = getMandatoryAttribute(table, "name");
+                Element percentageErrorElement = table.getChild("percentage");
+                Element attributesElement = getMandatoryElement(table, "attributes");
+                List<Element> attributeElements = getMandatoryElements(attributesElement, "attribute");
+                Set<String> attributes = new HashSet<String>();
+                for (Element attributeElem : attributeElements) {
+                    attributes.add(attributeElem.getTextTrim());
+                }
+                if (logger.isDebugEnabled()) logger.debug("\t* Table: " + tableName.getValue() + " --- Percentage: " + percentageErrorElement.getTextTrim() + " --- Attributes to dirty: " + attributes);
+                conf.addTableForRandomErrors(tableName.getValue(), attributes);
+                conf.addPercentageForRandomErrors(tableName.getValue(), Integer.parseInt(percentageErrorElement.getTextTrim()));
+            }
+        }
+        Element outlierErrorsConfiguration = configurationElement.getChild("outlierErrors");
+        if (outlierErrorsConfiguration != null) {
+            conf.setOutlierErrors(true);
+            if (logger.isDebugEnabled()) logger.debug("* Generating Outlier Errors " + conf.isRandomErrors());
+            OutlierErrorConfiguration outlierErrorConfiguration = extractOutlierErrorConfiguration(outlierErrorsConfiguration);
+            conf.setOutlierErrorConfiguration(outlierErrorConfiguration);
+        }
         return conf;
     }
 
-    private RepairabilityRange readRepairabilityRange(Element repairabilityRangeElement) {
-        if (repairabilityRangeElement == null) {
-            return null;
+    private OutlierErrorConfiguration extractOutlierErrorConfiguration(Element outlierErrorsTag) {
+        OutlierErrorConfiguration outlierErrorConfiguration = new OutlierErrorConfiguration();
+        Element tablesElement = getMandatoryElement(outlierErrorsTag, "tables");
+        List<Element> tables = getMandatoryElements(tablesElement, "table");
+        for (Element table : tables) {
+            Attribute tableName = getMandatoryAttribute(table, "name");
+            Element attributesElement = getMandatoryElement(table, "attributes");
+            List<Element> attributeElements = getMandatoryElements(attributesElement, "attribute");
+            for (Element attribute : attributeElements) {
+                Attribute percentageAttribute = getMandatoryAttribute(attribute, "percentage");
+                Attribute detectableAttribute = getMandatoryAttribute(attribute, "detectable");
+                String attributeName = attribute.getTextTrim();
+                int percentage = Integer.parseInt(percentageAttribute.getValue().trim());
+                boolean detectable = Boolean.parseBoolean(detectableAttribute.getValue().trim());
+                outlierErrorConfiguration.addAttributes(tableName.getValue().trim(), attributeName, percentage, detectable);
+            }
         }
-        RepairabilityRange range = new RepairabilityRange();
-        String minValue = repairabilityRangeElement.getChildText("minValue");
-        if (minValue != null) {
-            double value = Double.parseDouble(minValue);
-            range.setMinValue(value);
-        }
-        String maxValue = repairabilityRangeElement.getChildText("maxValue");
-        if (maxValue != null) {
-            double value = Double.parseDouble(maxValue);
-            range.setMaxValue(value);
-        }
-        return range;
+        return outlierErrorConfiguration;
     }
 
     private Element getMandatoryElement(Element father, String elementName) {
@@ -193,5 +216,14 @@ public class DAOEGTaskConfiguration {
             throw new DAOException("Unable to load configuration. Missing attribute " + attributeName);
         }
         return attribute;
+    }
+
+    private List<Element> getMandatoryElements(Element father, String elementName) {
+        assert (father != null) : "Unable to get elements from null node";
+        List<Element> childred = father.getChildren(elementName);
+        if (childred == null) {
+            throw new DAOException("Unable to load configuration. Missing required tag <" + elementName + ">");
+        }
+        return childred;
     }
 }

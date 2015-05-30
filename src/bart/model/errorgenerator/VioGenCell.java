@@ -25,6 +25,10 @@ public class VioGenCell {
         return vioGenCell;
     }
 
+    public List<ViolationContext> getViolationContexts() {
+        return violationContexts;
+    }
+
     public void addViolationContext(ViolationContext violationContext) {
         this.violationContexts.add(violationContext);
     }

@@ -2,7 +2,9 @@ package bart.model;
 
 import bart.BartConstants;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class EGTaskConfiguration {
 
@@ -20,8 +22,7 @@ public class EGTaskConfiguration {
     private boolean exportDirtyDB = false;
     private String exportDirtyDBType = BartConstants.CSV;
     private String exportDirtyDBPath = null;
-    private boolean estimateAPosterioriRepairability = false;
-    private boolean estimateAPrioriRepairability = false;
+    private boolean estimateRepairability = false;
     private boolean cloneTargetSchema = true;
     private String cloneSuffix = BartConstants.DIRTY_SUFFIX;
     private boolean useSymmetricOptimization = true;
@@ -33,9 +34,13 @@ public class EGTaskConfiguration {
 //    private Integer maxNumberOfInequalitiesInSymmetricQueries = null;
     private double sizeFactorReduction = 0.7;
     private Map<String, Double> vioGenQueryProbabilities = new HashMap<String, Double>();
-    private Map<String, RepairabilityRange> vioGenQueryRepairabilityRanges = new HashMap<String, RepairabilityRange>();
     private Map<String, String> vioGenQueryStrategy = new HashMap<String, String>();
     private VioGenQueryConfiguration defaultVioGenQueryConfiguration = new VioGenQueryConfiguration();
+    private boolean randomErrors = false;
+    private Map<String, Set<String>> tablesForRandomErrors = new HashMap<String, Set<String>>(); // key: tableName  values: attributesToDirty
+    private Map<String, Integer> tablesPercentageForRandomErrors = new HashMap<String, Integer>(); // key: tableName values: percentage;
+    private boolean outlierErrors = false;
+    private OutlierErrorConfiguration outlierErrorConfiguration = new OutlierErrorConfiguration();
 
     public boolean isRecreateDBOnStart() {
         return recreateDBOnStart;
@@ -177,7 +182,7 @@ public class EGTaskConfiguration {
         this.sizeFactorReduction = sizeFactorReduction;
     }
 
-    public void addVioGenQueryProbability(String vioGenKey, double percentage) {
+    public void addVioGenQueryProbabilities(String vioGenKey, double percentage) {
         this.vioGenQueryProbabilities.put(vioGenKey, percentage);
     }
 
@@ -185,12 +190,8 @@ public class EGTaskConfiguration {
         return vioGenQueryProbabilities;
     }
 
-    public void addVioGenQueryRepairabilityRange(String vioGenKey, RepairabilityRange range) {
-        this.vioGenQueryRepairabilityRanges.put(vioGenKey, range);
-    }
-
-    public Map<String, RepairabilityRange> getVioGenQueryRepairabilityRanges() {
-        return vioGenQueryRepairabilityRanges;
+    public void setVioGenQueryProbabilities(Map<String, Double> vioGenQueryProbabilities) {
+        this.vioGenQueryProbabilities = vioGenQueryProbabilities;
     }
 
     public void addVioGenQueryStrategy(String vioGenKey, String strategy) {
@@ -201,20 +202,12 @@ public class EGTaskConfiguration {
         return vioGenQueryStrategy;
     }
 
-    public boolean isEstimateAPosterioriRepairability() {
-        return estimateAPosterioriRepairability;
+    public boolean isEstimateRepairability() {
+        return estimateRepairability;
     }
 
-    public void setEstimateAPosterioriRepairability(boolean estimateAPosterioriRepairability) {
-        this.estimateAPosterioriRepairability = estimateAPosterioriRepairability;
-    }
-
-    public boolean isEstimateAPrioriRepairability() {
-        return estimateAPrioriRepairability;
-    }
-
-    public void setEstimateAPrioriRepairability(boolean estimateAPrioriRepairability) {
-        this.estimateAPrioriRepairability = estimateAPrioriRepairability;
+    public void setEstimateRepairability(boolean estimateRepairability) {
+        this.estimateRepairability = estimateRepairability;
     }
 
     public boolean isDebug() {
@@ -265,6 +258,57 @@ public class EGTaskConfiguration {
         this.checkChanges = checkChanges;
     }
 
+    public boolean isRandomErrors() {
+        return randomErrors;
+    }
+
+    public void setRandomErrors(boolean randomErrors) {
+        this.randomErrors = randomErrors;
+    }
+
+    public Set<String> getTablesForRandomErrors() {
+        return tablesForRandomErrors.keySet();
+    }
+
+    public void addTableForRandomErrors(String tableName, Set<String> attributes) {
+        this.tablesForRandomErrors.put(tableName, attributes);
+    }
+
+    public Set<String> getAttributesForRandomErrors(String tableName) {
+        return tablesForRandomErrors.get(tableName);
+    }
+
+    public void addPercentageForRandomErrors(String tableName, int percentage) {
+        this.tablesPercentageForRandomErrors.put(tableName, percentage);
+    }
+
+    public int getPercentageForRandomErrors(String tableName) {
+        return tablesPercentageForRandomErrors.get(tableName);
+    }
+
+    public boolean isOutlierErrors() {
+        return outlierErrors;
+    }
+
+    public void setOutlierErrors(boolean outlierErrors) {
+        this.outlierErrors = outlierErrors;
+    }
+
+    public OutlierErrorConfiguration getOutlierErrorConfiguration() {
+        return outlierErrorConfiguration;
+    }
+
+    public void setOutlierErrorConfiguration(OutlierErrorConfiguration outlierErrorConfiguration) {
+        this.outlierErrorConfiguration = outlierErrorConfiguration;
+    }
+
+//    public Integer getMaxNumberOfInequalitiesInSymmetricQueries() {
+//        return maxNumberOfInequalitiesInSymmetricQueries;
+//    }
+//
+//    public void setMaxNumberOfInequalitiesInSymmetricQueries(Integer maxNumberOfInequalitiesInSymmetricQueries) {
+//        this.maxNumberOfInequalitiesInSymmetricQueries = maxNumberOfInequalitiesInSymmetricQueries;
+//    }
     @Override
     public String toString() {
         return toShortString()
@@ -272,7 +316,7 @@ public class EGTaskConfiguration {
     }
 
     public Object toShortString() {
-        return "Configuration:"
+        String configuration = "Configuration:"
                 + "\n\t printLog=" + printLog
                 + "\n\t recreateDBOnStart=" + recreateDBOnStart
                 + "\n\t useDeltaDBForChanges=" + useDeltaDBForChanges
@@ -287,7 +331,30 @@ public class EGTaskConfiguration {
                 + "\n\t sampleStrategyForSymmetricQueries=" + sampleStrategyForSymmetricQueries
                 + "\n\t sampleStrategyForInequalityQueries=" + sampleStrategyForInequalityQueries
                 //                + "\n\t maxNumberOfInequalitiesInSymmetricQueries=" + maxNumberOfInequalitiesInSymmetricQueries
-                + "\n\t detectEntireEquivalenceClasses=" + detectEntireEquivalenceClasses;
+                + "\n\t detectEntireEquivalenceClasses=" + detectEntireEquivalenceClasses
+                + "\n\t randomErrors=" + randomErrors
+                + printDetailedRandomErrorsForTables()
+                + "\n\t outlierErrors=" + outlierErrors
+                + printDetaileOutlierErrors();
+        return configuration.trim();
+    }
+
+    private String printDetailedRandomErrorsForTables() {
+        StringBuilder sb = new StringBuilder();
+        if (randomErrors) {
+            for (String table : getTablesForRandomErrors()) {
+                sb.append("\n\t\t Table: ").append(table)
+                        .append("\n\t\t\t Random error(%)=").append(tablesPercentageForRandomErrors.get(table))
+                        .append("\n\t\t\t Attributes to dirty=").append(tablesForRandomErrors.get(table));
+
+            }
+        }
+        return sb.toString();
+    }
+
+    private String printDetaileOutlierErrors() {
+        if (!outlierErrors) return "";
+        return "\n\t" + outlierErrorConfiguration.toString();
     }
 
 }

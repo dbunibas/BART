@@ -36,8 +36,8 @@ public class ViolationContext {
             addCell(cell);
         }
     }
-
-    public boolean containsCellRef(CellRef cellRef) {
+    
+    public boolean containsCellRef(CellRef cellRef){
         return contextCellRefs.contains(cellRef);
     }
 
