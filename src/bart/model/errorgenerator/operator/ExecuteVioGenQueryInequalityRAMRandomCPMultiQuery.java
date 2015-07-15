@@ -28,6 +28,7 @@ import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrate
 import bart.model.expressions.Expression;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         if (task.getConfiguration().isGenerateAllChanges()) {
             throw new IllegalArgumentException("ExecuteVioGenQueryInequalityMainMemoryRandom requires a random execution. Please set generateAllChanges to false.");
         }
+        long start = new Date().getTime();
         int sampleSize = ExecuteVioGenQueryUtility.computeSampleSize(vioGenQuery, task);
         if (sampleSize == 0) {
             if (task.getConfiguration().isPrintLog()) System.out.println("No changes required");
@@ -70,23 +72,28 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         initializeQuery(vioGenQuery, task);
         Set<Tuple> discardedTuples = new HashSet<Tuple>();
         int initialChanges = allCellChanges.getChanges().size();
-        findVioGenCells(vioGenQuery, allCellChanges, sampleSize, discardedTuples, task);
+        findVioGenCells(vioGenQuery, allCellChanges, sampleSize, discardedTuples, start, task);
         if (!ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
             if (logger.isInfoEnabled()) logger.info("After first iteration there are " + (sampleSize - ((allCellChanges.getChanges().size()) - initialChanges)) + " remaining changes to perform!");
             if (logger.isInfoEnabled()) logger.info("Discarded tuples: " + discardedTuples.size());
-            executeDiscardedTuples(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, task);
+            executeDiscardedTuples(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
         if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
     }
 
-    private void findVioGenCells(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<Tuple> discardedTuples, EGTask task) {
+    private void findVioGenCells(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<Tuple> discardedTuples, long start, EGTask task) {
         int offset = computeOffset(vioGenQuery, task);
         IAlgebraOperator pivotingOperator = vioGenQuery.getQuery();
         if (logger.isInfoEnabled()) logger.info("Pivoting operator:\n" + pivotingOperator);
         int initialChanges = allCellChanges.getChanges().size();
         ITupleIterator pivotingIt = queryRunner.run(pivotingOperator, task.getSource(), task.getTarget());
         while (pivotingIt.hasNext()) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                discardedTuples.clear();
+                break;
+            }
             Tuple pivotTuple = pivotingIt.next();
             if (discardedTuples.size() < offset) {
                 discardedTuples.add(pivotTuple);
@@ -96,7 +103,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
                 discardedTuples.add(pivotTuple);
                 continue;
             }
-            handleTuple(vioGenQuery, pivotTuple, allCellChanges, task);
+            handleTuple(vioGenQuery, pivotTuple, allCellChanges, start, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 break;
             }
@@ -104,11 +111,15 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         pivotingIt.close();
     }
 
-    private void executeDiscardedTuples(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<Tuple> discardedTuples, int initialChanges, int sampleSize, EGTask task) {
+    private void executeDiscardedTuples(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<Tuple> discardedTuples, int initialChanges, int sampleSize, long start, EGTask task) {
         Iterator<Tuple> it = discardedTuples.iterator();
         while (it.hasNext()) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                break;
+            }
             Tuple discardedTuple = it.next();
-            handleTuple(vioGenQuery, discardedTuple, allCellChanges, task);
+            handleTuple(vioGenQuery, discardedTuple, allCellChanges, start, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 return;
             }
@@ -123,7 +134,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         if (logger.isDebugEnabled()) logger.debug("Operator\n" + operator.toString());
     }
 
-    private void handleTuple(VioGenQuery vioGenQuery, Tuple pivotTuple, CellChanges allCellChanges, EGTask task) {
+    private void handleTuple(VioGenQuery vioGenQuery, Tuple pivotTuple, CellChanges allCellChanges, long start, EGTask task) {
         if (logger.isDebugEnabled()) logger.debug("Pivot Tuple: " + pivotTuple.toStringWithOIDAndAlias());
         PositiveFormula formulaForTuple = buildFormulaForTuple(vioGenQuery.getFormula().getFormulaSampling(), pivotTuple).clone();
         formulaForTuple.setFormulaWithAdornments(null);
@@ -132,6 +143,10 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPMultiQuery implements IVioGe
         if (logger.isDebugEnabled()) logger.trace("Query for tuple: \n" + queryForTuple);
         ITupleIterator it = queryRunner.run(queryForTuple, task.getSource(), task.getTarget());
         while (it.hasNext()) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                break;
+            }
             Tuple tuple = it.next();
             if (logger.isDebugEnabled()) logger.debug("Tuple: " + tuple);
             List<VioGenQueryCellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);

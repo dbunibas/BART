@@ -48,21 +48,24 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
         symmetricQueryBuilder.initializeQuery(vioGenQuery.getFormula().getFormulaWithAdornments(), task);
         List<EquivalenceClassQuery> equivalenceClassQueries = vioGenQuery.getFormula().getFormulaWithAdornments().getEquivalenceClassQueries();
         ExecuteVioGenQueryUtility.executeEquivalenceClassQuery(equivalenceClassQueries, queryRunner, task.getSource(), task.getTarget());
+        long start = new Date().getTime();
         while (true) {
+            if (BartUtility.isTimeout(start, task)) {
+                break;
+            }
             List<EquivalenceClass> equivalenceClasses = equivalenceClassExtractor.getNextCommonEquivalenceClasses(equivalenceClassQueries);
             if (logger.isInfoEnabled()) logger.info("Common equivalence classes read!");
             if (logger.isDebugEnabled()) logger.trace("*** Equivalence Classes ***\n" + BartUtility.printCollection(equivalenceClasses));
             if (equivalenceClasses.isEmpty()) {
                 break;
             }
-            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, allCellChanges, task);
+            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, allCellChanges, start, task);
         }
         ExecuteVioGenQueryUtility.closeIterators(equivalenceClassQueries);
     }
 
-    private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, CellChanges allCellChanges, EGTask task) {
+    private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, CellChanges allCellChanges, long start, EGTask task) {
         assert (!equivalenceClasses.isEmpty()) : "Equivalence classes are empty!";
-        long start;
         EquivalenceClass firstEquivalenceClass = equivalenceClasses.get(0);
         FormulaWithAdornments formulaWithAdornment = vioGenQuery.getFormula().getFormulaWithAdornments();
         List<AttributeRef> equalityAttributes = firstEquivalenceClass.getEqualityAttributes();
@@ -72,19 +75,27 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
             equivalenceClassForIntersection = firstEquivalenceClass;
         } else {
             equivalenceClassForIntersection = new EquivalenceClass(equalityAttributes);
-            start = new Date().getTime();
+            long startEq = new Date().getTime();
             equivalenceClassForIntersection.addAllTuple(ExecuteVioGenQueryUtility.intersectTuples(equivalenceClasses));
-            if (logger.isDebugEnabled()) logger.debug("intersectTuples (ms): " + (new Date().getTime() - start));
+            if (logger.isDebugEnabled()) logger.debug("intersectTuples (ms): " + (new Date().getTime() - startEq));
             if (logger.isInfoEnabled()) logger.info("tuples after intersection: " + equivalenceClassForIntersection.getTuples().size());
         }
         if (logger.isInfoEnabled()) logger.info("Building context for equivalence class...");
         Set<Tuple> usedTuples = new HashSet<Tuple>();
         for (int i = 0; i < equivalenceClassForIntersection.getTuples().size() - 1; i++) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                return;
+            }
             Tuple firstTuple = equivalenceClassForIntersection.getTuples().get(i);
             if (task.getConfiguration().isAvoidInteractions() && usedTuples.contains(firstTuple)) {
                 continue;
             }
             for (int j = i + 1; j < equivalenceClassForIntersection.getTuples().size(); j++) {
+                if (BartUtility.isTimeout(start, task)) {
+                    logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                    return;
+                }
                 Tuple secondTuple = equivalenceClassForIntersection.getTuples().get(j);
                 if (task.getConfiguration().isAvoidInteractions() && usedTuples.contains(firstTuple)) {
                     continue;

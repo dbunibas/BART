@@ -32,6 +32,7 @@ import bart.persistence.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -343,9 +344,17 @@ public class BartUtility {
         }
         return BartConstants.DIRTY_SUFFIX;
     }
-    
+
+    public static boolean isTimeout(long start, EGTask task) {
+        Long executionTimeout = task.getConfiguration().getQueryExecutionTimeout();
+        if (executionTimeout == null) {
+            return false;
+        }
+        long end = new Date().getTime();
+        return (end - start) > executionTimeout;
+    }
     // NUMERICAL METHOD
-    
+
     public static boolean isNumeric(String type) {
         return (type.equals(BartConstants.NUMERIC) || type.equals(Types.LONG) || type.equals(Types.DOUBLE) || type.equals(Types.INTEGER));
     }

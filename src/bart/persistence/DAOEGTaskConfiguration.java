@@ -218,6 +218,7 @@ public class DAOEGTaskConfiguration {
         return attribute;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Element> getMandatoryElements(Element father, String elementName) {
         assert (father != null) : "Unable to get elements from null node";
         List<Element> childred = father.getChildren(elementName);

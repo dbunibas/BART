@@ -6,6 +6,7 @@ import bart.model.database.AttributeRef;
 import bart.model.database.Cell;
 import bart.model.database.IValue;
 import bart.model.dependency.Dependency;
+import bart.model.detection.RepairabilityStats;
 import bart.model.detection.Violations;
 import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,27 +52,43 @@ public class EstimateRepairability {
 
     private void computeAverageRepairabilityForVioGenQueries(Map<VioGenQuery, List<VioGenQueryCellChange>> changesForQueryMap) {
         for (VioGenQuery vioGenQuery : changesForQueryMap.keySet()) {
-            double sum = 0.0;
+            RepairabilityStats repairabilityStats = new RepairabilityStats();
+            SummaryStatistics stats = new SummaryStatistics();
             List<VioGenQueryCellChange> changesForQuery = changesForQueryMap.get(vioGenQuery);
             for (VioGenQueryCellChange change : changesForQuery) {
-                sum += change.getRepairability();
+                stats.addValue(change.getRepairability());
             }
-            double repairabilityForQuery = sum / (double) changesForQuery.size();
-            if (logger.isInfoEnabled()) logger.info("Repairability for query " + vioGenQuery.toShortString() + ": " + repairabilityForQuery);
-            ErrorGeneratorStats.getInstance().getVioGenQueriesRepairability().put(vioGenQuery, repairabilityForQuery);
+            repairabilityStats.setMean(stats.getMean());
+            double confidenceInterval = calcMeanCI(stats, 0.95);
+            repairabilityStats.setConfidenceInterval(confidenceInterval);
+            if (logger.isInfoEnabled()) logger.info("Repairability for query " + vioGenQuery.toShortString() + ": " + repairabilityStats);
+            ErrorGeneratorStats.getInstance().getVioGenQueriesRepairability().put(vioGenQuery, repairabilityStats);
         }
     }
 
     private void computeAverageRepairabilityForVioDependencies(Map<Dependency, List<VioGenQueryCellChange>> changes) {
         for (Dependency dependency : changes.keySet()) {
-            double sum = 0.0;
+            RepairabilityStats repairabilityStats = new RepairabilityStats();
+            SummaryStatistics stats = new SummaryStatistics();
             List<VioGenQueryCellChange> changesForQuery = changes.get(dependency);
             for (VioGenQueryCellChange change : changesForQuery) {
-                sum += change.getRepairability();
+                stats.addValue(change.getRepairability());
             }
-            double repairabilityForQuery = sum / (double) changesForQuery.size();
-            if (logger.isInfoEnabled()) logger.info("Repairability for query " + dependency.getId() + ": " + repairabilityForQuery);
-            ErrorGeneratorStats.getInstance().getDependencyRepairability().put(dependency, repairabilityForQuery);
+            repairabilityStats.setMean(stats.getMean());
+            double confidenceInterval = calcMeanCI(stats, 0.95);
+            repairabilityStats.setConfidenceInterval(confidenceInterval);
+            if (logger.isInfoEnabled()) logger.info("Repairability for query " + dependency.getId() + ": " + repairabilityStats);
+            ErrorGeneratorStats.getInstance().getDependencyRepairability().put(dependency, repairabilityStats);
+        }
+    }
+
+    private static double calcMeanCI(SummaryStatistics stats, double level) {
+        try {
+            TDistribution tDist = new TDistribution(stats.getN() - 1);
+            double critVal = tDist.inverseCumulativeProbability(1.0 - (1 - level) / 2);
+            return critVal * stats.getStandardDeviation() / Math.sqrt(stats.getN());
+        } catch (MathIllegalArgumentException e) {
+            return Double.NaN;
         }
     }
 

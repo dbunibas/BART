@@ -223,12 +223,12 @@ public class ExecuteVioGenQueryUtility {
     public static int computeSampleSize(VioGenQuery vioGenQuery, EGTask task) {
         VioGenQueryConfiguration configuration = vioGenQuery.getConfiguration();
         double percentage = configuration.getPercentage();
-        if (logger.isDebugEnabled()) logger.debug("Percentage: " + percentage);
         Set<TableAlias> tableInFormula = DependencyUtility.extractTableAliasInFormula(vioGenQuery.getFormula());
-        if (logger.isDebugEnabled()) logger.debug("Tables in formula: " + tableInFormula);
         long tableSize = getMaxTableSize(tableInFormula, task);
-        if (logger.isDebugEnabled()) logger.debug("Table size: " + tableSize);
         int sampleSize = (int) (percentage * tableSize) / 100;
+        if (logger.isDebugEnabled()) logger.debug("Percentage: " + percentage);
+        if (logger.isDebugEnabled()) logger.debug("Tables in formula: " + tableInFormula);
+        if (logger.isDebugEnabled()) logger.debug("Table size: " + tableSize);
         if (logger.isDebugEnabled()) logger.debug("SampleSize for vioGenQuery " + vioGenQuery.toShortString() + ": " + sampleSize);
         return sampleSize;
     }

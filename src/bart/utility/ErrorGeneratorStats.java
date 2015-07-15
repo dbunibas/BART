@@ -1,6 +1,7 @@
 package bart.utility;
 
 import bart.model.dependency.Dependency;
+import bart.model.detection.RepairabilityStats;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.utility.comparator.DependencyComparator;
 import bart.utility.comparator.VioGenQueryComparator;
@@ -38,8 +39,8 @@ public class ErrorGeneratorStats {
     private Map<VioGenQuery, Long> vioGenQueriesErrors = new HashMap<VioGenQuery, Long>();
     private Map<Dependency, Long> dependenciesErrors = new HashMap<Dependency, Long>();
     ////
-    private Map<VioGenQuery, Double> vioGenQueriesRepairability = new HashMap<VioGenQuery, Double>();
-    private Map<Dependency, Double> dependencyRepairability = new HashMap<Dependency, Double>();
+    private Map<VioGenQuery, RepairabilityStats> vioGenQueriesRepairability = new HashMap<VioGenQuery, RepairabilityStats>();
+    private Map<Dependency, RepairabilityStats> dependencyRepairability = new HashMap<Dependency, RepairabilityStats>();
 
     public static ErrorGeneratorStats getInstance() {
         return singleton;
@@ -86,11 +87,11 @@ public class ErrorGeneratorStats {
         dependencyTimes.put(dependency, totalTime);
     }
 
-    public Map<VioGenQuery, Double> getVioGenQueriesRepairability() {
+    public Map<VioGenQuery, RepairabilityStats> getVioGenQueriesRepairability() {
         return vioGenQueriesRepairability;
     }
 
-    public Map<Dependency, Double> getDependencyRepairability() {
+    public Map<Dependency, RepairabilityStats> getDependencyRepairability() {
         return dependencyRepairability;
     }
 

@@ -29,9 +29,9 @@ public class CheckDetectableCellChanges {
     }
 
     public Set<ICellChange> findChangesWithDetectabilityK(CellChanges changes, Violations violations, int k, EGTask task) {
-        if (!task.getConfiguration().isAvoidInteractions()) {
-            throw new IllegalArgumentException("Unable to check detectable changes with avoidInteractions = false");
-        }
+//        if (!task.getConfiguration().isAvoidInteractions()) {
+//            throw new IllegalArgumentException("Unable to check detectable changes with avoidInteractions = false");
+//        }
         checkDetectability(changes, violations, task);
         Set<ICellChange> result = new HashSet<ICellChange>();
         for (ICellChange change : changes.getChanges()) {

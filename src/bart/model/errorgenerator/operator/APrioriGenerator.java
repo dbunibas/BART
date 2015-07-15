@@ -172,7 +172,7 @@ public class APrioriGenerator implements IInitializableOperator {
         if (task.getConfiguration().isEstimateRepairability()) {
             repairabilityEstimator.estimateRepairability(cellChanges, violations, task);
         }
-        if (!nonDetectableChanges.isEmpty()) {
+        if (!nonDetectableChanges.isEmpty() && task.getConfiguration().isAvoidInteractions()) {
             StringBuilder sb = new StringBuilder();
             for (ICellChange nonDetectableChange : nonDetectableChanges) {
                 if (nonDetectableChange.getType().equals(BartConstants.VIOGEN_CHANGE)) {

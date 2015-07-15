@@ -20,6 +20,7 @@ import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrate
 import bart.utility.AlgebraUtility;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +57,7 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
         intitializeOperators(task);
         checkConditions(vioGenQuery, task);
         symmetricQueryBuilder.initializeQuery(vioGenQuery.getFormula().getFormulaWithAdornments(), task);
+        long start = new Date().getTime();
         int sampleSize = ExecuteVioGenQueryUtility.computeSampleSize(vioGenQuery, task);
         if (sampleSize == 0) {
             if (task.getConfiguration().isPrintLog()) System.out.println("No changes required");
@@ -71,11 +73,14 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
         int offset = computeOffset(vioGenQuery, task);
         int initialChanges = allCellChanges.getChanges().size();
         while (true) {
+            if (BartUtility.isTimeout(start, task)) {
+                break;
+            }
             List<EquivalenceClass> equivalenceClasses = equivalenceClassExtractor.getNextCommonEquivalenceClasses(equivalenceClassQueries);
             if (equivalenceClasses.isEmpty()) {
                 break;
             }
-            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, discardedTuples, allCellChanges, sampleSize, offset, initialChanges, task);
+            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, discardedTuples, allCellChanges, sampleSize, offset, initialChanges, start, task);
             if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                 break;
             }
@@ -83,14 +88,14 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
         ExecuteVioGenQueryUtility.closeIterators(equivalenceClassQueries);
         if (!ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
             if (logger.isInfoEnabled()) logger.info("After first iteration there are " + (sampleSize - ((allCellChanges.getChanges().size()) - initialChanges)) + " remaining changes to perform!");
-            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, task);
+            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
         if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
     }
 
     private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, Set<DiscardedTuplePair> discardedTuples,
-            CellChanges allCellChanges, int sampleSize, int tuplePairsToDiscard, int initialChanges, EGTask task) {
+            CellChanges allCellChanges, int sampleSize, int tuplePairsToDiscard, int initialChanges, long start, EGTask task) {
         EquivalenceClass firstEquivalenceClass = equivalenceClasses.get(0);
         FormulaWithAdornments formulaWithAdornment = vioGenQuery.getFormula().getFormulaWithAdornments();
         List<AttributeRef> equalityAttributes = firstEquivalenceClass.getEqualityAttributes();
@@ -106,11 +111,21 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
         if (logger.isDebugEnabled()) logger.debug("Building context for equivalence class...");
         Set<Tuple> usedTuples = new HashSet<Tuple>();
         for (int i = 0; i < equivalenceClassForIntersection.getTuples().size() - 1; i++) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                discardedTuples.clear();
+                return;
+            }
             Tuple firstTuple = equivalenceClassForIntersection.getTuples().get(i);
             if (usedTuples.contains(firstTuple)) {
                 continue;
             }
             for (int j = i + 1; j < equivalenceClassForIntersection.getTuples().size(); j++) {
+                if (BartUtility.isTimeout(start, task)) {
+                    logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                    discardedTuples.clear();
+                    return;
+                }
                 Tuple secondTuple = equivalenceClassForIntersection.getTuples().get(j);
                 if (usedTuples.contains(secondTuple)) {
                     continue;
@@ -137,13 +152,16 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
         }
     }
 
-    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<DiscardedTuplePair> discardedTuples, int initialChanges, int sampleSize, EGTask task) {
+    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<DiscardedTuplePair> discardedTuples, int initialChanges, int sampleSize, long start, EGTask task) {
         Iterator<DiscardedTuplePair> it = discardedTuples.iterator();
         Set<Tuple> usedTuples = new HashSet<Tuple>();
         while (it.hasNext()) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                break;
+            }
             DiscardedTuplePair discardedTuplePair = it.next();
             TuplePair tuplePair = discardedTuplePair.getTuplePair();
-            EquivalenceClass equivalenceClass = discardedTuplePair.getEquivalenceClass();
             if (usedTuples.contains(tuplePair.getFirstTuple()) || usedTuples.contains(tuplePair.getSecondTuple())) {
                 continue;
             }

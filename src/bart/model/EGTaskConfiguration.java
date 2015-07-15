@@ -10,6 +10,7 @@ public class EGTaskConfiguration {
 
     private boolean printLog = false;
     private boolean debug = false;
+    private Long queryExecutionTimeout;
     private boolean useDeltaDBForChanges = true;
     private boolean recreateDBOnStart = false;
     private boolean checkCleanInstance = false;
@@ -64,6 +65,14 @@ public class EGTaskConfiguration {
 
     public void setUseDeltaDBForChanges(boolean useDeltaDBForChanges) {
         this.useDeltaDBForChanges = useDeltaDBForChanges;
+    }
+
+    public Long getQueryExecutionTimeout() {
+        return queryExecutionTimeout;
+    }
+
+    public void setQueryExecutionTimeout(Long queryExecutionTimeout) {
+        this.queryExecutionTimeout = queryExecutionTimeout;
     }
 
     public String getSampleStrategyForStandardQueries() {

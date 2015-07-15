@@ -20,6 +20,7 @@ import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrate
 import bart.utility.AlgebraUtility;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
         if (task.getConfiguration().isPrintLog()) System.out.println("--- VioGen Query: " + vioGenQuery.toShortString());
         intitializeOperators(task);
         checkConditions(vioGenQuery, task);
+        long start = new Date().getTime();
         int sampleSize = ExecuteVioGenQueryUtility.computeSampleSize(vioGenQuery, task);
         if (sampleSize == 0) {
             if (task.getConfiguration().isPrintLog()) System.out.println("No changes required");
@@ -66,16 +68,16 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
         Set<CrossProductTuplePair> discardedTuples = new HashSet<CrossProductTuplePair>();
         int initialChanges = allCellChanges.getChanges().size();
         Set<Tuple> usedTuples = new HashSet<Tuple>();
-        findVioGenQueries(vioGenQuery, allCellChanges, sampleSize, discardedTuples, usedTuples, task);
+        findVioGenQueries(vioGenQuery, allCellChanges, sampleSize, discardedTuples, usedTuples, start, task);
         if (!ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
             if (logger.isInfoEnabled()) logger.info("After first iteration there are " + (sampleSize - ((allCellChanges.getChanges().size()) - initialChanges)) + " remaining changes to perform!");
-            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, usedTuples, initialChanges, sampleSize, task);
+            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, usedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
         if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
     }
 
-    private void findVioGenQueries(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, EGTask task) {
+    private void findVioGenQueries(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, long start, EGTask task) {
         int initialChanges = allCellChanges.getChanges().size();
         int offset = computeOffset(vioGenQuery, task);
         CrossProductFormulas crossProduct = vioGenQuery.getFormula().getCrossProductFormulas();
@@ -95,10 +97,20 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
         List<Tuple> secondExtractedTuples = ExecuteVioGenQueryUtility.materializeTuples(secondOperator, queryRunner, task);
         if (logger.isInfoEnabled()) logger.info("Tuples for alias " + secondTableAlias + ": " + secondExtractedTuples.size());
         for (Tuple firstTuple : firstExtractedTuples) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                discardedTuples.clear();
+                return;
+            }
             if (usedTuples.contains(firstTuple)) {
                 continue;
             }
             for (Tuple secondTuple : secondExtractedTuples) {
+                if (BartUtility.isTimeout(start, task)) {
+                    logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                    discardedTuples.clear();
+                    return;
+                }
                 if (usedTuples.contains(firstTuple) || usedTuples.contains(secondTuple)) {
                     continue;
                 }
@@ -125,9 +137,13 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
         }
     }
 
-    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, int initialChanges, int sampleSize, EGTask task) {
+    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, int initialChanges, int sampleSize, long start, EGTask task) {
         Iterator<CrossProductTuplePair> it = discardedTuples.iterator();
         while (it.hasNext()) {
+            if (BartUtility.isTimeout(start, task)) {
+                logger.warn("Timeout for vioGenQuery " + vioGenQuery);
+                return;
+            }
             CrossProductTuplePair tuplePair = it.next();
             if (usedTuples.contains(tuplePair.getFirstTuple()) || usedTuples.contains(tuplePair.getSecondTuple())) {
                 continue;
