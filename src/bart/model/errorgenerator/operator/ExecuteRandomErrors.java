@@ -45,11 +45,12 @@ public class ExecuteRandomErrors implements IInitializableOperator {
         /*
          Dirties table at most for percentage wrt attributes to dirty sizes
          */
-        if (task.getConfiguration().isPrintLog()) System.out.println("Start to dirty: " + tableName);
-        if (task.getConfiguration().isDebug()) System.out.println("Table to dirty: " + tableName);
+        if (task.getConfiguration().isDebug()) System.out.println("Start to add random errors into table: " + tableName);
         ITable table = task.getTarget().getTable(tableName);
+        if (task.getConfiguration().isPrintLog()) System.out.println("Adding random errors into table: " + tableName + " - size: " + table.getSize());
         Set<String> attributesForRandomErrors = task.getConfiguration().getAttributesForRandomErrors(tableName);
         if (task.getConfiguration().isDebug()) System.out.println("Attributes to dirty: " + attributesForRandomErrors);
+        checkAttributes(table, attributesForRandomErrors);
         int percentage = task.getConfiguration().getPercentageForRandomErrors(tableName);
         if (task.getConfiguration().isDebug()) System.out.println("Percentage to dirty for attributes: " + percentage);
         double percentageValue = ((double) percentage) / 100;
@@ -89,6 +90,13 @@ public class ExecuteRandomErrors implements IInitializableOperator {
 
     public void intitializeOperators(EGTask task) {
         valueSelector = OperatorFactory.getInstance().getValueSelector(task);
+    }
+
+    private void checkAttributes(ITable table, Set<String> attributesForRandomErrors) {
+        for (String attributesForRandomError : attributesForRandomErrors) {
+            Attribute attribute = table.getAttribute(attributesForRandomError); //Exception if it not exists
+            if (logger.isDebugEnabled()) logger.debug("Attribute: " + attribute);
+        }
     }
 
 }

@@ -338,10 +338,10 @@ public class GenerateChangesAndContexts {
             return;
         }
         addChanges(changesForTuple, allCellChanges);
-        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(firstTuple, changesForTuple)) {
+        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsedInChanges(firstTuple, changesForTuple)) {
             usedTuples.add(firstTuple);
         }
-        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsingInChanges(secondTuple, changesForTuple)) {
+        if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsedInChanges(secondTuple, changesForTuple)) {
             usedTuples.add(secondTuple);
         }
     }

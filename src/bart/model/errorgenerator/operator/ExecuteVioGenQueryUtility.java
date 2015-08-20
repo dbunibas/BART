@@ -262,7 +262,7 @@ public class ExecuteVioGenQueryUtility {
         return result;
     }
 
-    public static boolean isUsingInChanges(Tuple tuple, List<VioGenQueryCellChange> changesForTuple) {
+    public static boolean isUsedInChanges(Tuple tuple, List<VioGenQueryCellChange> changesForTuple) {
         for (VioGenQueryCellChange change : changesForTuple) {
             String changedTable = change.getCell().getAttributeRef().getTableName();
             TupleOID changedTupleOID = change.getCell().getTupleOID();

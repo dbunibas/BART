@@ -2,7 +2,6 @@ package bart.model.errorgenerator;
 
 import bart.model.database.AttributeRef;
 import bart.model.database.Tuple;
-import bart.model.dependency.FormulaVariable;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collection;

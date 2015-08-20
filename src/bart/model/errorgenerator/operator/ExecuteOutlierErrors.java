@@ -49,7 +49,6 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
             dirtyTable(tableName, task, cellChanges, detectableChanges);
         }
         if (task.getConfiguration().isPrintLog()) System.out.println("Outliers CellChanges generated: " + cellChanges.getChanges().size());
-
         return cellChanges;
     }
 
@@ -60,20 +59,19 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
         OutlierErrorConfiguration outlierErrorConfiguration = task.getConfiguration().getOutlierErrorConfiguration();
         Set<String> attributesToDirty = outlierErrorConfiguration.getAttributesToDirty(tableName);
         if (task.getConfiguration().isDebug()) System.out.println("Attributes to dirty: " + attributesToDirty);
+        checkAttributes(table, attributesToDirty);
         for (String attribute : attributesToDirty) {
-            int percentageToDirty = outlierErrorConfiguration.getPercentageToDirty(tableName, attribute);
+            double percentageToDirty = outlierErrorConfiguration.getPercentageToDirty(tableName, attribute);
             boolean detectable = outlierErrorConfiguration.isDetectable(tableName, attribute);
             dirtyAttribute(table, attribute, percentageToDirty, detectable, cellChanges, detectableChanges, task);
-
         }
-
     }
 
-    private void dirtyAttribute(ITable table, String attribute, int percentageToDirty, boolean detectable, CellChanges cellChanges, CellChanges detectableChanges, EGTask task) {
+    private void dirtyAttribute(ITable table, String attribute, double percentageToDirty, boolean detectable, CellChanges cellChanges, CellChanges detectableChanges, EGTask task) {
         if (task.getConfiguration().isDebug()) System.out.println("Attribute to dirty: " + attribute);
         if (task.getConfiguration().isDebug()) System.out.println("Percentage to dirty: " + percentageToDirty);
         if (task.getConfiguration().isDebug()) System.out.println("Detectable: " + detectable);
-        double percentage = ((double) percentageToDirty) / 100;
+        double percentage = percentageToDirty / 100;
         // TODO select attribute from table ???
         ITupleIterator it = table.getTupleIterator();
         List<Cell> originalDistribution = new ArrayList<Cell>();
@@ -296,4 +294,11 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
         return sb.toString();
     }
 
+
+    private void checkAttributes(ITable table, Set<String> attributesForRandomErrors) {
+        for (String attributesForRandomError : attributesForRandomErrors) {
+            Attribute attribute = table.getAttribute(attributesForRandomError); //Exception if it not exists
+            if (logger.isDebugEnabled()) logger.debug("Attribute: " + attribute);
+        }
+    }
 }

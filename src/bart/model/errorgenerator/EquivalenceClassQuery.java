@@ -4,7 +4,6 @@ import bart.model.algebra.IAlgebraOperator;
 import bart.model.algebra.operators.ITupleIterator;
 import bart.model.database.AttributeRef;
 import bart.model.database.Tuple;
-import bart.model.dependency.FormulaVariable;
 import java.util.List;
 
 public class EquivalenceClassQuery {

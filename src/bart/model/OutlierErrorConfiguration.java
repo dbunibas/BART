@@ -10,7 +10,7 @@ public class OutlierErrorConfiguration {
 
     private Map<String, Set<AttributeToDirty>> mapAttributesForTables = new HashMap<String, Set<AttributeToDirty>>(); // key: tableName
 
-    public void addAttributes(String tableName, String attributeName, int percentage, boolean detectable) {
+    public void addAttributes(String tableName, String attributeName, double percentage, boolean detectable) {
         AttributeToDirty attribute = new AttributeToDirty(attributeName, percentage, detectable);
         Set<AttributeToDirty> attributes = mapAttributesForTables.get(tableName);
         if (attributes == null) attributes = new HashSet<AttributeToDirty>();
@@ -31,7 +31,7 @@ public class OutlierErrorConfiguration {
         return attributesName;
     }
 
-    public int getPercentageToDirty(String tableName, String attributeName) {
+    public double getPercentageToDirty(String tableName, String attributeName) {
         Set<AttributeToDirty> attributes = mapAttributesForTables.get(tableName);
         if (attributes != null && !attributes.isEmpty()) {
             Iterator<AttributeToDirty> iterator = attributes.iterator();
@@ -42,7 +42,7 @@ public class OutlierErrorConfiguration {
                 }
             }
         }
-        return 0;
+        return 0.0;
     }
 
     public boolean isDetectable(String tableName, String attributeName) {
@@ -81,10 +81,10 @@ public class OutlierErrorConfiguration {
 class AttributeToDirty {
 
     private String name;
-    private int percentage;
+    private double percentage;
     private boolean detectable;
 
-    public AttributeToDirty(String name, int percentage, boolean detectable) {
+    public AttributeToDirty(String name, double percentage, boolean detectable) {
         this.name = name;
         this.percentage = percentage;
         this.detectable = detectable;
@@ -98,7 +98,7 @@ class AttributeToDirty {
         this.name = name;
     }
 
-    public int getPercentage() {
+    public double getPercentage() {
         return percentage;
     }
 
@@ -116,13 +116,14 @@ class AttributeToDirty {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 67 * hash + this.percentage;
-        hash = 67 * hash + (this.detectable ? 1 : 0);
+        int hash = 5;
+        hash = 47 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 47 * hash + (int) (Double.doubleToLongBits(this.percentage) ^ (Double.doubleToLongBits(this.percentage) >>> 32));
+        hash = 47 * hash + (this.detectable ? 1 : 0);
         return hash;
     }
-
+    
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

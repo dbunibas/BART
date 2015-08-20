@@ -192,7 +192,7 @@ public class DAOEGTaskConfiguration {
                 Attribute percentageAttribute = getMandatoryAttribute(attribute, "percentage");
                 Attribute detectableAttribute = getMandatoryAttribute(attribute, "detectable");
                 String attributeName = attribute.getTextTrim();
-                int percentage = Integer.parseInt(percentageAttribute.getValue().trim());
+                double percentage = Double.parseDouble(percentageAttribute.getValue().trim());
                 boolean detectable = Boolean.parseBoolean(detectableAttribute.getValue().trim());
                 outlierErrorConfiguration.addAttributes(tableName.getValue().trim(), attributeName, percentage, detectable);
             }
