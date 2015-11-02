@@ -3,6 +3,12 @@ package bart.persistence;
 import bart.exceptions.DAOException;
 import bart.model.EGTaskConfiguration;
 import bart.model.OutlierErrorConfiguration;
+import bart.model.database.AttributeRef;
+import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
+import bart.model.errorgenerator.operator.valueselectors.TypoAddString;
+import bart.model.errorgenerator.operator.valueselectors.TypoRandom;
+import bart.model.errorgenerator.operator.valueselectors.TypoRemoveString;
+import bart.model.errorgenerator.operator.valueselectors.TypoSwitchValue;
 import bart.persistence.xml.DAOXmlUtility;
 import bart.utility.BartUtility;
 import java.util.HashSet;
@@ -137,6 +143,24 @@ public class DAOEGTaskConfiguration {
                 }
             }
         }
+        Element dirtyStrategiesElement = configurationElement.getChild("dirtyStrategies");
+        if (dirtyStrategiesElement != null) {
+            Element defaultStrategyElement = getMandatoryElement(dirtyStrategiesElement, "defaultStrategy");
+            Element strategyElement = getMandatoryElement(defaultStrategyElement, "strategy");
+            IDirtyStrategy defaultDirtyStrategy = getDirtyStrategy(strategyElement);
+            conf.setDefaultDirtyStrategy(defaultDirtyStrategy);
+            Element attributeStrategyElement = dirtyStrategiesElement.getChild("attributeStrategy");
+            if (attributeStrategyElement != null) {
+                for (Element attributeElement : (List<Element>) attributeStrategyElement.getChildren("attribute")) {
+                    Attribute tableAttribute = getMandatoryAttribute(attributeElement, "table");
+                    Attribute nameAttribute = getMandatoryAttribute(attributeElement, "name");
+                    AttributeRef attributeRef = new AttributeRef(tableAttribute.getValue().trim(), nameAttribute.getValue().trim());
+                    Element strategyElementAttribute = getMandatoryElement(attributeElement, "strategy");
+                    IDirtyStrategy attributeDirtyStrategy = getDirtyStrategy(strategyElementAttribute);
+                    conf.addDirtyStrategyForAttribute(attributeRef, attributeDirtyStrategy);
+                }
+            }
+        }
         Element executorConfigurationElement = configurationElement.getChild("queryExecutors");
         if (executorConfigurationElement != null) {
             Element vioGenQueriesElement = executorConfigurationElement.getChild("vioGenQueries");
@@ -180,6 +204,9 @@ public class DAOEGTaskConfiguration {
         return conf;
     }
 
+    public DAOEGTaskConfiguration() {
+    }
+
     private OutlierErrorConfiguration extractOutlierErrorConfiguration(Element outlierErrorsTag) {
         OutlierErrorConfiguration outlierErrorConfiguration = new OutlierErrorConfiguration();
         Element tablesElement = getMandatoryElement(outlierErrorsTag, "tables");
@@ -198,6 +225,31 @@ public class DAOEGTaskConfiguration {
             }
         }
         return outlierErrorConfiguration;
+    }
+
+    private IDirtyStrategy getDirtyStrategy(Element strategyElement) {
+        String strategyName = strategyElement.getText().trim();
+        if (strategyName.equals(IDirtyStrategy.TYPO_ADD_STRING)) {
+            Attribute charsAttribute = getMandatoryAttribute(strategyElement, "chars");
+            Attribute charsToAddAttribute = getMandatoryAttribute(strategyElement, "charsToAdd");
+            String charsString = charsAttribute.getValue().trim();
+            int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
+            return new TypoAddString(charsString, times);
+        }
+        if (strategyName.equals(IDirtyStrategy.TYPO_RANDOM)) {
+            return new TypoRandom();
+        }
+        if (strategyName.equals(IDirtyStrategy.TYPO_REMOVE_STRING)) {
+            Attribute charsToAddAttribute = getMandatoryAttribute(strategyElement, "charsToRemove");
+            int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
+            return new TypoRemoveString(times);
+        }
+        if (strategyName.equals(IDirtyStrategy.TYPO_SWITCH_VALUE)) {
+            Attribute charsToAddAttribute = getMandatoryAttribute(strategyElement, "charsToSwitch");
+            int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
+            return new TypoSwitchValue(times);
+        }
+        throw new DAOException("Unable to load dirty strategy for: " + strategyName);
     }
 
     private Element getMandatoryElement(Element father, String elementName) {

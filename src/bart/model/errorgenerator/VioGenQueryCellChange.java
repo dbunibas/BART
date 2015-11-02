@@ -2,6 +2,7 @@ package bart.model.errorgenerator;
 
 import bart.BartConstants;
 import bart.model.database.Cell;
+import bart.model.database.CellRef;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,14 +66,22 @@ public class VioGenQueryCellChange extends AbstractCellChange {
         return BartConstants.VIOGEN_CHANGE;
     }
 
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 17 * hash + (this.getCell() != null ? this.getCell().hashCode() : 0);
+//        hash = 17 * hash + (this.getNewValue() != null ? this.getNewValue().hashCode() : 0);
+//        hash = 17 * hash + (this.context != null ? this.context.hashCode() : 0);
+//        hash = 17 * hash + (this.vioGenQuery != null ? this.vioGenQuery.toShortString().hashCode() : 0);
+//        return hash;
+//    }
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 17 * hash + (this.getCell() != null ? this.getCell().hashCode() : 0);
-        hash = 17 * hash + (this.getNewValue() != null ? this.getNewValue().hashCode() : 0);
-        hash = 17 * hash + (this.context != null ? this.context.hashCode() : 0);
-        hash = 17 * hash + (this.vioGenQuery != null ? this.vioGenQuery.toShortString().hashCode() : 0);
-        return hash;
+        return this.toShortString().hashCode();
+    }
+    
+    public String toShortString(){
+        return new CellRef(this.getCell()).toString() + "." + this.getNewValue().toString();
     }
 
     @Override

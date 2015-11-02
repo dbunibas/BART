@@ -80,22 +80,23 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
     private void findVioGenQueries(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, long start, EGTask task) {
         int initialChanges = allCellChanges.getChanges().size();
         int offset = computeOffset(vioGenQuery, task);
+        if (logger.isInfoEnabled()) logger.info("Random p: " + vioGenQuery.getConfiguration().getProbabilityFactorForInequalityQueries());
         CrossProductFormulas crossProduct = vioGenQuery.getFormula().getCrossProductFormulas();
         List<ComparisonAtom> inequalityComparisons = crossProduct.getInequalityComparisons();
-        if (logger.isInfoEnabled()) logger.info("Inequality Comparisons: " + inequalityComparisons);
+        if (logger.isDebugEnabled()) logger.debug("Inequality Comparisons: " + inequalityComparisons);
         List<TableAlias> tableAliasInCrossProducts = crossProduct.getTableAliasInCrossProducts();
         TableAlias firstTableAlias = tableAliasInCrossProducts.get(0);
         IAlgebraOperator firstOperator = crossProduct.getCrossProductAlgebraOperator(firstTableAlias);
         firstOperator = addLimit(firstOperator, firstTableAlias, vioGenQuery, offset, task);
-        if (logger.isInfoEnabled()) logger.info("First operator\n" + firstOperator);
+        if (logger.isDebugEnabled()) logger.debug("First operator\n" + firstOperator);
         List<Tuple> firstExtractedTuples = ExecuteVioGenQueryUtility.materializeTuples(firstOperator, queryRunner, task);
-        if (logger.isInfoEnabled()) logger.info("Tuples for alias " + firstTableAlias + ": " + firstExtractedTuples.size());
+        if (logger.isDebugEnabled()) logger.debug("Tuples for alias " + firstTableAlias + ": " + firstExtractedTuples.size());
         TableAlias secondTableAlias = tableAliasInCrossProducts.get(1);
         IAlgebraOperator secondOperator = crossProduct.getCrossProductAlgebraOperator(secondTableAlias);
         secondOperator = addLimit(secondOperator, secondTableAlias, vioGenQuery, offset, task);
-        if (logger.isInfoEnabled()) logger.info("Second operator\n" + secondOperator);
+        if (logger.isDebugEnabled()) logger.debug("Second operator\n" + secondOperator);
         List<Tuple> secondExtractedTuples = ExecuteVioGenQueryUtility.materializeTuples(secondOperator, queryRunner, task);
-        if (logger.isInfoEnabled()) logger.info("Tuples for alias " + secondTableAlias + ": " + secondExtractedTuples.size());
+        if (logger.isDebugEnabled()) logger.debug("Tuples for alias " + secondTableAlias + ": " + secondExtractedTuples.size());
         for (Tuple firstTuple : firstExtractedTuples) {
             if (BartUtility.isTimeout(start, task)) {
                 logger.warn("Timeout for vioGenQuery " + vioGenQuery);
@@ -127,7 +128,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
                 if (!verified) {
                     continue;
                 }
-                if (logger.isInfoEnabled()) logger.info("Tuple pair to handle " + tuplePair);
+                if (logger.isDebugEnabled()) logger.debug("Tuple pair to handle " + tuplePair);
                 changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
                 if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
                     if (logger.isInfoEnabled()) logger.info("All changes generated!");
@@ -183,7 +184,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
             limit.addChild(operator);
             operator = limit;
         }
-        if (logger.isInfoEnabled()) logger.info("Operator:\n" + operator);
+        if (logger.isDebugEnabled()) logger.debug("Operator:\n" + operator);
         return operator;
     }
 

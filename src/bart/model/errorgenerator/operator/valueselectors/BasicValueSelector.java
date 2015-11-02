@@ -1,6 +1,7 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
 import bart.model.EGTask;
+import bart.model.database.AttributeRef;
 import bart.model.database.Cell;
 import bart.model.database.ConstantValue;
 import bart.model.database.IValue;
@@ -35,7 +36,7 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         }
         if (whiteValueConstraint.isStarConstraint()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for star value");
-            return generateNewValueForStar(whiteValueConstraint, originalCell);
+            return generateNewValueForStar(whiteValueConstraint, originalCell, task);
         } else if (!whiteValueConstraint.isNumeric()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for whitelist " + change.getWhiteList());
             return new ConstantValue(whiteValueConstraint.toString());
@@ -45,9 +46,12 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         }
     }
 
-    private IValue generateNewValueForStar(ValueConstraint valueConstraint, Cell cell) {
+    private IValue generateNewValueForStar(ValueConstraint valueConstraint, Cell cell, EGTask task) {
         if (!valueConstraint.isNumeric()) {
-            return new ConstantValue(cell.getValue() + "-*");
+            AttributeRef attribute = new AttributeRef(cell.getAttributeRef().getTableName(), cell.getAttributeRef().getName());
+            IDirtyStrategy dirtyStrategy = task.getConfiguration().getDirtyStrategy(attribute);
+            return dirtyStrategy.generateNewValue(cell.getValue());
+//            return new ConstantValue(cell.getValue() + "-*");
         }
         String oldValue = cell.getValue().toString();
         double oldDouble = Double.parseDouble(oldValue);

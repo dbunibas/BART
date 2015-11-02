@@ -5,6 +5,7 @@ import bart.exceptions.DBMSException;
 import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
+import bart.model.VioGenQueryConfiguration;
 import bart.model.detection.operator.DetectViolations;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;

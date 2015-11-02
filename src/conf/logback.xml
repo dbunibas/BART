@@ -35,7 +35,7 @@
     <!--<logger name="bart.model.errorgenerator.operator.ExecuteVioGenQueryInequalitySymmetricMainMemoryRandom" level="INFO"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.ExecuteVioGenQueryInequalityCrossProducts" level="INFO"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.ExecuteVioGenQuerySymmetricMainMemoryRandom" level="INFO"/>-->
-    <!--<logger name="bart.model.errorgenerator.operator.ExecuteVioGenQueryInequalityRAMRandomCP" level="INFO"/>-->
+    <logger name="bart.model.errorgenerator.operator.ExecuteVioGenQueryInequalityRAMRandomCP" level="INFO"/>
     <!--<logger name="bart.model.errorgenerator.operator.ExportDatabaseCSV" level="DEBUG"/>-->
     <!--<logger name="bart.model.errorgenerator.CellChanges" level="DEBUG"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.deltadb.ApplyCellChanges" level="INFO"/>-->

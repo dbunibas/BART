@@ -11,8 +11,6 @@ public abstract class AbstractCellChange implements ICellChange {
     private ValueConstraint whiteListIntersection;
     private Set<ValueConstraint> blackList = new HashSet<ValueConstraint>();
     private Set<String> violatedDependencies = new HashSet<String>();
-    
-    
 
     @Override
     public IValue getNewValue() {
@@ -71,9 +69,16 @@ public abstract class AbstractCellChange implements ICellChange {
 
     @Override
     public String toString() {
+        return getCell() + " := " + getNewValue() + "-" + hashCode();
+    }
+    public String toShortString() {
         return getCell() + " := " + getNewValue();
     }
 
+    @Override
+    public int hashCode() {
+        return this.toShortString().hashCode();
+    }
     @Override
     public String toLongString() {
         StringBuilder sb = new StringBuilder();
