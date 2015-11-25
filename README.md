@@ -1,7 +1,9 @@
 BART
 ====
 
-The BART Project: Benchmarking Algorithms for (data) Repairing and Translation
+BART (Benchmarking Algorithms for data Repairing and Translation) is an error-generation tool for data cleaning applications. Its purpose is to introduce errors into clean databases for the purpose of benchmarking data-repairing algorithms. It provides users with the highest possible level of control over the error-generation process, and at the same time scales nicely to large databases. This is far from trivial, since, as we show in our technical papers, the error-generation problem is surprisingly challenging, and in fact, NP-complete. To scale to millions of tuples, the system relies on several non-trivial optimizations, including a new symmetry property of data quality constraints.
+
+Additional material about the project can be found at the following address: http://db.unibas.it/projects/bart/
 
 ### How to import project in NetBeans ####
 1. In NetBeans, File -> Open projects... and select the project folder
