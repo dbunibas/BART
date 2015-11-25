@@ -250,7 +250,7 @@
     *************************************************** -->
     
     <target name="run" depends="compile" description="Run the application">
-        <java classname="${main.class}" fork="yes">
+        <java classname="${main.class}" fork="yes"  maxmemory="${run.maxmemory}">
             <classpath refid="compile.classpath" />
             <arg value="${arg0}"/>
         </java>
