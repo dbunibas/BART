@@ -50,8 +50,10 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         if (!valueConstraint.isNumeric()) {
             AttributeRef attribute = new AttributeRef(cell.getAttributeRef().getTableName(), cell.getAttributeRef().getName());
             IDirtyStrategy dirtyStrategy = task.getConfiguration().getDirtyStrategy(attribute);
+            if(dirtyStrategy == null){
+                dirtyStrategy = new TypoAddString("***", 1);
+            }
             return dirtyStrategy.generateNewValue(cell.getValue());
-//            return new ConstantValue(cell.getValue() + "-*");
         }
         String oldValue = cell.getValue().toString();
         double oldDouble = Double.parseDouble(oldValue);

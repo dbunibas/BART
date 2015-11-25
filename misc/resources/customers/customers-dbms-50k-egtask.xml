@@ -85,6 +85,12 @@ fd2: treatments(ssn: $ssn1, salary: $salary1, insurance: $insur1, treatment: $tr
   <cloneTargetSchema>true</cloneTargetSchema>
   <useDeltaDBForChanges>true</useDeltaDBForChanges>
   <checkChanges>true</checkChanges>
+        
+  <exportDirtyDB>true</exportDirtyDB>
+  <exportDirtyDBPath>bart_out/customers/&SIZE;/</exportDirtyDBPath>
+  <exportDirtyDBType>CSV</exportDirtyDBType>
+  <exportCellChanges>true</exportCellChanges>
+  <exportCellChangesPath>bart_out/customers/&SIZE;/inputdb_diffs.csv</exportCellChangesPath>
 
   <!-- To load DB every time on start and then apply changes without copying -->
   <!--
