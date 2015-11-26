@@ -1,9 +1,9 @@
 package bart.persistence;
 
-import bart.exceptions.DAOException;
-import bart.model.database.mainmemory.datasource.NullValueFactory;
+import speedy.model.database.mainmemory.datasource.NullValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
 
 public class Types {
 

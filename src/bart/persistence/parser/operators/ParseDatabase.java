@@ -1,6 +1,5 @@
 package bart.persistence.parser.operators;
 
-import bart.exceptions.ParserException;
 import bart.persistence.parser.ParserAttribute;
 import bart.persistence.parser.ParserFact;
 import bart.persistence.parser.ParserInstance;
@@ -8,16 +7,16 @@ import bart.persistence.parser.ParserSchema;
 import bart.persistence.parser.ParserTable;
 import bart.persistence.parser.output.DatabaseLexer;
 import bart.persistence.parser.output.DatabaseParser;
-import bart.model.database.IDatabase;
-import bart.model.database.mainmemory.MainMemoryDB;
-import bart.model.database.mainmemory.datasource.DataSource;
-import bart.model.database.mainmemory.datasource.INode;
-import bart.model.database.mainmemory.datasource.nodes.AttributeNode;
-import bart.model.database.mainmemory.datasource.nodes.LeafNode;
-import bart.model.database.mainmemory.datasource.nodes.SetNode;
-import bart.model.database.mainmemory.datasource.nodes.TupleNode;
-import bart.model.database.mainmemory.datasource.IntegerOIDGenerator;
-import bart.model.database.mainmemory.datasource.NullValueFactory;
+import speedy.model.database.IDatabase;
+import speedy.model.database.mainmemory.MainMemoryDB;
+import speedy.model.database.mainmemory.datasource.DataSource;
+import speedy.model.database.mainmemory.datasource.INode;
+import speedy.model.database.mainmemory.datasource.nodes.AttributeNode;
+import speedy.model.database.mainmemory.datasource.nodes.LeafNode;
+import speedy.model.database.mainmemory.datasource.nodes.SetNode;
+import speedy.model.database.mainmemory.datasource.nodes.TupleNode;
+import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
+import speedy.model.database.mainmemory.datasource.NullValueFactory;
 import bart.persistence.PersistenceConstants;
 import bart.persistence.PersistenceUtility;
 import bart.persistence.Types;
@@ -26,6 +25,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.ParserException;
 
 public class ParseDatabase {
 

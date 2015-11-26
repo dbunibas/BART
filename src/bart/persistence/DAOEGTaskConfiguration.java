@@ -1,15 +1,14 @@
 package bart.persistence;
 
-import bart.exceptions.DAOException;
 import bart.model.EGTaskConfiguration;
 import bart.model.OutlierErrorConfiguration;
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import bart.model.errorgenerator.operator.valueselectors.TypoAddString;
 import bart.model.errorgenerator.operator.valueselectors.TypoRandom;
 import bart.model.errorgenerator.operator.valueselectors.TypoRemoveString;
 import bart.model.errorgenerator.operator.valueselectors.TypoSwitchValue;
-import bart.persistence.xml.DAOXmlUtility;
+import speedy.persistence.xml.DAOXmlUtility;
 import bart.utility.BartUtility;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
 
 public class DAOEGTaskConfiguration {
 

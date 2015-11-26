@@ -15,9 +15,9 @@
             <login>pguser</login>
             <password>pguser</password>
         </access-configuration>
-        <import-xml createTables="true">
-            <input>./xml/&SIZE;tuples_md.xml</input>
-        </import-xml>
+        <import createTables="true">
+            <input type="xml" table="md">./xml/&SIZE;tuples_md.xml</input>
+        </import>
     </source>
     <target> 
         <type>DBMS</type>
@@ -28,9 +28,9 @@
             <login>pguser</login>
             <password>pguser</password>
         </access-configuration>
-        <import-xml>
-            <input>./xml/&SIZE;tuples_emp.xml</input>
-        </import-xml>
+        <import>
+            <input type="xml" table="emp">./xml/&SIZE;tuples_emp.xml</input>
+        </import>
     </target>
 
     <!-- ****************************************************

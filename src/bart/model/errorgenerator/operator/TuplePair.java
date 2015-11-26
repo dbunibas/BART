@@ -1,6 +1,6 @@
 package bart.model.errorgenerator.operator;
 
-import bart.model.database.Tuple;
+import speedy.model.database.Tuple;
 
 public class TuplePair {
 

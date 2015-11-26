@@ -1,6 +1,5 @@
 package bart.model.algebra.operators;
 
-import bart.model.database.TableAlias;
 import bart.model.dependency.RelationalAtom;
 import bart.model.dependency.LabeledEdge;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.SimpleGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.database.TableAlias;
 
 public class FindConnectedTables {
 

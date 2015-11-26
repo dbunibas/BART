@@ -1,7 +1,7 @@
 package bart.model.dependency;
 
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.database.TableAlias;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.database.TableAlias;
 
 public class FormulaSampling {
 

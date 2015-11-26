@@ -11,7 +11,7 @@ import bart.model.dependency.IFormula;
 import bart.model.dependency.IFormulaAtom;
 import bart.model.dependency.RelationalAtom;
 import bart.model.dependency.VariableEquivalenceClass;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.ArrayList;

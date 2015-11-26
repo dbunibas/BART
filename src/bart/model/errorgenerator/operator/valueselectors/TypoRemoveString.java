@@ -1,7 +1,7 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
 import java.util.Random;
 
 public class TypoRemoveString implements IDirtyStrategy {
@@ -14,11 +14,14 @@ public class TypoRemoveString implements IDirtyStrategy {
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
-        int changes = 0;
-        while (!valueString.isEmpty() && changes < charsToRemove) {
-            int randomIndex = selectRandomIndex(valueString);
-            valueString = removeChars(valueString, randomIndex);
-            changes++;
+        String originalValue = valueString;
+        while (originalValue.equals(valueString)) {
+            int changes = 0;
+            while (!valueString.isEmpty() && changes < charsToRemove) {
+                int randomIndex = selectRandomIndex(valueString);
+                valueString = removeChars(valueString, randomIndex);
+                changes++;
+            }
         }
         return new ConstantValue(valueString);
     }

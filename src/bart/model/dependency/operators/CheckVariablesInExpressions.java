@@ -1,12 +1,12 @@
 package bart.model.dependency.operators;
 
-import bart.exceptions.ParserException;
 import bart.model.dependency.*;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.ParserException;
 
 public class CheckVariablesInExpressions {
 

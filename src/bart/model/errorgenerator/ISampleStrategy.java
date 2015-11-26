@@ -2,8 +2,8 @@ package bart.model.errorgenerator;
 
 import bart.model.EGTask;
 import bart.model.VioGenQueryConfiguration;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.database.TableAlias;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.database.TableAlias;
 import java.util.Set;
 
 public interface ISampleStrategy {

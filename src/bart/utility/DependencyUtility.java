@@ -1,7 +1,7 @@
 package bart.utility;
 
 import bart.BartConstants;
-import bart.model.database.*;
+import speedy.model.database.*;
 import bart.model.dependency.*;
 import bart.model.errorgenerator.VioGenQuery;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package bart.model.dependency.analysis;
 
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;
 import bart.model.dependency.FormulaWithAdornments;

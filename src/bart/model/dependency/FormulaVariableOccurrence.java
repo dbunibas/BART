@@ -1,7 +1,7 @@
 package bart.model.dependency;
 
-import bart.model.database.AttributeRef;
-import bart.model.database.TableAlias;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.TableAlias;
 
 public class FormulaVariableOccurrence implements IFormulaValue {
     

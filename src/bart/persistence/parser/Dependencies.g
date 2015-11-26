@@ -14,9 +14,9 @@ package bart.persistence.parser.output;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.dependency.*;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.persistence.parser.operators.ParseDependencies;
 import bart.BartConstants;
 import bart.utility.BartUtility;
@@ -49,7 +49,7 @@ public void setGenerator(ParseDependencies generator) {
 @lexer::members {
 
 public void emitErrorMessage(String msg) {
-	throw new bart.exceptions.ParserException(msg);
+	throw new speedy.exceptions.ParserException(msg);
 }
 }
 

@@ -2,7 +2,7 @@ package bart.model.errorgenerator.operator;
 
 import bart.BartConstants;
 import bart.exceptions.ErrorGeneratorException;
-import bart.model.database.ConstantValue;
+import speedy.model.database.ConstantValue;
 import bart.model.errorgenerator.ValueConstraint;
 import java.util.Set;
 

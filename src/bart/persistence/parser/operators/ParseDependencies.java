@@ -1,9 +1,8 @@
 package bart.persistence.parser.operators;
 
-import bart.exceptions.ParserException;
 import bart.model.EGTask;
-import bart.model.database.IDatabase;
-import bart.model.database.TableAlias;
+import speedy.model.database.IDatabase;
+import speedy.model.database.TableAlias;
 import bart.model.dependency.*;
 import bart.model.dependency.operators.AssignAliasesInFormulas;
 import bart.model.dependency.operators.CheckVariablesInExpressions;
@@ -18,6 +17,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.ParserException;
 
 @SuppressWarnings("unchecked")
 public class ParseDependencies {

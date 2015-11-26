@@ -5,18 +5,8 @@ import bart.BartConstants;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
-import bart.model.algebra.CartesianProduct;
-import bart.model.algebra.ExtractRandomSample;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.Join;
-import bart.model.algebra.Scan;
-import bart.model.algebra.Select;
-import bart.model.database.AttributeRef;
-import bart.model.database.ResultInfo;
-import bart.model.database.TableAlias;
 import bart.model.dependency.*;
-import bart.model.database.operators.IRunQuery;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +16,16 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.CartesianProduct;
+import speedy.model.algebra.ExtractRandomSample;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.Join;
+import speedy.model.algebra.Select;
+import speedy.model.algebra.operators.AlgebraOperatorWithStats;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.ResultInfo;
+import speedy.model.database.TableAlias;
+import speedy.model.database.operators.IRunQuery;
 
 public class BuildAlgebraTreeForPositiveFormula implements IInitializableOperator {
 

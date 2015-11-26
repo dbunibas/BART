@@ -12,7 +12,7 @@ package bart.persistence.parser.output;
 @header {
 package bart.persistence.parser.output;
 
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.persistence.parser.operators.ParseDatabase;
 import bart.persistence.parser.*;
 }
@@ -33,7 +33,7 @@ public void setGenerator(ParseDatabase generator) {
 @lexer::members {
 
 public void emitErrorMessage(String msg) {
-	throw new bart.exceptions.ParserException(msg);
+	throw new speedy.exceptions.ParserException(msg);
 }
 }
 

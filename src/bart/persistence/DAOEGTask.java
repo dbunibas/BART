@@ -1,17 +1,16 @@
 package bart.persistence;
 
-import bart.exceptions.DAOException;
+import speedy.exceptions.DAOException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
 import bart.persistence.parser.ParserMainMemoryDatabase;
 import bart.persistence.parser.operators.ParseDependencies;
-import bart.model.database.EmptyDB;
-import bart.model.database.IDatabase;
-import bart.model.database.dbms.DBMSDB;
-import bart.persistence.relational.AccessConfiguration;
-import bart.persistence.xml.DAOXmlUtility;
-import bart.persistence.xml.operators.TransformFilePaths;
-import bart.utility.BartUtility;
+import speedy.model.database.EmptyDB;
+import speedy.model.database.IDatabase;
+import speedy.model.database.dbms.DBMSDB;
+import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.xml.DAOXmlUtility;
+import speedy.persistence.xml.operators.TransformFilePaths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +19,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.SpeedyConstants;
+import speedy.persistence.file.CSVFile;
+import speedy.persistence.file.IImportFile;
+import speedy.persistence.file.XMLFile;
 
 public class DAOEGTask {
 
@@ -113,21 +116,45 @@ public class DAOEGTask {
             accessConfiguration.setLogin(dbmsElement.getChildText("login").trim());
             accessConfiguration.setPassword(dbmsElement.getChildText("password").trim());
             Element initDbElement = databaseElement.getChild("init-db");
-            DBMSDB database = new DBMSDB(accessConfiguration, task);
+            DBMSDB database = new DBMSDB(accessConfiguration);
             if (initDbElement != null) {
                 database.getInitDBConfiguration().setInitDBScript(initDbElement.getValue());
             }
-            Element importXmlElement = databaseElement.getChild("import-xml");
+            if (databaseElement.getChild("import-xml") != null) {
+                throw new DAOException("The 'import-xml' tag is deprecated. Use Import instead");
+            }
+            Element importXmlElement = databaseElement.getChild("import");
             if (importXmlElement != null) {
                 Attribute createTableAttribute = importXmlElement.getAttribute("createTables");
                 if (createTableAttribute != null) {
-                    database.getInitDBConfiguration().setCreateTablesFromXML(Boolean.parseBoolean(createTableAttribute.getValue()));
+                    database.getInitDBConfiguration().setCreateTablesFromFiles(Boolean.parseBoolean(createTableAttribute.getValue()));
                 }
                 for (Object inputFileObj : importXmlElement.getChildren("input")) {
                     Element inputFileElement = (Element) inputFileObj;
-                    String xmlFile = inputFileElement.getText();
-                    xmlFile = filePathTransformator.expand(fileTask, xmlFile);
-                    database.getInitDBConfiguration().addXmlFileToImport(xmlFile);
+                    String fileName = inputFileElement.getText();
+                    if(inputFileElement.getAttribute("table") == null) throw new DAOException("Attribute table for the tag 'input' is mandatory");
+                    if(inputFileElement.getAttribute("type") == null) throw new DAOException("Attribute type for the tag 'input' is mandatory. Use CSV or XML as value");
+                    String tableName = inputFileElement.getAttribute("table").getValue();
+                    String type = inputFileElement.getAttribute("type").getValue();
+                    fileName = filePathTransformator.expand(fileTask, fileName);
+                    IImportFile fileToImport;
+                    if (type.equalsIgnoreCase(SpeedyConstants.XML)) {
+                        fileToImport = new XMLFile(fileName);
+                    } else if (type.equalsIgnoreCase(SpeedyConstants.CSV)) {
+                        CSVFile csvFile = new CSVFile(fileName);
+                        if (inputFileElement.getAttribute("separator") != null) {
+                            String separator = inputFileElement.getAttribute("separator").getValue();
+                            csvFile.setSeparator(separator.charAt(0));
+                        }
+                        if (inputFileElement.getAttribute("quoteCharacter") != null) {
+                            String quoteCharacter = inputFileElement.getAttribute("quoteCharacter").getValue();
+                            csvFile.setQuoteCharacter(quoteCharacter.charAt(0));
+                        }
+                        fileToImport = csvFile;
+                    } else {
+                        throw new DAOException("Type " + type + " is not supported");
+                    }
+                    database.getInitDBConfiguration().addFileToImportForTable(tableName, fileToImport);
                 }
             }
             return database;

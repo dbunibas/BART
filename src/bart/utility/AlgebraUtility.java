@@ -2,9 +2,8 @@ package bart.utility;
 
 import bart.BartConstants;
 import bart.model.EGTask;
-import bart.model.algebra.operators.GenerateTupleFromTuplePair;
-import bart.model.algebra.operators.StringComparator;
-import bart.model.database.*;
+import speedy.model.algebra.operators.GenerateTupleFromTuplePair;
+import speedy.model.database.*;
 import bart.model.dependency.*;
 import bart.persistence.Types;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.List;
 import org.nfunk.jep.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.comparator.StringComparator;
 
 @SuppressWarnings("unchecked")
 public class AlgebraUtility {

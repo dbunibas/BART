@@ -1,7 +1,7 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,11 @@ public class TypoAddString implements IDirtyStrategy {
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
-        for (int i = 0; i < charsToAdd; i++) {
-            valueString = insertValue(valueString, chars, selectRandomIndex(valueString));
+        String originalValue = valueString;
+        while (valueString.equals(originalValue)) {
+            for (int i = 0; i < charsToAdd; i++) {
+                valueString = insertValue(valueString, chars, selectRandomIndex(valueString));
+            }
         }
         return new ConstantValue(valueString);
     }
@@ -34,9 +37,9 @@ public class TypoAddString implements IDirtyStrategy {
         String prefix = valueString.substring(0, selectRandomIndex);
         String suffix = valueString.substring(selectRandomIndex, valueString.length());
         if (logger.isDebugEnabled()) {
-            logger.debug("Value: "+ valueString);
-            logger.debug("Prefix: "+ prefix);
-            logger.debug("Suffix: "+ suffix);
+            logger.debug("Value: " + valueString);
+            logger.debug("Prefix: " + prefix);
+            logger.debug("Suffix: " + suffix);
         }
         return prefix + chars + suffix;
     }
@@ -45,7 +48,5 @@ public class TypoAddString implements IDirtyStrategy {
     public String toString() {
         return "TypoAddString{" + "chars=" + chars + ", charsToAdd=" + charsToAdd + '}';
     }
-    
-    
 
 }

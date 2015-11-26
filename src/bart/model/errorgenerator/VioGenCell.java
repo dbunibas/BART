@@ -1,7 +1,7 @@
 package bart.model.errorgenerator;
 
 import bart.BartConstants;
-import bart.model.database.Cell;
+import speedy.model.database.Cell;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.List;

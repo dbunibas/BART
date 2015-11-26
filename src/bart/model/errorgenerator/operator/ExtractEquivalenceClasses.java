@@ -1,10 +1,10 @@
 package bart.model.errorgenerator.operator;
 
 import bart.BartConstants;
-import bart.model.algebra.operators.ITupleIterator;
-import bart.model.database.AttributeRef;
-import bart.model.database.IValue;
-import bart.model.database.Tuple;
+import speedy.model.algebra.operators.ITupleIterator;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.IValue;
+import speedy.model.database.Tuple;
 import bart.model.errorgenerator.EquivalenceClass;
 import bart.model.errorgenerator.EquivalenceClassQuery;
 import java.util.ArrayList;

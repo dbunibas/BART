@@ -2,9 +2,9 @@ package bart.model.detection.operator;
 
 import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
-import bart.model.database.AttributeRef;
-import bart.model.database.Cell;
-import bart.model.database.IValue;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Cell;
+import speedy.model.database.IValue;
 import bart.model.dependency.Dependency;
 import bart.model.detection.RepairabilityStats;
 import bart.model.detection.Violations;

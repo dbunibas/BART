@@ -1,9 +1,10 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.model.database.IValue;
+import speedy.model.database.IValue;
 
 public interface IDirtyStrategy {
 
+    public static final String TYPO_APPEND_STRING = TypoAppendString.class.getSimpleName();
     public static final String TYPO_ADD_STRING = TypoAddString.class.getSimpleName();
     public static final String TYPO_RANDOM = TypoRandom.class.getSimpleName();
     public static final String TYPO_REMOVE_STRING = TypoRemoveString.class.getSimpleName();

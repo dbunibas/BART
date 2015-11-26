@@ -1,9 +1,9 @@
 package bart.model.dependency.analysis;
 
 import bart.model.EGTask;
-import bart.model.algebra.operators.AlgebraOperatorWithStats;
 import bart.model.algebra.operators.BuildAlgebraTreeUtility;
-import bart.model.database.TableAlias;
+import speedy.model.algebra.operators.AlgebraOperatorWithStats;
+import speedy.model.database.TableAlias;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.CrossProductFormulas;
 import bart.model.dependency.IFormula;

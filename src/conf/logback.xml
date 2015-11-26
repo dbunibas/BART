@@ -20,6 +20,8 @@
         <appender-ref ref="stdout"/>
         <!--<appender-ref ref="file"/>-->
     </root>
+    <!--     TEST     -->
+    <logger name="bart.test" level="DEBUG"/>
     <!--     OPERATOR     -->
     <!--<logger name="bart.model.errorgenerator.operator.APrioriGenerator" level="INFO"/>-->
     <logger name="bart.model.errorgenerator.operator.SelectQueryExecutor" level="INFO"/>
@@ -63,8 +65,8 @@
     <!--<logger name="bart.persistence.relational.PooledDbConnectionFactory" level="TRACE"/>-->
     <!--<logger name="bart.utility.DBMSUtility" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.QueryManager" level="TRACE"/>-->
-    <!--     TEST     -->
-    <logger name="bart.test" level="DEBUG"/>
+    <!--     SPEEDY     -->
+    <!--<logger name="speedy.utility.DBMSUtility" level="DEBUG"/>-->
     <!--     STATS     -->
     <!--<logger name="bart.model.errorgenerator.operator.ErrorGeneratorStats" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.QueryStatManager" level="DEBUG"/>-->

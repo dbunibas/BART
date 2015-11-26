@@ -1,35 +1,29 @@
 package bart.model.errorgenerator.operator.deltadb.dbms;
 
 import bart.BartConstants;
-import bart.model.algebra.CreateTable;
-import bart.model.algebra.Distinct;
-import bart.model.algebra.GroupBy;
-import bart.model.algebra.IAggregateFunction;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.Join;
-import bart.model.algebra.MaxAggregateFunction;
-import bart.model.algebra.Project;
-import bart.model.algebra.RestoreOIDs;
-import bart.model.algebra.Scan;
-import bart.model.algebra.Select;
-import bart.model.algebra.ValueAggregateFunction;
-import bart.model.algebra.operators.sql.AlgebraTreeToSQL;
-import bart.model.database.Attribute;
-import bart.model.database.AttributeRef;
-import bart.model.database.IDatabase;
-import bart.model.database.ITable;
-import bart.model.database.TableAlias;
-import bart.model.database.dbms.DBMSDB;
-import bart.model.database.dbms.DBMSVirtualDB;
-import bart.model.database.operators.IDatabaseManager;
-import bart.model.database.operators.dbms.SQLDatabaseManager;
+import speedy.model.algebra.Distinct;
+import speedy.model.algebra.GroupBy;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.Join;
+import speedy.model.algebra.Project;
+import speedy.model.algebra.RestoreOIDs;
+import speedy.model.algebra.Scan;
+import speedy.model.algebra.Select;
+import speedy.model.algebra.operators.sql.AlgebraTreeToSQL;
+import speedy.model.database.Attribute;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.IDatabase;
+import speedy.model.database.ITable;
+import speedy.model.database.TableAlias;
+import speedy.model.database.dbms.DBMSDB;
+import speedy.model.database.dbms.DBMSVirtualDB;
 import bart.model.dependency.Dependency;
 import bart.model.errorgenerator.operator.deltadb.IBuildDatabaseForChaseStep;
-import bart.model.expressions.Expression;
-import bart.persistence.relational.AccessConfiguration;
-import bart.persistence.relational.QueryManager;
+import speedy.model.expressions.Expression;
+import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.relational.QueryManager;
 import bart.utility.BartUtility;
-import bart.utility.DBMSUtility;
+import bart.utility.BartDBMSUtility;
 import bart.utility.DependencyUtility;
 import bart.utility.ErrorGeneratorStats;
 import java.util.ArrayList;
@@ -42,6 +36,11 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.CreateTableAs;
+import speedy.model.algebra.aggregatefunctions.IAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.MaxAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.ValueAggregateFunction;
+import speedy.utility.SpeedyUtility;
 
 public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
 
@@ -142,7 +141,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
                 if (distinct) {
                     removeOIDAttribute(deltaTableAttributes);
                 }
-                IAlgebraOperator projection = new Project(deltaTableAttributes, cleanNames(deltaTableAttributes), true);
+                IAlgebraOperator projection = new Project(SpeedyUtility.createProjectionAttributes(deltaTableAttributes), cleanNames(deltaTableAttributes), true);
                 projection.addChild(initialTable);
                 algebraRoot = projection;
             } else {
@@ -163,7 +162,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
                 }
                 materializedTableName = tableName + "_" + dependencyId + "_" + cleanStepId;
             }
-            CreateTable createTable = new CreateTable(materializedTableName, materializedTableName, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), distinct);
+            CreateTableAs createTable = new CreateTableAs(materializedTableName, materializedTableName, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), distinct);
             createTable.addChild(algebraRoot);
             resultOperator = createTable;
             if (logger.isDebugEnabled()) logger.debug("Algebra for extract database: \n" + resultOperator);
@@ -247,7 +246,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
         // select oid, A from (join)
         AttributeRef attributeInAlias = new AttributeRef(alias, attribute.getName());
         List<AttributeRef> projectionAttributes = new ArrayList<AttributeRef>(Arrays.asList(new AttributeRef[]{oid, attributeInAlias}));
-        Project project = new Project(projectionAttributes);
+        Project project = new Project(SpeedyUtility.createProjectionAttributes(projectionAttributes));
         project.addChild(join);
         String cleanStepId = stepId.replaceAll("\\.", "_");
         cleanStepId = cleanStepId.replaceAll("\"", "");
@@ -255,9 +254,9 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
             cleanStepId = getHash(cleanStepId);
         }
         IAlgebraOperator resultOperator;
-        String tableName = BartConstants.DELTA_TMP_TABLES + DBMSUtility.attributeRefToAliasSQL(attribute) + "_" + cleanStepId;
-        String tableAlias = DBMSUtility.attributeRefToAliasSQL(attribute);
-        CreateTable createTable = new CreateTable(tableName, tableAlias, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), false);
+        String tableName = BartConstants.DELTA_TMP_TABLES + BartDBMSUtility.attributeRefToAliasSQL(attribute) + "_" + cleanStepId;
+        String tableAlias = BartDBMSUtility.attributeRefToAliasSQL(attribute);
+        CreateTableAs createTable = new CreateTableAs(tableName, tableAlias, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), false);
         createTable.addChild(project);
         resultOperator = createTable;
         if (logger.isDebugEnabled()) logger.debug("Algebra tree for attribute: " + attribute + "\n" + resultOperator);
@@ -285,7 +284,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
             removeOIDAttribute(deltaTableAttributes);
             removeOIDAttribute(projectionAttributes);
         }
-        Project project = new Project(deltaTableAttributes, projectionAttributes, true);
+        Project project = new Project(SpeedyUtility.createProjectionAttributes(deltaTableAttributes), projectionAttributes, true);
         project.addChild(leftChild);
         RestoreOIDs restore = new RestoreOIDs(new AttributeRef(table.getName(), BartConstants.OID));
         restore.addChild(project);

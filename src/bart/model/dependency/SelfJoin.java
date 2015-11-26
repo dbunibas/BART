@@ -1,6 +1,6 @@
 package bart.model.dependency;
 
-import bart.model.database.TableAlias;
+import speedy.model.database.TableAlias;
 import java.util.List;
 
 public class SelfJoin {

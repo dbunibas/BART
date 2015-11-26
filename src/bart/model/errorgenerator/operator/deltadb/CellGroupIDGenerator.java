@@ -1,9 +1,9 @@
 package bart.model.errorgenerator.operator.deltadb;
 
 import bart.BartConstants;
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
-import bart.model.database.NullValue;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
+import speedy.model.database.NullValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,11 +1,8 @@
 package bart;
 
-import bart.exceptions.DAOException;
-import bart.exceptions.DBMSException;
 import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
-import bart.model.VioGenQueryConfiguration;
 import bart.model.detection.operator.DetectViolations;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
@@ -13,9 +10,9 @@ import bart.model.errorgenerator.operator.APrioriGenerator;
 import bart.utility.ErrorGeneratorStats;
 import bart.persistence.DAOEGTask;
 import bart.persistence.DAOEGTaskConfiguration;
-import bart.persistence.relational.AccessConfiguration;
-import bart.persistence.xml.DAOXmlUtility;
-import bart.utility.DBMSUtility;
+import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.xml.DAOXmlUtility;
+import bart.utility.BartDBMSUtility;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +22,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
+import speedy.exceptions.DBMSException;
 
 public class Main {
 
@@ -125,7 +124,7 @@ public class Main {
         }
         try {
             System.out.println("Removing db " + accessConfiguration.getDatabaseName() + ", if exist...");
-            DBMSUtility.deleteDB(accessConfiguration);
+            BartDBMSUtility.deleteDB(accessConfiguration);
             System.out.println("Database removed!");
         } catch (DBMSException ex) {
             String message = ex.getMessage();

@@ -5,22 +5,22 @@ import bart.BartConstants;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
-import bart.model.algebra.operators.IInsertTuple;
-import bart.model.database.AttributeRef;
-import bart.model.database.Cell;
-import bart.model.database.ConstantValue;
-import bart.model.database.IDatabase;
-import bart.model.database.IValue;
-import bart.model.database.Tuple;
-import bart.model.database.TupleOID;
-import bart.model.database.mainmemory.datasource.IntegerOIDGenerator;
-import bart.model.database.operators.IDatabaseManager;
-import bart.model.errorgenerator.VioGenQueryCellChange;
+import speedy.model.algebra.operators.IInsertTuple;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Cell;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IDatabase;
+import speedy.model.database.IValue;
+import speedy.model.database.Tuple;
+import speedy.model.database.TupleOID;
+import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
+import speedy.model.database.operators.IDatabaseManager;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
 import bart.utility.BartUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.database.dbms.DBMSDB;
 
 public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChangeApplier {
 
@@ -36,7 +36,8 @@ public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChang
         String dirtySuffix = BartUtility.getDirtyCloneSuffix(task);
         //TODO handle task.getConfiguration().isCloneTargetSchema()
         try {
-            databaseManager.removeClone(task, dirtySuffix);
+            DBMSDB target = (DBMSDB) task.getTarget();
+            databaseManager.removeClone(target, dirtySuffix);
         } catch (Exception e) {
         }
         IDatabase deltaDB = deltaBuilder.generate(task.getTarget(), task, BartConstants.CHASE_STEP_ROOT);
@@ -69,7 +70,7 @@ public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChang
         if (logger.isDebugEnabled()) logger.debug("Inserting new value in TableName: " + tableName + " AttributeName: " + attributeName);
         String deltaTableName = BartUtility.getDeltaRelationName(tableName, attributeName);
         Tuple tupleToInsert = buildTuple(tid, stepId, newValue, groupID, tableName, attributeName);
-        insertOperator.execute(deltaDB.getTable(deltaTableName), tupleToInsert, task);
+        insertOperator.execute(deltaDB.getTable(deltaTableName), tupleToInsert, task.getSource(), task.getTarget());
     }
 
     private Tuple buildTuple(TupleOID tid, String stepId, IValue newValue, IValue groupID, String deltaTableName, String attributeName) {

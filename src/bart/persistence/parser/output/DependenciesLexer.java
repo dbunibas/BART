@@ -1,4 +1,4 @@
-// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2014-11-04 13:39:34
+// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2015-11-26 13:40:13
 
 package bart.persistence.parser.output;
 
@@ -34,7 +34,7 @@ public class DependenciesLexer extends Lexer {
 
 
 	public void emitErrorMessage(String msg) {
-		throw new bart.exceptions.ParserException(msg);
+		throw new speedy.exceptions.ParserException(msg);
 	}
 
 

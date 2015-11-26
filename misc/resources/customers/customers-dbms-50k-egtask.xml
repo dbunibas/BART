@@ -14,10 +14,10 @@
       <login>pguser</login>
       <password>pguser</password>
     </access-configuration>
-    <import-xml createTables="true">
-      <input>./xml/consttablecf1.xml</input>
-      <input>./xml/&SIZE;_master.xml</input>
-    </import-xml>
+    <import createTables="true">
+      <input type="xml" table="consttablecf1">./xml/consttablecf1.xml</input>
+      <input type="xml" table="masterdata">./xml/&SIZE;_master.xml</input>
+    </import>
   </source>
   <target> 
     <type>DBMS</type>
@@ -28,10 +28,10 @@
       <login>pguser</login>
       <password>pguser</password>
     </access-configuration>
-    <import-xml>
-      <input>./xml/&SIZE;_customers.xml</input>
-      <input>./xml/&SIZE;_treatments.xml</input>
-    </import-xml>
+    <import>
+      <input type="xml" table="customers">./xml/&SIZE;_customers.xml</input>
+      <input type="xml" table="treatments">./xml/&SIZE;_treatments.xml</input>
+    </import>
   </target>
 <dependencies>
 <![CDATA[

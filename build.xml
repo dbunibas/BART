@@ -7,7 +7,7 @@
         <property name="build.sysclasspath" value="ignore" />
         <path id="compile.classpath">
             <pathelement location="${build.dir}" />
-            <!--<pathelement location="${lib.dir}/lunaticEngine-${lunaticEngine.ver}.jar" />-->
+            <pathelement location="${lib.dir}/speedy-${speedy.ver}.jar" />
             <pathelement location="${lib.dir}/slf4j-api-${slf4j.ver}.jar" />
             <pathelement location="${lib.dir}/logback-core-${logback.ver}.jar" />
             <pathelement location="${lib.dir}/logback-classic-${logback.ver}.jar" />
@@ -27,6 +27,8 @@
             <pathelement location="${lib.dir}/concurrent.jar" />  
             <pathelement location="${lib.dir}/commons-logging-${commons-logging.ver}.jar" />
             <pathelement location="${lib.dir}/commons-math3-${commons-math3.ver}.jar" />
+            <pathelement location="${lib.dir}/commons-csv-${commons-csv.ver}.jar" />
+            <pathelement location="${lib.dir}/commons-lang-${commons-lang.ver}.jar" />
 
             <!-- JDBC Drivers -->
             <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />
@@ -38,6 +40,17 @@
             <pathelement location="${lib.dir}/junit-4.11.jar" />
             <pathelement location="${lib.dir}/hamcrest-core-1.3.jar" />
         </path>
+    </target>
+    
+    <target name="-light-deploy-speedy" depends="-init-speedy-dir" if="speedy.src.exists">
+        <ant dir="${speedy.dir}" inheritAll="false" target="light-jar" />
+        <copy file="${speedy.dir}/dist/speedy-${speedy.ver}.jar" todir="${lib.dir}"/>
+    </target>
+
+    <target name="-init-speedy-dir">
+        <condition property="speedy.src.exists">
+            <available file="${speedy.dir}" type="dir"/>
+        </condition>
     </target>
     
     <target name="-create-manifest" depends="init, -init-version">
@@ -238,7 +251,7 @@
               Build
     *************************************************** -->
 
-    <target name="build" depends="compile, compile-test" description="compila ed esegue i test">
+    <target name="build" depends="-light-deploy-speedy, compile, compile-test" description="compila ed esegue i test">
     </target>
     
     <target name="rebuild" depends="clean, build" description="ripulisce e ricostruisce">
@@ -370,6 +383,7 @@
             build.top.dir      = build
             build.dir          = build/classes
             resources.dir      = misc/resources
+            speedy.dir         = ${speedy.dir}
             experiments.dir    = misc/experiments
             test.src.dir       = test
             test.build.dir     = build/test/classes

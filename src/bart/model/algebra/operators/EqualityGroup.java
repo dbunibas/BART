@@ -1,11 +1,11 @@
 package bart.model.algebra.operators;
 
 import bart.BartConstants;
-import bart.model.database.AttributeRef;
-import bart.model.database.TableAlias;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import java.util.ArrayList;
 import java.util.List;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.TableAlias;
 
 class EqualityGroup {
 

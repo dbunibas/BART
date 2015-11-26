@@ -1,12 +1,12 @@
-// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2014-11-04 13:39:34
+// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2015-11-26 13:40:13
 
 package bart.persistence.parser.output;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.dependency.*;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.persistence.parser.operators.ParseDependencies;
 import bart.BartConstants;
 import bart.utility.BartUtility;

@@ -1,6 +1,6 @@
 package bart.model.algebra.operators;
 
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 
 class Equality {
 

@@ -1,6 +1,5 @@
 package bart.model.errorgenerator.operator;
 
-import bart.exceptions.DAOException;
 import bart.model.EGTask;
 import bart.model.EGTaskConfiguration;
 import bart.model.VioGenQueryConfiguration;
@@ -11,7 +10,7 @@ import bart.model.dependency.analysis.FindCrossProductFormulas;
 import bart.model.dependency.operators.FindVariableEquivalenceClasses;
 import bart.model.dependency.analysis.FindFormulaWithAdornments;
 import bart.model.errorgenerator.VioGenQuery;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import org.nfunk.jep.SymbolTable;
 import org.nfunk.jep.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
 
 public class GenerateVioGenQueries {
 

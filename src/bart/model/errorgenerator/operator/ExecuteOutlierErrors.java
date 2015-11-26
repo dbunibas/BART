@@ -4,14 +4,14 @@ import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
 import bart.model.OutlierErrorConfiguration;
-import bart.model.algebra.operators.ITupleIterator;
-import bart.model.database.Attribute;
-import bart.model.database.AttributeRef;
-import bart.model.database.Cell;
-import bart.model.database.ConstantValue;
-import bart.model.database.ITable;
-import bart.model.database.IValue;
-import bart.model.database.Tuple;
+import speedy.model.algebra.operators.ITupleIterator;
+import speedy.model.database.Attribute;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Cell;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.ITable;
+import speedy.model.database.IValue;
+import speedy.model.database.Tuple;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.OutlierCellChange;
 import bart.model.errorgenerator.ValueConstraint;
@@ -204,24 +204,6 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
         }
         return distribution;
     }
-
-//    private double[] getDistribution(List<Cell> originalDistribution, List<OutlierCellChange> generatedOutliers, EGTask task) {
-//        double[] distribution = new double[originalDistribution.size()];
-//        int counter = 0;
-//        for (Cell cell : originalDistribution) {
-//            checkNumeric(cell, task);
-//            if (isChanged(generatedOutliers, cell)) {
-//                OutlierCellChange outlier = getOutlier(generatedOutliers, cell);
-//                Number numericalValue = (Number) outlier.getNewValue().getPrimitiveValue();
-//                distribution[counter] = numericalValue.doubleValue();
-//            } else {
-//                Number numericalValue = (Number) cell.getValue().getPrimitiveValue();
-//                distribution[counter] = numericalValue.doubleValue();
-//            }
-//            counter++;
-//        }
-//        return distribution;
-//    }
     
         private double[] getDistribution(List<Cell> originalDistribution, List<OutlierCellChange> generatedOutliers, EGTask task) {
         double[] distribution = new double[originalDistribution.size()];
@@ -249,20 +231,6 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
         if (!BartUtility.isNumeric(type)) {
             throw new UnsupportedOperationException("Unable to generate outlier errors with non-numeric value. Type used:" + type);
         }
-    }
-
-    private boolean isChanged(List<OutlierCellChange> generatedOutliers, Cell cell) {
-        for (OutlierCellChange outlier : generatedOutliers) {
-            if (cell.equalsModuloAlias(outlier.getCell())) return true;
-        }
-        return false;
-    }
-
-    private OutlierCellChange getOutlier(List<OutlierCellChange> generatedOutliers, Cell cell) {
-        for (OutlierCellChange outlier : generatedOutliers) {
-            if (cell.equalsModuloAlias(outlier.getCell())) return outlier;
-        }
-        return null;
     }
 
     private Map<Cell, OutlierCellChange> generateMap(List<OutlierCellChange> generatedOutliers) {

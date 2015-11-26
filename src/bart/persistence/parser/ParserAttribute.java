@@ -1,6 +1,6 @@
 package bart.persistence.parser;
 
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 
 public class ParserAttribute implements Cloneable {
 

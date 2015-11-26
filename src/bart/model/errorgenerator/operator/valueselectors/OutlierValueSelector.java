@@ -1,11 +1,11 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
 import bart.model.EGTask;
-import bart.model.database.Attribute;
-import bart.model.database.AttributeRef;
-import bart.model.database.Cell;
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
+import speedy.model.database.Attribute;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Cell;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
 import bart.model.errorgenerator.ICellChange;
 import bart.model.errorgenerator.ValueConstraint;
 import bart.model.errorgenerator.operator.IntersectValueConstraints;

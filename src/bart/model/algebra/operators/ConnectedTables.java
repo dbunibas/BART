@@ -1,8 +1,8 @@
 package bart.model.algebra.operators;
 
-import bart.model.database.TableAlias;
 import java.util.List;
 import java.util.Set;
+import speedy.model.database.TableAlias;
 
 class ConnectedTables {
 

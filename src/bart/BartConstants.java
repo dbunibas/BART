@@ -1,7 +1,7 @@
 package bart;
 
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
 
 public class BartConstants {
 

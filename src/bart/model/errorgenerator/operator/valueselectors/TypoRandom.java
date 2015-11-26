@@ -1,6 +1,6 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.model.database.IValue;
+import speedy.model.database.IValue;
 import java.util.Random;
 
 public class TypoRandom implements IDirtyStrategy {

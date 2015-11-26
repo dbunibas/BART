@@ -1,7 +1,7 @@
 package bart.model.errorgenerator;
 
-import bart.model.database.AttributeRef;
-import bart.model.database.Tuple;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Tuple;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collection;

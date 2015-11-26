@@ -1,8 +1,8 @@
 package bart.model.errorgenerator;
 
 import bart.BartConstants;
-import bart.model.database.Cell;
-import bart.model.database.CellRef;
+import speedy.model.database.Cell;
+import speedy.model.database.CellRef;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class VioGenQueryCellChange extends AbstractCellChange {
     private VioGenCell vioGenCell;
     private ViolationContext context;
     private VioGenQuery vioGenQuery;
-    
+
     private List<ViolationContext> violationContexts = new ArrayList<ViolationContext>();
     private double repairability;
 
@@ -21,7 +21,6 @@ public class VioGenQueryCellChange extends AbstractCellChange {
         this.vioGenQuery = vioGenQuery;
     }
 
-
     public VioGenCell getVioGenCell() {
         return vioGenCell;
     }
@@ -29,8 +28,6 @@ public class VioGenQueryCellChange extends AbstractCellChange {
     public Cell getCell() {
         return vioGenCell.getCell();
     }
-
-
 
     public VioGenQuery getVioGenQuery() {
         return vioGenQuery;
@@ -43,8 +40,6 @@ public class VioGenQueryCellChange extends AbstractCellChange {
     public void setContext(ViolationContext context) {
         this.context = context;
     }
-
-
 
     public List<ViolationContext> getViolationContexts() {
         return violationContexts;
@@ -61,7 +56,7 @@ public class VioGenQueryCellChange extends AbstractCellChange {
     public void setRepairability(double repairability) {
         this.repairability = repairability;
     }
-    
+
     public String getType() {
         return BartConstants.VIOGEN_CHANGE;
     }
@@ -75,25 +70,22 @@ public class VioGenQueryCellChange extends AbstractCellChange {
 //        hash = 17 * hash + (this.vioGenQuery != null ? this.vioGenQuery.toShortString().hashCode() : 0);
 //        return hash;
 //    }
-    @Override
-    public int hashCode() {
-        return this.toShortString().hashCode();
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (obj == null) return false;
+//        if (getClass() != obj.getClass()) return false;
+//        final VioGenQueryCellChange other = (VioGenQueryCellChange) obj;
+//        if (this.getCell() != other.getCell() && (this.getCell() == null || !this.getCell().equals(other.getCell()))) return false;
+//        if (this.getNewValue() != other.getNewValue() && (this.getNewValue() == null || !this.getNewValue().equals(other.getNewValue()))) return false;
+//        if (this.context != other.context && (this.context == null || !this.context.equals(other.context))) return false;
+//        if (this.vioGenQuery != other.vioGenQuery && (this.vioGenQuery == null || !this.vioGenQuery.toShortString().equals(other.vioGenQuery.toShortString()))) return false;
+//        return true;
+//    }
     
-    public String toShortString(){
-        return new CellRef(this.getCell()).toString() + "." + this.getNewValue().toString();
-    }
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        final VioGenQueryCellChange other = (VioGenQueryCellChange) obj;
-        if (this.getCell() != other.getCell() && (this.getCell() == null || !this.getCell().equals(other.getCell()))) return false;
-        if (this.getNewValue() != other.getNewValue() && (this.getNewValue() == null || !this.getNewValue().equals(other.getNewValue()))) return false;
-        if (this.context != other.context && (this.context == null || !this.context.equals(other.context))) return false;
-        if (this.vioGenQuery != other.vioGenQuery && (this.vioGenQuery == null || !this.vioGenQuery.toShortString().equals(other.vioGenQuery.toShortString()))) return false;
-        return true;
+    public String toShortString() {
+//        return new CellRef(this.getCell()).toString() + "." + this.getNewValue().toString();
+        return this.getCell().getTupleOID() + ":" + this.getCell().getAttributeRef().toStringNoAlias() + "." + this.getNewValue().toString();
     }
 
     @Override

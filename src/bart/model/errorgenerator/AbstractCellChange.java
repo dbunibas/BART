@@ -1,6 +1,6 @@
 package bart.model.errorgenerator;
 
-import bart.model.database.IValue;
+import speedy.model.database.IValue;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,6 +71,7 @@ public abstract class AbstractCellChange implements ICellChange {
     public String toString() {
         return getCell() + " := " + getNewValue() + "-" + hashCode();
     }
+
     public String toShortString() {
         return getCell() + " := " + getNewValue();
     }
@@ -79,6 +80,16 @@ public abstract class AbstractCellChange implements ICellChange {
     public int hashCode() {
         return this.toShortString().hashCode();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        final AbstractCellChange other = (AbstractCellChange) obj;
+        return this.toShortString().equals(other.toShortString());
+    }
+
     @Override
     public String toLongString() {
         StringBuilder sb = new StringBuilder();

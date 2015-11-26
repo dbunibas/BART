@@ -1,7 +1,7 @@
 package bart.model.errorgenerator.operator.deltadb;
 
 import bart.model.EGTask;
-import bart.model.database.IDatabase;
+import speedy.model.database.IDatabase;
 
 
 public interface IBuildDeltaDB {

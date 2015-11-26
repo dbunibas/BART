@@ -1,9 +1,9 @@
 package bart.model.dependency.operators;
 
 import bart.model.EGTask;
-import bart.model.algebra.IAlgebraOperator;
 import bart.model.algebra.operators.BuildAlgebraTreeForPositiveFormula;
-import bart.model.database.TableAlias;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.database.TableAlias;
 import bart.model.dependency.FormulaSampling;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;

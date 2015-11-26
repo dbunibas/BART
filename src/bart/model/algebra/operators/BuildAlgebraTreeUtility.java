@@ -1,11 +1,6 @@
 package bart.model.algebra.operators;
 
 import bart.utility.AlgebraUtility;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.Scan;
-import bart.model.algebra.Select;
-import bart.model.database.AttributeRef;
-import bart.model.database.TableAlias;
 import bart.model.dependency.BuiltInAtom;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.FormulaAttribute;
@@ -14,7 +9,7 @@ import bart.model.dependency.FormulaVariableOccurrence;
 import bart.model.dependency.IFormulaAtom;
 import bart.model.dependency.PositiveFormula;
 import bart.model.dependency.RelationalAtom;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +17,12 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.Scan;
+import speedy.model.algebra.Select;
+import speedy.model.algebra.operators.AlgebraOperatorWithStats;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.TableAlias;
 
 public class BuildAlgebraTreeUtility {
 

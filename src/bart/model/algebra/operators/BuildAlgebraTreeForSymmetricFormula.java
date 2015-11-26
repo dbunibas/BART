@@ -2,20 +2,9 @@ package bart.model.algebra.operators;
 
 import bart.BartConstants;
 import bart.model.EGTask;
-import bart.model.algebra.CountAggregateFunction;
-import bart.model.algebra.GroupBy;
-import bart.model.algebra.IAggregateFunction;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.OrderBy;
-import bart.model.algebra.Project;
-import bart.model.algebra.Select;
-import bart.model.algebra.SelectIn;
-import bart.model.algebra.ValueAggregateFunction;
-import bart.model.database.AttributeRef;
-import bart.model.database.TableAlias;
 import bart.model.dependency.PositiveFormula;
 import bart.model.dependency.RelationalAtom;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +12,18 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.GroupBy;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.OrderBy;
+import speedy.model.algebra.Project;
+import speedy.model.algebra.Select;
+import speedy.model.algebra.SelectIn;
+import speedy.model.algebra.aggregatefunctions.CountAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.IAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.ValueAggregateFunction;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.TableAlias;
+import speedy.utility.SpeedyUtility;
 
 public class BuildAlgebraTreeForSymmetricFormula {
 
@@ -91,7 +92,7 @@ public class BuildAlgebraTreeForSymmetricFormula {
         expression.changeVariableDescription("count", countAttribute);
         Select select = new Select(expression);
         select.addChild(secondGroupBy);
-        Project violationProject = new Project(equalityAttributes);
+        Project violationProject = new Project(SpeedyUtility.createProjectionAttributes(equalityAttributes));
         violationProject.addChild(select);
         return violationProject;
     }

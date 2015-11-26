@@ -1,7 +1,7 @@
 package bart.model.dependency.operators;
 
 import bart.utility.BartUtility;
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.dependency.*;
 import java.util.List;
 import org.slf4j.Logger;

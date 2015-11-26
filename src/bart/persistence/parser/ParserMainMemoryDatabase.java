@@ -1,14 +1,14 @@
 package bart.persistence.parser;
 
-import bart.exceptions.DAOException;
 import bart.persistence.parser.operators.ParseDatabase;
-import bart.model.database.IDatabase;
-import bart.model.database.mainmemory.MainMemoryDB;
-import bart.model.database.mainmemory.datasource.DataSource;
+import speedy.model.database.IDatabase;
+import speedy.model.database.mainmemory.MainMemoryDB;
+import speedy.model.database.mainmemory.datasource.DataSource;
 import bart.persistence.PersistenceUtility;
-import bart.persistence.xml.DAOXsd;
+import speedy.persistence.xml.DAOXsd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
 
 public class ParserMainMemoryDatabase {
 

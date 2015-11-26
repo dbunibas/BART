@@ -1,17 +1,15 @@
 package bart.utility;
 
 import bart.BartConstants;
-import bart.exceptions.DAOException;
-import bart.exceptions.DBMSException;
-import bart.model.database.*;
-import bart.model.database.mainmemory.datasource.IntegerOIDGenerator;
+import speedy.model.database.*;
+import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.persistence.Types;
-import bart.persistence.relational.AccessConfiguration;
-import bart.persistence.relational.QueryManager;
-import bart.persistence.relational.SimpleDbConnectionFactory;
+import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.relational.QueryManager;
+import speedy.persistence.relational.SimpleDbConnectionFactory;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -26,10 +24,12 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.nfunk.jep.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
+import speedy.exceptions.DBMSException;
 
-public class DBMSUtility {
+public class BartDBMSUtility {
 
-    private static Logger logger = LoggerFactory.getLogger(DBMSUtility.class);
+    private static Logger logger = LoggerFactory.getLogger(BartDBMSUtility.class);
 
 //    public static final String TEMP_DB_NAME = "testdb";
     public static final String TEMP_DB_NAME = "template1";
@@ -332,7 +332,7 @@ public class DBMSUtility {
         for (int col = 1; col <= columns; col++) {
             String attributeName = metadata.getColumnName(col);
             String attributeType = metadata.getColumnTypeName(col);
-            Attribute attribute = new Attribute(tableName, attributeName, DBMSUtility.convertDBTypeToDataSourceType(attributeType));
+            Attribute attribute = new Attribute(tableName, attributeName, BartDBMSUtility.convertDBTypeToDataSourceType(attributeType));
             result.add(attribute);
         }
         return result;
@@ -427,7 +427,7 @@ public class DBMSUtility {
     }
 
     public static String attributeRefToSQL(AttributeRef attribureRef) {
-        String tableAliasScript = DBMSUtility.tableAliasToSQL(attribureRef.getTableAlias());
+        String tableAliasScript = BartDBMSUtility.tableAliasToSQL(attribureRef.getTableAlias());
         if (!tableAliasScript.isEmpty()) {
             tableAliasScript += BartConstants.DELTA_TABLE_SEPARATOR;
         }
@@ -436,13 +436,13 @@ public class DBMSUtility {
 
     public static String attributeRefToSQLDot(AttributeRef attributeRef) {
         StringBuilder sb = new StringBuilder();
-        sb.append(DBMSUtility.tableAliasToSQL(attributeRef.getTableAlias())).append(".").append(attributeRef.getName());
+        sb.append(BartDBMSUtility.tableAliasToSQL(attributeRef.getTableAlias())).append(".").append(attributeRef.getName());
         return sb.toString();
     }
 
     public static String attributeRefToAliasSQL(AttributeRef attributeRef) {
         StringBuilder sb = new StringBuilder();
-        sb.append(DBMSUtility.tableAliasToSQL(attributeRef.getTableAlias())).append(BartConstants.DELTA_TABLE_SEPARATOR).append(attributeRef.getName());
+        sb.append(BartDBMSUtility.tableAliasToSQL(attributeRef.getTableAlias())).append(BartConstants.DELTA_TABLE_SEPARATOR).append(attributeRef.getName());
         return sb.toString();
     }
 
@@ -504,9 +504,9 @@ public class DBMSUtility {
             AttributeRef attributeRef = occurrence.getAttributeRef();
             String result;
             if (useAlias) {
-                result = DBMSUtility.attributeRefToSQLDot(attributeRef);
+                result = BartDBMSUtility.attributeRefToSQLDot(attributeRef);
             } else {
-                result = DBMSUtility.attributeRefToSQL(attributeRef);
+                result = BartDBMSUtility.attributeRefToSQL(attributeRef);
             }
             if (logger.isDebugEnabled()) logger.debug("Return " + result);
             return result;
@@ -515,9 +515,9 @@ public class DBMSUtility {
             AttributeRef attributeRef = (AttributeRef) objectVariable;
             String result;
             if (useAlias) {
-                result = DBMSUtility.attributeRefToSQLDot(attributeRef);
+                result = BartDBMSUtility.attributeRefToSQLDot(attributeRef);
             } else {
-                result = DBMSUtility.attributeRefToSQL(attributeRef);
+                result = BartDBMSUtility.attributeRefToSQL(attributeRef);
             }
             if (logger.isDebugEnabled()) logger.debug("Return " + result);
             return result;

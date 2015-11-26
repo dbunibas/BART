@@ -1,9 +1,9 @@
 package bart.model;
 
-import bart.model.database.EmptyDB;
-import bart.model.database.IDatabase;
-import bart.model.database.dbms.DBMSDB;
-import bart.model.database.mainmemory.MainMemoryDB;
+import speedy.model.database.EmptyDB;
+import speedy.model.database.IDatabase;
+import speedy.model.database.dbms.DBMSDB;
+import speedy.model.database.mainmemory.MainMemoryDB;
 import bart.model.dependency.Dependency;
 import java.util.ArrayList;
 import java.util.List;

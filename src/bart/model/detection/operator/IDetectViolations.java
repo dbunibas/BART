@@ -1,7 +1,7 @@
 package bart.model.detection.operator;
 
 import bart.model.EGTask;
-import bart.model.database.IDatabase;
+import speedy.model.database.IDatabase;
 import bart.model.dependency.Dependency;
 import bart.model.detection.Violations;
 

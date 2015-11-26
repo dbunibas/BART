@@ -1,28 +1,25 @@
 package bart.model.errorgenerator.operator.deltadb.mainmemory;
 
 import bart.BartConstants;
-import bart.model.algebra.Distinct;
-import bart.model.algebra.GroupBy;
-import bart.model.algebra.IAggregateFunction;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.Join;
-import bart.model.algebra.MaxAggregateFunction;
-import bart.model.algebra.Project;
-import bart.model.algebra.RestoreOIDs;
-import bart.model.algebra.Scan;
-import bart.model.algebra.Select;
-import bart.model.algebra.ValueAggregateFunction;
-import bart.model.database.Attribute;
-import bart.model.database.AttributeRef;
-import bart.model.database.IDatabase;
-import bart.model.database.ITable;
-import bart.model.database.TableAlias;
-import bart.model.database.mainmemory.MainMemoryDB;
-import bart.model.database.mainmemory.MainMemoryVirtualDB;
-import bart.model.database.mainmemory.MainMemoryVirtualTable;
+import speedy.model.algebra.Distinct;
+import speedy.model.algebra.GroupBy;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.Join;
+import speedy.model.algebra.Project;
+import speedy.model.algebra.RestoreOIDs;
+import speedy.model.algebra.Scan;
+import speedy.model.algebra.Select;
+import speedy.model.database.Attribute;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.IDatabase;
+import speedy.model.database.ITable;
+import speedy.model.database.TableAlias;
+import speedy.model.database.mainmemory.MainMemoryDB;
+import speedy.model.database.mainmemory.MainMemoryVirtualDB;
+import speedy.model.database.mainmemory.MainMemoryVirtualTable;
 import bart.model.dependency.Dependency;
 import bart.model.errorgenerator.operator.deltadb.IBuildDatabaseForChaseStep;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import bart.utility.ErrorGeneratorStats;
@@ -36,6 +33,10 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.aggregatefunctions.IAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.MaxAggregateFunction;
+import speedy.model.algebra.aggregatefunctions.ValueAggregateFunction;
+import speedy.utility.SpeedyUtility;
 
 public class BuildMainMemoryDBForChaseStep implements IBuildDatabaseForChaseStep {
 
@@ -101,7 +102,7 @@ public class BuildMainMemoryDBForChaseStep implements IBuildDatabaseForChaseStep
             IAlgebraOperator initialTable = generateInitialTable(tableName, affectedAttributes, nonAffectedAttributes, deltaDB, deltaTableAttributes, stepId);
             AttributeRef oidAttributeRef = findOidAttribute(initialTable, deltaDB);
             if (affectedAttributes.isEmpty()) {
-                IAlgebraOperator projection = new Project(deltaTableAttributes, cleanNames(deltaTableAttributes), true);
+                IAlgebraOperator projection = new Project(SpeedyUtility.createProjectionAttributes(deltaTableAttributes), cleanNames(deltaTableAttributes), true);
                 projection.addChild(initialTable);
                 if (distinct) {
                     projection = createDistinctTable(projection, table.getAttributes());
@@ -139,7 +140,7 @@ public class BuildMainMemoryDBForChaseStep implements IBuildDatabaseForChaseStep
             }
             attributes.add(new AttributeRef(attribute.getTableName(), attribute.getName()));
         }
-        Project project = new Project(attributes);
+        Project project = new Project(SpeedyUtility.createProjectionAttributes(attributes));
         project.addChild(algebraRoot);
         Distinct distinct = new Distinct();
         distinct.addChild(project);
@@ -213,7 +214,7 @@ public class BuildMainMemoryDBForChaseStep implements IBuildDatabaseForChaseStep
         // select oid, A from (join)
         AttributeRef attributeInAlias = new AttributeRef(alias, attribute.getName());
         List<AttributeRef> projectionAttributes = new ArrayList<AttributeRef>(Arrays.asList(new AttributeRef[]{oid, attributeInAlias}));
-        Project project = new Project(projectionAttributes);
+        Project project = new Project(SpeedyUtility.createProjectionAttributes(projectionAttributes));
         project.addChild(join);
         if (logger.isDebugEnabled()) logger.debug("Algebra tree for attribute: " + attribute + "\n" + project);
         return project;
@@ -236,7 +237,7 @@ public class BuildMainMemoryDBForChaseStep implements IBuildDatabaseForChaseStep
         projectionAttributes.addAll(affectedAttributes);
 //        sortAttributes(deltaTableAttributes, table.getAttributes());
 //        sortAttributes(projectionAttributes, table.getAttributes());
-        Project project = new Project(deltaTableAttributes, projectionAttributes, true);
+        Project project = new Project(SpeedyUtility.createProjectionAttributes(deltaTableAttributes), projectionAttributes, true);
         project.addChild(leftChild);
         IAlgebraOperator restore = new RestoreOIDs(new AttributeRef(table.getName(), BartConstants.OID));
         restore.addChild(project);

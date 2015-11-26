@@ -1,7 +1,7 @@
 package bart.model.dependency;
 
 import bart.BartConstants;
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 import java.util.ArrayList;
 import java.util.List;
 

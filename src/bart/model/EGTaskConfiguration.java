@@ -1,7 +1,7 @@
 package bart.model;
 
 import bart.BartConstants;
-import bart.model.database.AttributeRef;
+import speedy.model.database.AttributeRef;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import java.util.HashMap;
 import java.util.Map;

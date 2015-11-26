@@ -1,6 +1,6 @@
 package bart.model.errorgenerator.operator.deltadb;
 
-import bart.model.database.IDatabase;
+import speedy.model.database.IDatabase;
 import bart.model.dependency.Dependency;
 
 public interface IBuildDatabaseForChaseStep {

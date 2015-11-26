@@ -17,7 +17,7 @@ An EGTask is specified in an .xml file, with 3 main sections:
 #####**1. Database configuration:** #####
 Is used to specify the JDBC parameters to access the DBMS.
 [PostgreSQL](http://www.postgresql.org/) and [H2](http://www.h2database.com) DBMS are supported.
-    Data can be automatically loaded into the database from XML files.
+    Data can be automatically loaded into the database from XML and CSV files.
 
 #####**2. Dependencies specification:** #####
 

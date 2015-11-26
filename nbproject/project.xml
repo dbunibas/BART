@@ -126,6 +126,10 @@
                         <location>${test.src.dir}</location>
                     </source-folder>
                     <source-folder style="packages">
+                        <label>Speedy Sources</label>
+                        <location>${speedy.dir}/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
                         <label>Resources</label>
                         <location>${resources.dir}</location>
                     </source-folder>
@@ -137,7 +141,7 @@
                         <location>build.xml</location>
                     </source-file>
                     <source-file>
-                        <location>dependent.properties</location>
+                        <location>project.properties</location>
                     </source-file>
                 </items>
                 <context-menu>

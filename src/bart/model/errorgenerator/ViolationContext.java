@@ -1,14 +1,14 @@
 package bart.model.errorgenerator;
 
-import bart.model.algebra.operators.StringComparator;
-import bart.model.database.Cell;
-import bart.model.database.CellRef;
+import speedy.model.database.Cell;
+import speedy.model.database.CellRef;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import speedy.utility.comparator.StringComparator;
 
 public class ViolationContext {
 
@@ -68,7 +68,7 @@ public class ViolationContext {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         List<Cell> orderedCells = new ArrayList<Cell>(contextCells);
-        Collections.sort(orderedCells, new StringComparator<Cell>());
+        Collections.sort(orderedCells, new StringComparator());
         sb.append(orderedCells);
         return sb.toString();
     }

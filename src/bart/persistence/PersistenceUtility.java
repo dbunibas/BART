@@ -1,7 +1,7 @@
 package bart.persistence;
 
-import bart.model.database.mainmemory.datasource.*;
-import bart.model.database.mainmemory.datasource.nodes.*;
+import speedy.model.database.mainmemory.datasource.*;
+import speedy.model.database.mainmemory.datasource.nodes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

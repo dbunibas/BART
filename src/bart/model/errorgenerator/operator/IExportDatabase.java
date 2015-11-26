@@ -1,6 +1,6 @@
 package bart.model.errorgenerator.operator;
 
-import bart.model.database.IDatabase;
+import speedy.model.database.IDatabase;
 import bart.model.errorgenerator.CellChanges;
 
 public interface IExportDatabase {

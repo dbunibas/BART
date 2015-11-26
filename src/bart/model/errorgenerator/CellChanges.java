@@ -1,8 +1,8 @@
 package bart.model.errorgenerator;
 
 import bart.BartConstants;
-import bart.model.database.Cell;
-import bart.model.database.IValue;
+import speedy.model.database.Cell;
+import speedy.model.database.IValue;
 import bart.utility.BartUtility;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,7 +1,7 @@
 package bart.model.dependency;
 
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.database.TableAlias;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.database.TableAlias;
 import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.HashMap;

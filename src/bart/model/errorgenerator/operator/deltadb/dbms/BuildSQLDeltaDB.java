@@ -2,17 +2,17 @@ package bart.model.errorgenerator.operator.deltadb.dbms;
 
 import bart.BartConstants;
 import bart.model.EGTask;
-import bart.model.database.Attribute;
-import bart.model.database.AttributeRef;
-import bart.model.database.IDatabase;
-import bart.model.database.dbms.DBMSDB;
-import bart.model.database.dbms.DBMSTable;
+import speedy.model.database.Attribute;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.IDatabase;
+import speedy.model.database.dbms.DBMSDB;
+import speedy.model.database.dbms.DBMSTable;
 import bart.model.dependency.Dependency;
 import bart.model.errorgenerator.operator.deltadb.IBuildDeltaDB;
-import bart.persistence.relational.AccessConfiguration;
-import bart.persistence.relational.QueryManager;
+import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.relational.QueryManager;
 import bart.utility.BartUtility;
-import bart.utility.DBMSUtility;
+import bart.utility.BartDBMSUtility;
 import bart.utility.DependencyUtility;
 import bart.utility.ErrorGeneratorStats;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class BuildSQLDeltaDB  implements IBuildDeltaDB{
         String dirtySuffix = BartUtility.getDirtyCloneSuffix(task);
         AccessConfiguration accessConfiguration = ((DBMSDB) database).getAccessConfiguration().clone();
         accessConfiguration.setSchemaName(accessConfiguration.getSchemaName() + dirtySuffix);
-        DBMSDB deltaDB = new DBMSDB(accessConfiguration, task);
-        DBMSUtility.createSchema(accessConfiguration);
+        DBMSDB deltaDB = new DBMSDB(accessConfiguration);
+        BartDBMSUtility.createSchema(accessConfiguration);
         StringBuilder script = new StringBuilder();
         List<AttributeRef> affectedAttributes = findAllAffectedAttributes(task);
         script.append(createDeltaRelationsSchema(database, accessConfiguration, affectedAttributes));
@@ -85,7 +85,7 @@ public class BuildSQLDeltaDB  implements IBuildDeltaDB{
         script.append("CREATE TABLE ").append(deltaDBSchema).append(".").append(deltaRelationName).append("(").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.STEP).append(" text,").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.TID).append(" bigint,").append("\n");
-        script.append(BartConstants.INDENT).append(attributeName).append(" ").append(DBMSUtility.convertDataSourceTypeToDBType(attributeType)).append(",").append("\n");
+        script.append(BartConstants.INDENT).append(attributeName).append(" ").append(BartDBMSUtility.convertDataSourceTypeToDBType(attributeType)).append(",").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.GROUP_ID).append(" text").append("\n");
         script.append(") WITH OIDS;").append("\n\n");
 //        script.append("CREATE INDEX ").append(attributeName).append("_oid  ON ").append(deltaDBSchema).append(".").append(deltaRelationName).append(" USING btree(tid ASC);\n");
@@ -101,7 +101,7 @@ public class BuildSQLDeltaDB  implements IBuildDeltaDB{
         script.append(BartConstants.INDENT).append(BartConstants.TID).append(" bigint,").append("\n");
 //        script.append(BartConstants.INDENT).append(BartConstants.OID).append(" integer,").append("\n");
         for (Attribute attribute : tableNonAffectedAttributes) {
-            script.append(BartConstants.INDENT).append(attribute.getName()).append(" ").append(DBMSUtility.convertDataSourceTypeToDBType(attribute.getType())).append(",\n");
+            script.append(BartConstants.INDENT).append(attribute.getName()).append(" ").append(BartDBMSUtility.convertDataSourceTypeToDBType(attribute.getType())).append(",\n");
         }
         BartUtility.removeChars(",\n".length(), script);
         script.append("\n").append(") WITH OIDS;").append("\n\n");

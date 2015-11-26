@@ -1,7 +1,7 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
-import bart.model.database.ConstantValue;
-import bart.model.database.IValue;
+import speedy.model.database.ConstantValue;
+import speedy.model.database.IValue;
 import java.util.Random;
 
 public class TypoSwitchValue implements IDirtyStrategy {
@@ -14,9 +14,12 @@ public class TypoSwitchValue implements IDirtyStrategy {
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
-        for (int i = 0; i < charsToSwitch; i++) {
-            int index = getRandomIndex(valueString);
-            valueString = swapAt(valueString, index);
+        String originalValue = valueString;
+        while (valueString.equals(originalValue)) {
+            for (int i = 0; i < charsToSwitch; i++) {
+                int index = getRandomIndex(valueString);
+                valueString = swapAt(valueString, index);
+            }
         }
         return new ConstantValue(valueString);
     }

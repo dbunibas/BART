@@ -7,7 +7,7 @@ import bart.IInitializableOperator;
 import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
 import bart.model.dependency.Dependency;
-import bart.model.database.IDatabase;
+import speedy.model.database.IDatabase;
 import bart.model.dependency.analysis.FindFormulaWithAdornments;
 import bart.model.detection.Violations;
 import bart.utility.BartUtility;

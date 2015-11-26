@@ -1,21 +1,19 @@
 package bart;
 
-import bart.model.database.operators.IRunQuery;
-import bart.model.database.operators.dbms.SQLRunQuery;
-import bart.model.database.operators.mainmemory.MainMemoryRunQuery;
+import speedy.model.database.operators.IRunQuery;
+import speedy.model.database.operators.dbms.SQLRunQuery;
+import speedy.model.database.operators.mainmemory.MainMemoryRunQuery;
 import bart.model.EGTask;
-import bart.model.algebra.operators.IInsertTuple;
-import bart.model.algebra.operators.IUpdateCell;
-import bart.model.algebra.operators.mainmemory.InsertTuple;
-import bart.model.algebra.operators.mainmemory.UpdateCell;
-import bart.model.algebra.operators.sql.SQLInsertTuple;
-import bart.model.algebra.operators.sql.SQLUpdateCell;
-import bart.model.database.operators.IDatabaseManager;
-import bart.model.database.operators.IExplainQuery;
-import bart.model.database.operators.dbms.SQLDatabaseManager;
-import bart.model.database.operators.dbms.SQLExplainQuery;
-import bart.model.database.operators.mainmemory.MainMemoryDatabaseManager;
-import bart.model.database.operators.mainmemory.MainMemoryExplainQuery;
+import speedy.model.algebra.operators.IInsertTuple;
+import speedy.model.algebra.operators.IUpdateCell;
+import speedy.model.algebra.operators.sql.SQLInsertTuple;
+import speedy.model.algebra.operators.sql.SQLUpdateCell;
+import speedy.model.database.operators.IDatabaseManager;
+import speedy.model.database.operators.IExplainQuery;
+import speedy.model.database.operators.dbms.SQLDatabaseManager;
+import speedy.model.database.operators.dbms.SQLExplainQuery;
+import speedy.model.database.operators.mainmemory.MainMemoryDatabaseManager;
+import speedy.model.database.operators.mainmemory.MainMemoryExplainQuery;
 import bart.model.errorgenerator.ISampleStrategy;
 import bart.model.errorgenerator.operator.ApplyCellChanges;
 import bart.model.errorgenerator.operator.ExportDatabaseCSV;
@@ -33,6 +31,8 @@ import bart.model.errorgenerator.operator.valueselectors.BasicValueSelector;
 import bart.model.errorgenerator.operator.valueselectors.INewValueSelectorStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.operators.mainmemory.MainMemoryInsertTuple;
+import speedy.model.algebra.operators.mainmemory.MainMemoryUpdateCell;
 
 public class OperatorFactory {
 
@@ -45,10 +45,10 @@ public class OperatorFactory {
     private IExplainQuery mainMemoryQueryExplanator = new MainMemoryExplainQuery();
     private IExplainQuery sqlQueryExplanator = new SQLExplainQuery();
     //
-    private IUpdateCell mainMemoryCellUpdater = new UpdateCell();
+    private IUpdateCell mainMemoryCellUpdater = new MainMemoryUpdateCell();
     private IUpdateCell sqlCellUpdater = new SQLUpdateCell();
     //
-    private IInsertTuple mainMemoryInsertOperator = new InsertTuple();
+    private IInsertTuple mainMemoryInsertOperator = new MainMemoryInsertTuple();
     private IInsertTuple sqlInsertOperator = new SQLInsertTuple();
     //
     private IDatabaseManager mainMemoryDatabaseManager = new MainMemoryDatabaseManager();

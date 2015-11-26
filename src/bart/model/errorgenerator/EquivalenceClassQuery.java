@@ -1,9 +1,9 @@
 package bart.model.errorgenerator;
 
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.operators.ITupleIterator;
-import bart.model.database.AttributeRef;
-import bart.model.database.Tuple;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.operators.ITupleIterator;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.Tuple;
 import java.util.List;
 
 public class EquivalenceClassQuery {

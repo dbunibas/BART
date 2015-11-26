@@ -1,8 +1,6 @@
 package bart.model.errorgenerator.operator;
 
-import bart.exceptions.DAOException;
-import bart.model.database.Cell;
-import bart.model.errorgenerator.VioGenQueryCellChange;
+import speedy.model.database.Cell;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
 import java.io.BufferedWriter;
@@ -13,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.exceptions.DAOException;
 
 public class ExportCellChangesCSV {
     

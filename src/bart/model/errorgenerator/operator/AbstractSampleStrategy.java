@@ -3,8 +3,8 @@ package bart.model.errorgenerator.operator;
 import bart.BartConstants;
 import bart.model.EGTask;
 import bart.model.VioGenQueryConfiguration;
-import bart.model.database.ITable;
-import bart.model.database.TableAlias;
+import speedy.model.database.ITable;
+import speedy.model.database.TableAlias;
 import bart.model.errorgenerator.ISampleStrategy;
 import java.util.Set;
 

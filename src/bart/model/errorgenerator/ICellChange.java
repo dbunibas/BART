@@ -1,7 +1,7 @@
 package bart.model.errorgenerator;
 
-import bart.model.database.Cell;
-import bart.model.database.IValue;
+import speedy.model.database.Cell;
+import speedy.model.database.IValue;
 import java.util.Set;
 
 public interface ICellChange {

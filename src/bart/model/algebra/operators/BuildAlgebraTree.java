@@ -2,12 +2,6 @@ package bart.model.algebra.operators;
 
 import bart.utility.AlgebraUtility;
 import bart.model.EGTask;
-import bart.model.algebra.Difference;
-import bart.model.algebra.IAlgebraOperator;
-import bart.model.algebra.Join;
-import bart.model.algebra.Project;
-import bart.model.database.AttributeRef;
-import bart.model.database.TableAlias;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;
@@ -18,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.Difference;
+import speedy.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.Join;
+import speedy.model.algebra.Project;
+import speedy.model.database.AttributeRef;
+import speedy.model.database.TableAlias;
+import speedy.utility.SpeedyUtility;
 
 public class BuildAlgebraTree {
 
@@ -49,7 +50,7 @@ public class BuildAlgebraTree {
     private IAlgebraOperator addStandardDifferences(IAlgebraOperator root, FormulaWithNegations negatedFormula, Integer sampleSize, EGTask task) {
         IAlgebraOperator negatedRoot = buildStandardTreeForFormulaWithNegations(negatedFormula, sampleSize, task);
         IAlgebraOperator joinRoot = addJoinForDifference(root, negatedRoot, negatedFormula);
-        IAlgebraOperator project = new Project(root.getAttributes(task.getSource(), task.getTarget()));
+        IAlgebraOperator project = new Project(SpeedyUtility.createProjectionAttributes(root.getAttributes(task.getSource(), task.getTarget())));
         project.addChild(joinRoot);
         IAlgebraOperator difference = new Difference();
         difference.addChild(root);

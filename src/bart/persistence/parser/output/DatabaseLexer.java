@@ -1,4 +1,4 @@
-// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Database.g 2014-09-19 18:37:48
+// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Database.g 2015-11-26 13:39:24
 
 package bart.persistence.parser.output;
 
@@ -28,7 +28,7 @@ public class DatabaseLexer extends Lexer {
 
 
 	public void emitErrorMessage(String msg) {
-		throw new bart.exceptions.ParserException(msg);
+		throw new speedy.exceptions.ParserException(msg);
 	}
 
 

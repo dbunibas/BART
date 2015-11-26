@@ -1,6 +1,6 @@
 package bart.model.dependency;
 
-import bart.model.expressions.Expression;
+import speedy.model.expressions.Expression;
 
 public class FormulaExpression implements IFormulaValue {
 

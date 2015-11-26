@@ -3,13 +3,14 @@ package bart.model.errorgenerator.operator;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
-import bart.model.algebra.operators.IUpdateCell;
-import bart.model.database.CellRef;
-import bart.model.database.IDatabase;
-import bart.model.database.operators.IDatabaseManager;
+import speedy.model.algebra.operators.IUpdateCell;
+import speedy.model.database.CellRef;
+import speedy.model.database.IDatabase;
+import speedy.model.database.operators.IDatabaseManager;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
 import bart.utility.BartUtility;
+import speedy.model.database.dbms.DBMSDB;
 
 public class ApplyCellChanges implements IChangeApplier, IInitializableOperator {
 
@@ -21,11 +22,12 @@ public class ApplyCellChanges implements IChangeApplier, IInitializableOperator 
         IDatabase dirtyTarget = task.getTarget();
         if (task.getConfiguration().isCloneTargetSchema()) {
             String dirtySuffix = BartUtility.getDirtyCloneSuffix(task);
+            DBMSDB target = (DBMSDB) task.getTarget();
             try {
-                databaseManager.removeClone(task, dirtySuffix);
+                databaseManager.removeClone(target, dirtySuffix);
             } catch (Exception e) {
             }
-            dirtyTarget = databaseManager.cloneTarget(task, dirtySuffix);
+            dirtyTarget = databaseManager.cloneTarget(target, dirtySuffix);
             task.setDirtyTarget(dirtyTarget);
         }
         for (ICellChange cellChange : cellChanges.getChanges()) {

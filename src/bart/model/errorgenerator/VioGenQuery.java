@@ -2,7 +2,7 @@ package bart.model.errorgenerator;
 
 import bart.BartConstants;
 import bart.model.VioGenQueryConfiguration;
-import bart.model.algebra.IAlgebraOperator;
+import speedy.model.algebra.IAlgebraOperator;
 import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.Dependency;
 import bart.model.dependency.IFormula;
