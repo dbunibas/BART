@@ -3,7 +3,14 @@ BART
 
 BART (Benchmarking Algorithms for data Repairing and Translation) is an error-generation tool for data cleaning applications. Its purpose is to introduce errors into clean databases for the purpose of benchmarking data-repairing algorithms. It provides users with the highest possible level of control over the error-generation process, and at the same time scales nicely to large databases. This is far from trivial, since, as we show in our technical papers, the error-generation problem is surprisingly challenging, and in fact, NP-complete. To scale to millions of tuples, the system relies on several non-trivial optimizations, including a new symmetry property of data quality constraints.
 
-Additional material about the project can be found at the following address: http://db.unibas.it/projects/bart/
+Additional material about the project (papers and example datasets) can be found at the following address: http://db.unibas.it/projects/bart/
+
+---
+
+### How to run an EGTask
+Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employees/employees-dbms-2k-egtask.xml`
+
+---
 
 ### How to import project in NetBeans ####
 1. In NetBeans, File -> Open projects... and select the project folder
@@ -31,9 +38,3 @@ Is used to specify the JDBC parameters to access the DBMS.
 * **generateAllChanges**: To generate all possible changes (default = false) - slow, only for toy examples
 * **avoidInteractions**: Avoid interactions among changes. (default = true)
 * **errorPercentages**: Error percentages for dependencies and comparisons. All percentages are wrt table sizes (# tuples)
-
-
----
-
-### How to run an EGTask
-Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employees/employees-dbms-2k-egtask.xml`
