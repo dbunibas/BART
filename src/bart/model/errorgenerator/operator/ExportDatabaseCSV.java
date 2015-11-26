@@ -22,18 +22,21 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.exceptions.DAOException;
+import speedy.persistence.xml.operators.TransformFilePaths;
 
 public class ExportDatabaseCSV implements IExportDatabase {
 
     private static Logger logger = LoggerFactory.getLogger(ExportDatabaseCSV.class);
+    private TransformFilePaths filePathTransformator = new TransformFilePaths();
     private static String SEPARATOR = ",";
     private static String NEW_LINE = "\n";
 
-    public void export(IDatabase database, String path) {
-        export(database, new CellChanges(), path);
+    public void export(IDatabase database, String path, String taskPath) {
+        export(database, new CellChanges(), path, taskPath);
     }
 
-    public void export(IDatabase database, CellChanges cellChanges, String path) {
+    public void export(IDatabase database, CellChanges cellChanges, String path, String taskPath) {
+        path = expandPath(taskPath, path);
         if (logger.isDebugEnabled()) logger.debug("Exporting database to path " + path);
         for (String tableName : database.getTableNames()) {
             ITable table = database.getTable(tableName);
@@ -97,26 +100,33 @@ public class ExportDatabaseCSV implements IExportDatabase {
     }
 
     private String writeValue(IValue value) {
-        if(value == null){
+        if (value == null) {
             return "";
         }
         String s = value.toString();
-        if(s.contains(SEPARATOR)){
+        if (s.contains(SEPARATOR)) {
             logger.warn("Removing csv separator value " + SEPARATOR + " from " + s);
             s = s.replaceAll(SEPARATOR, "");
         }
         return s;
     }
-    
-    private List<Attribute> getAttributes(ITable table){
+
+    private List<Attribute> getAttributes(ITable table) {
         List<Attribute> result = new ArrayList<Attribute>();
         for (Attribute attribute : table.getAttributes()) {
-            if(attribute.getName().equalsIgnoreCase(BartConstants.OID)){
+            if (attribute.getName().equalsIgnoreCase(BartConstants.OID)) {
                 continue;
             }
             result.add(attribute);
         }
         return result;
+    }
+
+    private String expandPath(String taskPath, String path) {
+        if (path.startsWith(File.separator)) {
+            return path;
+        }
+        return filePathTransformator.expand(taskPath, path);
     }
 
 }

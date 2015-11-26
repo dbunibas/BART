@@ -12,13 +12,16 @@ import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.exceptions.DAOException;
+import speedy.persistence.xml.operators.TransformFilePaths;
 
 public class ExportCellChangesCSV {
-    
+
     private static Logger logger = LoggerFactory.getLogger(ExportCellChangesCSV.class);
+    private TransformFilePaths filePathTransformator = new TransformFilePaths();
     private static String SEPARATOR = ",";
-    
-    public void export(CellChanges cellChanges, String path) {
+
+    public void export(CellChanges cellChanges, String path, String taskPath) {
+        path = expandPath(taskPath, path);
         Writer out = null;
         try {
             if (logger.isDebugEnabled()) logger.debug("Exporting cell changes in " + path);
@@ -41,7 +44,7 @@ public class ExportCellChangesCSV {
             }
         }
     }
-    
+
     private String changeToCSV(ICellChange change) {
         StringBuilder sb = new StringBuilder();
         Cell originalCell = change.getCell();
@@ -52,5 +55,12 @@ public class ExportCellChangesCSV {
         sb.append(originalCell.getValue());
         return sb.toString();
     }
-    
+
+    private String expandPath(String taskPath, String path) {
+        if (path.startsWith(File.separator)) {
+            return path;
+        }
+        return filePathTransformator.expand(taskPath, path);
+    }
+
 }

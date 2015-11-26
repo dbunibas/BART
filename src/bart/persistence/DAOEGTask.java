@@ -42,6 +42,7 @@ public class DAOEGTask {
         this.fileTask = fileTask;
         try {
             EGTask task = new EGTask(fileTask);
+            task.setAbsolutePath(fileTask);
             Document document = daoUtility.buildDOM(fileTask);
             Element rootElement = document.getRootElement();
             //CONFIGURATION

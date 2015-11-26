@@ -5,6 +5,7 @@ import bart.model.OutlierErrorConfiguration;
 import speedy.model.database.AttributeRef;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import bart.model.errorgenerator.operator.valueselectors.TypoAddString;
+import bart.model.errorgenerator.operator.valueselectors.TypoAppendString;
 import bart.model.errorgenerator.operator.valueselectors.TypoRandom;
 import bart.model.errorgenerator.operator.valueselectors.TypoRemoveString;
 import bart.model.errorgenerator.operator.valueselectors.TypoSwitchValue;
@@ -67,6 +68,11 @@ public class DAOEGTaskConfiguration {
         if (applyChangesElement != null) {
             conf.setApplyCellChanges(Boolean.parseBoolean(applyChangesElement.getText()));
             if (logger.isDebugEnabled()) logger.debug("* applyCellChanges " + conf.isApplyCellChanges());
+        }
+        Element estimateRepairabilityElement = configurationElement.getChild("estimateRepairability");
+        if (estimateRepairabilityElement != null) {
+            conf.setEstimateRepairability(Boolean.parseBoolean(estimateRepairabilityElement.getText()));
+            if (logger.isDebugEnabled()) logger.debug("* estimateRepairability " + conf.isEstimateRepairability());
         }
         Element exportCellChangesElement = configurationElement.getChild("exportCellChanges");
         if (exportCellChangesElement != null) {
@@ -235,6 +241,13 @@ public class DAOEGTaskConfiguration {
             String charsString = charsAttribute.getValue().trim();
             int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
             return new TypoAddString(charsString, times);
+        }
+        if (strategyName.equals(IDirtyStrategy.TYPO_APPEND_STRING)) {
+            Attribute charsAttribute = getMandatoryAttribute(strategyElement, "chars");
+            Attribute charsToAddAttribute = getMandatoryAttribute(strategyElement, "charsToAdd");
+            String charsString = charsAttribute.getValue().trim();
+            int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
+            return new TypoAppendString(charsString, times);
         }
         if (strategyName.equals(IDirtyStrategy.TYPO_RANDOM)) {
             return new TypoRandom();

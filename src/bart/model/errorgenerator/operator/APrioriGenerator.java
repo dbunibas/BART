@@ -67,7 +67,7 @@ public class APrioriGenerator implements IInitializableOperator {
         if (configuration.isExportCellChanges()) {
             String path = configuration.getExportCellChangesPath();
             if (configuration.isPrintLog()) System.out.println("Exporting changes to path " + path);
-            cellChangesExporter.export(cellChanges, path);
+            cellChangesExporter.export(cellChanges, path, task.getAbsolutePath());
         }
         if (configuration.isApplyCellChanges()) {
             if (configuration.isPrintLog()) System.out.println("Now applying changes to the db (this may be slow due to multiple updates...)");
@@ -88,7 +88,7 @@ public class APrioriGenerator implements IInitializableOperator {
         if (configuration.isExportDirtyDB()) {
             String path = configuration.getExportDirtyDBPath();
             if (configuration.isPrintLog()) System.out.println("Exporting dirtydb to path " + path);
-            databaseExporter.export(task.getDirtyTarget(), cellChanges, path);
+            databaseExporter.export(task.getDirtyTarget(), cellChanges, path, task.getAbsolutePath());
         }
         long end = new Date().getTime();
         ErrorGeneratorStats.getInstance().addStat(ErrorGeneratorStats.TOTAL_TIME, end - start);
