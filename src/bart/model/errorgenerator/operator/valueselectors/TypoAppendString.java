@@ -23,6 +23,14 @@ public class TypoAppendString implements IDirtyStrategy {
         }
         return new ConstantValue(sb.toString());
     }
+    
+    public String getChars() {
+        return chars;
+    }
+
+    public int getCharsToAdd() {
+        return charsToAdd;
+    }
 
     @Override
     public String toString() {
