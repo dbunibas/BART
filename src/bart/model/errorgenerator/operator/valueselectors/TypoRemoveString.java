@@ -37,6 +37,10 @@ public class TypoRemoveString implements IDirtyStrategy {
         String suffix = valueString.substring(selectRandomIndex, valueString.length());
         return prefix + suffix;
     }
+    
+    public int getCharsToRemove() {
+        return charsToRemove;
+    }
 
     @Override
     public String toString() {
