@@ -331,6 +331,10 @@ public class EGTaskConfiguration {
         if (dirtyStrategy != null) return dirtyStrategy;
         return defaultDirtyStrategy;
     }
+    
+    public Map<AttributeRef, IDirtyStrategy> getDirtyStrategy()   {
+        return dirtyStrategiesMap;
+    }
 
 //    public Integer getMaxNumberOfInequalitiesInSymmetricQueries() {
 //        return maxNumberOfInequalitiesInSymmetricQueries;
