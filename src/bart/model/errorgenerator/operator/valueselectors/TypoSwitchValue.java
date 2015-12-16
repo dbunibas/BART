@@ -39,6 +39,10 @@ public class TypoSwitchValue implements IDirtyStrategy {
         toCharArray[index + 1] = tmp;
         return new String(toCharArray);
     }
+    
+    public int getCharsToSwitch() {
+        return charsToSwitch;
+    }
 
     @Override
     public String toString() {

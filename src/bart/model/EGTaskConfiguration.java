@@ -332,7 +332,7 @@ public class EGTaskConfiguration {
         return defaultDirtyStrategy;
     }
     
-    public Map<AttributeRef, IDirtyStrategy> getDirtyStrategy()   {
+    public Map<AttributeRef, IDirtyStrategy> getDirtyStrategiesMap()   {
         return dirtyStrategiesMap;
     }
 
