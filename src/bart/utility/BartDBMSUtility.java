@@ -352,7 +352,6 @@ public class BartDBMSUtility {
 //        workSchema.setSchemaName(BartConstants.WORK_SCHEMA);
 //        return workSchema;
 //    }
-
     private static String getTempDBName(AccessConfiguration accessConfiguration, String tempDBName) {
         String uri = accessConfiguration.getUri();
         if (uri.lastIndexOf("/") != -1) {
@@ -554,6 +553,11 @@ public class BartDBMSUtility {
         tableAlias.setSource(source);
         AttributeRef attributeRef = new AttributeRef(tableAlias, attributeSQL);
         return attributeRef;
+    }
+
+    public static void removeSchema(String schema, AccessConfiguration accessConfiguration) {
+        String function = "DROP SCHEMA IF EXISTS " + schema + " CASCADE;";
+        QueryManager.executeScript(function, accessConfiguration, true, true, false, false);
     }
 
     public static void createSchema(AccessConfiguration accessConfiguration) {
