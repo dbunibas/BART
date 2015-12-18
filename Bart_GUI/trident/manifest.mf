@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: trident
+OpenIDE-Module-Localizing-Bundle: trident/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

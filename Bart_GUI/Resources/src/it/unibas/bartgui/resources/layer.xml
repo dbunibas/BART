@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="AboutBart">
+        <file name="AboutBart.pdf" url="aboutbart/AboutBart.pdf"/>
+    </folder>
+    <folder name="BartGIfImage">
+        <file name="BartSaturdayNightFever.gif" url="icons/BartSaturdayNightFever.gif"/>
+    </folder>    
+    <folder name="BartAudio">
+        <file name="STheme.wav" url="audio/STheme.wav"/>
+    </folder>   
+</filesystem>

@@ -1,0 +1,206 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package it.unibas.bartgui.view.topComponent;
+
+import it.unibas.bartgui.egtaskdataobject.statistics.Statistic;
+import it.unibas.bartgui.resources.R;
+import it.unibas.bartgui.view.panel.chart.CellChangesTableModel;
+import it.unibas.bartgui.view.panel.chart.ChartsPanel;
+import it.unibas.centrallookup.CentralLookup;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+import org.jdesktop.swingx.JXTable;
+import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.loaders.DataObject;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.windows.TopComponent;
+import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
+
+/**
+ * Top component which displays something.
+ */
+@ConvertAsProperties(
+        dtd = "-//it.unibas.bartgui.view.topComponent//Chart//EN",
+        autostore = false
+)
+@TopComponent.Description(
+        preferredID = "ChartTopComponent",
+        iconBase=R.IMAGE_PIE_CHART, 
+        persistenceType = TopComponent.PERSISTENCE_NEVER
+)
+@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@ActionID(category = "Window", id = "it.unibas.bartgui.view.topComponent.ChartTopComponent")
+@ActionReference(path = "Menu/Window" , position = 40 )
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_ChartAction",
+        preferredID = "ChartTopComponent"
+)
+@Messages({
+    "CTL_ChartAction=Statistic Charts",
+    "CTL_ChartTopComponent=Charts Window",
+    "HINT_ChartTopComponent=Statistic Charts and Info",
+    "HINT_ChartTopComponent_SCRPanelTitle=Detailed info",
+    "HINT_ChartTopComponent_SCRPanelTable=Cell Change"
+})
+public final class ChartTopComponent extends TopComponent {
+
+    private ChartsPanel panelChart;
+    private Lookup.Result<Statistic> result;
+    private final StatLookupListener listener = new StatLookupListener();
+    private JTextArea detailedLog;
+    private JXTable cellChangesTable;
+    private final CellChangesTableModel model = new CellChangesTableModel();
+    
+    public ChartTopComponent() {
+        initComponents();
+        setName(Bundle.CTL_ChartTopComponent());
+        setToolTipText(Bundle.HINT_ChartTopComponent());
+        setLayout(new BorderLayout());
+        initPanel();
+        initTable();
+        initLayout();       
+    }
+    
+    private void initLayout()   {
+        JSplitPane splitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPanel.setDividerLocation(230);
+        
+        JScrollPane scrTextArea = new JScrollPane();
+        scrTextArea.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
+                Bundle.HINT_ChartTopComponent_SCRPanelTitle(), 
+                 TitledBorder.CENTER,TitledBorder.TOP));
+        scrTextArea.setPreferredSize(new Dimension(220, 300));
+        scrTextArea.setViewportView(detailedLog);
+
+        JScrollPane scrTable = new JScrollPane();
+        scrTable.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
+                Bundle.HINT_ChartTopComponent_SCRPanelTable(), 
+                 TitledBorder.CENTER,TitledBorder.TOP));
+        scrTable.setViewportView(cellChangesTable);
+        
+        JScrollPane scrTC = new JScrollPane();
+        scrTC.setViewportView(panelChart);
+
+        splitPanel.add(scrTextArea);
+        splitPanel.add(scrTable);
+        
+        JPanel tmp = new JPanel(new BorderLayout());
+        tmp.add(panelChart,BorderLayout.NORTH);
+        tmp.add(splitPanel,BorderLayout.CENTER);
+        JScrollPane tmpScr = new JScrollPane();
+        tmpScr.setViewportView(tmp);
+
+        add(tmpScr,BorderLayout.CENTER);
+    }
+    
+    private void initPanel()   {
+        panelChart = new ChartsPanel();
+        detailedLog = new JTextArea();
+        //detailedLog.setPreferredSize(new Dimension(230, 300));
+        //detailedLog.setMinimumSize(new Dimension(230, 300));
+        detailedLog.setEditable(false);
+    }
+    
+    private void initTable()   {
+        cellChangesTable = new JXTable();
+        cellChangesTable.setEditable(false);
+        cellChangesTable.setColumnControlVisible(true);
+        cellChangesTable.setShowGrid(true);
+        cellChangesTable.setDragEnabled(false); 
+        cellChangesTable.setSelectionBackground(new Color(214, 217, 223));
+        cellChangesTable.setModel(model);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+    @Override
+    public void componentOpened() {
+        result = Utilities.actionsGlobalContext().lookupResult(Statistic.class);
+        result.addLookupListener(listener);
+        listener.resultChanged(null);
+    }
+
+    @Override
+    public void componentClosed() {
+        result.removeLookupListener(listener);
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        listener.resultChanged(null);
+    }
+    
+    
+
+    void writeProperties(java.util.Properties p) {
+        // better to version settings since initial version as advocated at
+        // http://wiki.apidesign.org/wiki/PropertyFiles
+        p.setProperty("version", "1.0");
+        // TODO store your settings
+    }
+
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
+    }
+    
+    private void initPanel(Statistic s,String dtoName)   {
+        panelChart.setNameStatisitcResult(s.getName());
+        detailedLog.setText(s.getDetailedLog());
+        panelChart.setVioGenQueryTimes(s.getVioGenQueryTimes(dtoName));
+        panelChart.setVioGenQueriesErrors(s.getVioGenQueriesErrors(dtoName));
+        panelChart.setVioGenQueriesRepairability(s.getVioGenQueriesRepairability(dtoName));
+        panelChart.setDependencyRepairability(s.getDependencyRepairability(dtoName));
+    }
+    
+    private class StatLookupListener implements LookupListener   {
+
+        @Override
+        public void resultChanged(LookupEvent ev) {
+            Statistic tmp = Utilities.actionsGlobalContext().lookup(Statistic.class);
+            if(tmp != null)   {
+                DataObject dto = CentralLookup.getDefLookup().lookup(DataObject.class);
+                ChartTopComponent.this.model.setCellChanges(tmp.getCellChanges(dto.getPrimaryFile().getName()));
+                ChartTopComponent.this.initPanel(tmp, dto.getPrimaryFile().getName());
+                ChartTopComponent.this.setDisplayName(tmp.getName());
+            }
+        }
+        
+    }
+}

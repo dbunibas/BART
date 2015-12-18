@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: it.unibas.bartgui.view
+OpenIDE-Module-Install: it/unibas/bartgui/view/Installer.class
+OpenIDE-Module-Layer: it/unibas/bartgui/view/layer.xml
+OpenIDE-Module-Localizing-Bundle: it/unibas/bartgui/view/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Specification-Version: 1.0
+

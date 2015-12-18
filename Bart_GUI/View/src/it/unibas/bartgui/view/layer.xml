@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    
+        <folder name="Menu">
+            <folder name="File">
+                <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+                <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+                
+                <file name="org-openide-actions-CloseAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-CloseAction.instance"/>
+                    <attr intvalue="1510" name="position"/>
+                </file>
+                <!--<file name="org-openide-actions-CloseAction-separatorAfter.instance">
+                    it.unibas.bartgui.control.view.actions.OpenEgtaskFile
+                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
+                    <attr intvalue="-80" name="position"/>
+                </file> -->
+            </folder>
+            <folder name="Source_hidden"/>
+            <folder name="Tools_hidden"/>
+            <folder name="Refactoring_hidden"/>
+            <folder name="GoTo_hidden"/>
+        </folder>
+        
+        
+        <folder name="Toolbars">
+            <folder name="File">
+                <file name="org-netbeans-modules-project-ui-NewFile.shadow_hidden"/>
+                <file name="org-netbeans-modules-project-ui-NewProject.shadow_hidden"/>
+                <file name="org-netbeans-modules-project-ui-OpenProject.shadow_hidden"/>
+                <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+                
+                <file name="org-openide-actions-SaveAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAction.instance"/>
+                    <attr name="position" intvalue="70"/>
+                </file>             
+            </folder>
+            
+            <folder name="Memory">
+                    <file name="org-netbeans-modules-profiler-actions-SelfSamplerAction.shadow_hidden"/>
+            </folder>
+                
+            <folder name="Debug_hidden"/>
+            <folder name="Build_hidden"/>           
+        </folder>
+        
+    <folder name="Windows2">
+        <folder name="Modes">
+            <file name="bottomSlidingSide.wsmode" url="bottomSlidingSideWsmode.xml"/>
+            <file name="editor.wsmode" url="editorWsmode.xml"/>
+            <file name="explorer.wsmode" url="explorerWsmode.xml"/>
+            <file name="leftSlidingSide.wsmode" url="leftSlidingSideWsmode.xml"/>
+            <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
+            <file name="output.wsmode" url="outputWsmode.xml"/>
+            <file name="properties.wsmode" url="propertiesWsmode.xml"/>
+            <file name="rightSlidingSide.wsmode" url="rightSlidingSideWsmode.xml"/>
+            <file name="topSlidingSide.wsmode" url="topSlidingSideWsmode.xml"/>
+        </folder>
+    </folder>
+</filesystem>
