@@ -4,6 +4,7 @@
 /Bart_Engine/nbproject.properties
 /lib/lunaticEngine-*.jar
 /Bart_GUI/BART_ENGINE/nbproject/private/
+/Bart_GUI/BART_ENGINE/release/modules/ext/bart-*.jar
 /Bart_GUI/BART_LIB/nbproject/private/
 /Bart_GUI/CentralLookup/nbproject/private/
 /Bart_GUI/ControlEGTaskDataObject/nbproject/private/
