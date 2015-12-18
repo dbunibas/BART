@@ -131,7 +131,7 @@ public class TableDataView extends JPanel  implements MultiViewElement   {
         pageCtrlPanel.setPageSize(pageSize+"");
         
         panelValdPagCtrl = new ValidationPanel();
-        panelValdPagCtrl.setBorder(new TitledBorder(new LineBorder(Color.BLUE), "Pagination Control", 
+        panelValdPagCtrl.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Pagination Control", 
                                                         TitledBorder.CENTER,TitledBorder.TOP));
         panelValdPagCtrl.setInnerComponent(pageCtrlPanel);
         vgPagControl = panelValdPagCtrl.getValidationGroup();
