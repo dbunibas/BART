@@ -42,7 +42,7 @@ public class ConfEGTaskEditPanel extends JPanel   {
     
     private void initPanel()   {
         panelValAcc = new ValidationPanel();
-        getPanelValAcc().setBorder(new TitledBorder(new LineBorder(Color.BLUE), "EGTask Configuration", 
+        getPanelValAcc().setBorder(new TitledBorder(new LineBorder(Color.BLACK), "EGTask Configuration", 
                                                         TitledBorder.CENTER,TitledBorder.TOP));
         panel = new ConfEGTaskPanel();
         getPanelValAcc().setInnerComponent(panel);

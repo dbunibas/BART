@@ -9,9 +9,13 @@ import bart.model.EGTask;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
 import it.unibas.bartgui.egtaskdataobject.NodeResource;
+import it.unibas.bartgui.egtaskdataobject.notifier.DirtyStrategiesNodeNotifier;
 import it.unibas.bartgui.resources.R;
 import javax.swing.Action;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.openide.actions.OpenLocalExplorerAction;
+import org.openide.awt.Actions;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle;
@@ -28,12 +32,20 @@ import org.openide.util.lookup.ProxyLookup;
 })
 public class DirtyStrategiesNode extends AbstractNode   {
 
+    private ChangeListener listener;
+     
     public DirtyStrategiesNode(EGTask task,EGTaskDataObjectDataObject dto) {
         super(Children.create(new DirtyStrategiesFactory(dto, task), true), 
                 new ProxyLookup(Lookups.fixed(task,dto),dto.getAbstractLookup()));
         setName(NodeResource.NODE_DirtyStrategiesNode);
         setShortDescription(Bundle.HINT_DirtyStrategiesNode());
         setIconBaseWithExtension(R.IMAGE_NODE_DIRTYSTRATEGIES);
+        DirtyStrategiesNodeNotifier.addChangeListener(listener = new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                fireDisplayNameChange(null, "");
+            }
+        });
     }
     
     @Override
@@ -60,10 +72,20 @@ public class DirtyStrategiesNode extends AbstractNode   {
     @Override
     public Action[] getActions(boolean context) {
         Action[] result = new Action[]{
+            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDefaultStrategy"),
+            //ADD NEW
+            null,
             SystemAction.get(OpenLocalExplorerAction.class),
         };
         return result;
     }
+
+    @Override
+    public Action getPreferredAction() {
+        return Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDefaultStrategy"); 
+    }
+    
+    
 
     @Override
     public boolean canDestroy() {

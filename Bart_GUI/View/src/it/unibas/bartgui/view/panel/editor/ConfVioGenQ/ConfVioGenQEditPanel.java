@@ -44,7 +44,7 @@ public class ConfVioGenQEditPanel extends JPanel{
     
     private void initPanel()   {
         panelValAcc = new ValidationPanel();
-        getPanelValAcc().setBorder(new TitledBorder(new LineBorder(Color.BLUE), "VioGenQuery Configuration", 
+        getPanelValAcc().setBorder(new TitledBorder(new LineBorder(Color.BLACK), "VioGenQuery Configuration", 
                                                         TitledBorder.CENTER,TitledBorder.TOP));
         panel = new ConfVioGenQPanel();
         getPanelValAcc().setInnerComponent(panel);
