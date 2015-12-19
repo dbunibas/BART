@@ -25,7 +25,9 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.HelpCtx;
 import speedy.model.database.dbms.InitDBConfiguration;
+import speedy.persistence.file.CSVFile;
 import speedy.persistence.file.IImportFile;
+import speedy.persistence.file.XMLFile;
 
 /**
  *
@@ -102,13 +104,21 @@ public class ImportPanel extends javax.swing.JPanel {
         scrollPaneTables.setViewportView(jListTables);
     }
     
-    private void initButtonImportFile(Object[] obj)   {
-        for(Object o : obj)   {
+    private void initButtonImportFile(final ImportFilePanel panel)   {
+        for(Object o : panel.getButtons())   {
             ((JButton)o).addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(e.getActionCommand().equalsIgnoreCase("OK"))   {;                   
-                        
+                        if(panel.isXML())   {
+                            if(!panel.getPath().isEmpty())jTableFilesTableModel.addFile(new XMLFile(panel.getPath()));
+                        }
+                        if(panel.isCSV())   {
+                            CSVFile csvFile = new CSVFile(panel.getPath());
+                            csvFile.setQuoteCharacter(panel.getQuote().charAt(0));
+                            csvFile.setSeparator(panel.getQuote().charAt(0));
+                            jTableFilesTableModel.addFile(csvFile);
+                        }
                     }
                 }
             });
@@ -119,7 +129,11 @@ public class ImportPanel extends javax.swing.JPanel {
         addFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                ImportFilePanel panel = new ImportFilePanel();
+                initButtonImportFile(panel);
+                Dialog d = createDialog(panel, panel.getButtons());
+                d.setTitle("Import File");
+                d.setVisible(true);
             }
         });
         

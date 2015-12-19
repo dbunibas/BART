@@ -50,6 +50,7 @@ import speedy.persistence.file.CSVFile;
 import speedy.persistence.file.IImportFile;
 import speedy.persistence.file.XMLFile;
 import speedy.persistence.relational.AccessConfiguration;
+import speedy.persistence.xml.operators.TransformFilePaths;
 
 /**
  *
@@ -73,6 +74,7 @@ public class SaveEGTask implements ISave   {
     private static final String DB_TYPE_MAINMEMORY = "XML";
     private static final String DB_TYPE_MAINMEMORY_GENERATE = "GENERATE";
     private static final String DB_TYPE_DBMS = "DBMS";
+    private final TransformFilePaths transformFilePaths = new TransformFilePaths();
     
     private EGTaskDataObjectDataObject dto;
     private EGTask egt;
@@ -216,7 +218,10 @@ public class SaveEGTask implements ISave   {
                     List<IImportFile> files = dbmsdb.getInitDBConfiguration().getFilesToImport(table);
                     for(IImportFile file : files)   {
                         Element inputElemet = new Element("input");
-                        inputElemet.setText(file.getFileName());
+                        File basefile = FileUtil.toFile(dto.getPrimaryFile());
+                        String path = transformFilePaths
+                                .relativize(basefile.getAbsolutePath(), file.getFileName());
+                        inputElemet.setText(path);
                         inputElemet.setAttribute("table", table);
                         if(file instanceof XMLFile)   {                        
                             inputElemet.setAttribute("type", SpeedyConstants.XML);                      

@@ -74,12 +74,11 @@ emp(name: $n2, dept: $d2, salary: $s2, manager: $m2),
         <applyCellChanges>false</applyCellChanges>
         <cloneTargetSchema>false</cloneTargetSchema>
 
+        <estimateRepairability>true</estimateRepairability>
         <!-- To load DB every time on start and then apply changes without copying -->
-        <!--
-        <recreateDBOnStart>false</recreateDBOnStart>
+
         <applyCellChanges>true</applyCellChanges>
         <cloneTargetSchema>true</cloneTargetSchema>
-        -->
 
         <!-- To generate all possible changes (default = false - slow, only for toy examples)-->
         <!--<generateAllChanges>true</generateAllChanges>-->

@@ -1,6 +1,5 @@
 package it.unibas.bartgui.control.view.actions;
 
-import it.unibas.bartgui.egtaskdataobject.NodeResource;
 import it.unibas.bartgui.egtaskdataobject.api.ILoadEGTask;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

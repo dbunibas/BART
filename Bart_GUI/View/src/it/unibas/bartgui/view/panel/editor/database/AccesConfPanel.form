@@ -27,11 +27,11 @@
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="driverTextField" max="32767" attributes="0"/>
                   <Component id="uriTextField" max="32767" attributes="0"/>
                   <Component id="schemaTextField" max="32767" attributes="0"/>
-                  <Component id="loginTextField" pref="160" max="32767" attributes="0"/>
+                  <Component id="loginTextField" pref="216" max="32767" attributes="0"/>
                   <Component id="passwordTextField" max="32767" attributes="0"/>
+                  <Component id="driverTextField" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
