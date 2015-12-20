@@ -10,6 +10,7 @@ import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
 import it.unibas.bartgui.resources.R;
 import java.util.Map;
+import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle;
@@ -29,7 +30,7 @@ public class DirtyStrategyTableNode extends AbstractNode   {
     private String dirtyStrategyTable;
     
     public DirtyStrategyTableNode(EGTask egt, EGTaskDataObjectDataObject dto, String dirtyStrategyTable,Map<String,IDirtyStrategy> map)    {
-        super(Children.create(new DirtyStrategyAttributeFactory(map, dto, egt), true),
+        super(Children.create(new DirtyStrategyAttributeFactory(dirtyStrategyTable, map, dto, egt), true),
                 new ProxyLookup(Lookups.fixed(egt,dto),dto.getAbstractLookup()));
         this.dirtyStrategyTable = dirtyStrategyTable;
         setName(dirtyStrategyTable);
@@ -45,8 +46,38 @@ public class DirtyStrategyTableNode extends AbstractNode   {
         sb.append(R.HTML_CL_Node);
         return sb.toString();
     }
+
+    @Override
+    public Action[] getActions(boolean context) {
+        Action[] a = {};
+        return a;
+    }
+
+    @Override
+    public Action getPreferredAction() {
+        return null;
+    }
     
     
-    
+
+    @Override
+    public boolean canCut() {
+        return false;
+    }
+
+    @Override
+    public boolean canCopy() {
+        return false;
+    }
+
+    @Override
+    public boolean canDestroy() {
+        return false;
+    }
+
+    @Override
+    public boolean canRename() {
+        return false;
+    } 
     
 }

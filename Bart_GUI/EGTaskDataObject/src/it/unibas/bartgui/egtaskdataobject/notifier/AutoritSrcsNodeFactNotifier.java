@@ -9,6 +9,7 @@ import org.openide.util.WeakListeners;
  * @author Grandinetti Giovanni <grandinetti.giovanni13@gmail.com>
  */
 public class AutoritSrcsNodeFactNotifier {
+    
     private static final ChangeSupport cs = new ChangeSupport(AutoritSrcsNodeFactNotifier.class);
 
     public static void addChangeListener(ChangeListener listener) {
