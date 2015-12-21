@@ -212,6 +212,7 @@
                 <package>it.unibas.bartgui.view.panel.editor.autoritativesrc</package>
                 <package>it.unibas.bartgui.view.panel.editor.database</package>
                 <package>it.unibas.bartgui.view.panel.editor.database.visual</package>
+                <package>it.unibas.bartgui.view.panel.editor.dirtyStrategies</package>
                 <package>it.unibas.bartgui.view.panel.editor.dirtyStrategies.defaultStrategy</package>
                 <package>it.unibas.bartgui.view.panel.run</package>
                 <package>it.unibas.bartgui.view.topComponent</package>

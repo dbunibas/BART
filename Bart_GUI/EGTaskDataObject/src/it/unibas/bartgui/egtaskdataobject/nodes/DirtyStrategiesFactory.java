@@ -8,10 +8,13 @@ package it.unibas.bartgui.egtaskdataobject.nodes;
 import bart.model.EGTask;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
+import it.unibas.bartgui.egtaskdataobject.notifier.DirtyStrategiesFactoryNotifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import speedy.model.database.AttributeRef;
@@ -20,7 +23,9 @@ import speedy.model.database.AttributeRef;
  *
  * @author Grandinetti Giovanni <grandinetti.giovanni13@gmail.com>
  */
-public class DirtyStrategiesFactory extends ChildFactory<String>   {
+public class DirtyStrategiesFactory extends ChildFactory.Detachable<String>  {
+    
+    private ChangeListener listener;
     
     private Map<String,Map<String,IDirtyStrategy>> map = new HashMap<>();
     private EGTaskDataObjectDataObject dto;
@@ -54,5 +59,20 @@ public class DirtyStrategiesFactory extends ChildFactory<String>   {
     protected Node createNodeForKey(String key) {
         return new DirtyStrategyTableNode(egt, dto, key,map.get(key));
     }
-    
+
+    @Override
+    protected void removeNotify() {
+        DirtyStrategiesFactoryNotifier.removeChangeListener(listener);
+    }
+
+    @Override
+    protected void addNotify() {
+        DirtyStrategiesFactoryNotifier.addChangeListener(listener = new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                refresh(true);
+            }
+        });
+    }
+   
 }
