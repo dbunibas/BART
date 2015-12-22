@@ -25,3 +25,6 @@
 /Bart_GUI/BART_ENGINE/build/
 /Bart_GUI/BART_LIB/build/
 /Bart_GUI/trident/build/
+dirty_customers.csv
+dirty_treatments.csv
+inputdb_diffs.csv
