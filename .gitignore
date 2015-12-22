@@ -1,7 +1,8 @@
 /Bart_Engine/build
 /Bart_Engine/dist
 /Bart_Engine/nbproject/private
-/Bart_Engine/nbproject.properties
+/Bart_Engine/nbproject/nbproject.properties
+/Bart_Engine/build.properties
 /lib/lunaticEngine-*.jar
 /Bart_GUI/BART_ENGINE/nbproject/private/
 /Bart_GUI/BART_ENGINE/release/modules/ext/bart-*.jar
@@ -21,4 +22,6 @@
 /Bart_GUI/ControlView/build/
 /Bart_GUI/EGTaskDataObject/build/
 /Bart_GUI/View/build/
-dependencies.txt
+/Bart_GUI/BART_ENGINE/build/
+/Bart_GUI/BART_LIB/build/
+/Bart_GUI/trident/build/
