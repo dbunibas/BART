@@ -58,6 +58,7 @@ public class DefaultDirtyStrategyPanel extends javax.swing.JPanel {
         return obj;
     }
     
+    @SuppressWarnings("unchecked")
     private void initValidation()   {
         panelValidation = new ValidationPanel();
         panelValidation.setInnerComponent(this);
