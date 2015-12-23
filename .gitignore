@@ -28,3 +28,7 @@
 dirty_customers.csv
 dirty_treatments.csv
 inputdb_diffs.csv
+build
+nbproject/private
+nbproject.properties
+dist
