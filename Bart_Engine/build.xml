@@ -251,7 +251,7 @@
               Build
     *************************************************** -->
 
-    <target name="build" depends="-light-deploy-speedy, compile, compile-test" description="compila ed esegue i test">
+    <target name="build" depends="-light-deploy-speedy, compile, compile-test, gfp" description="compila ed esegue i test">
     </target>
     
     <target name="rebuild" depends="clean, build" description="ripulisce e ricostruisce">
