@@ -21,7 +21,9 @@ import org.openide.xml.XMLUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import it.unibas.bartgui.resources.R;
+import org.jdom.Element;
 import org.openide.ErrorManager;
+import speedy.persistence.xml.DAOXmlUtility;
 
 @ActionID(
         category = "File",
@@ -64,6 +66,7 @@ public final class OpenEgtaskFile implements ActionListener {
             DialogDisplayer.getDefault().notify(myNotify("Select xml file no a folder"));
             return;
         }
+        
         if(!controlFile(fo))return;
 
         ILoadEGTask load = Lookup.getDefault().lookup(ILoadEGTask.class);
@@ -72,11 +75,13 @@ public final class OpenEgtaskFile implements ActionListener {
     
     private boolean controlFile(FileObject fo)   {
         try{
-            InputStream is = fo.getInputStream();
-            Document doc = XMLUtil.parse(new InputSource(is), false, true, null, null);
-            int taskTAG = doc.getElementsByTagName("task").getLength();
-            if(taskTAG == 0 ){               
-                DialogDisplayer.getDefault().notify(myNotify(Bundle.MSG_WRONG_FILE(fo.getName())));
+            DAOXmlUtility daoUtility = new DAOXmlUtility();
+            File taskFile = FileUtil.toFile(fo);
+            String fileTask = taskFile.getAbsolutePath();
+            org.jdom.Document document = daoUtility.buildDOM(fileTask);
+            Element rootElement = document.getRootElement();
+            if((rootElement == null)|| (!rootElement.getName().equalsIgnoreCase("task")))  {
+                myNotify(Bundle.MSG_WRONG_FILE(fo.getName()));
                 return false;
             }
             return true;

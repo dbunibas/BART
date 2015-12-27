@@ -182,7 +182,7 @@ public class LoadEGTask implements ILoadEGTask  {
                
                 
                 
-                String dependencies = loadStringDependecyElement(egtDO.getPrimaryFile());
+                String dependencies = loadStringDependecyElement(fileTask);
                 loadStringMainMemoryDatabase(fileTask);
                 task.setAbsolutePath(fileTask);
                 ((EGTaskDataObjectDataObject)egtDO).setEGTask(task);
@@ -226,24 +226,25 @@ public class LoadEGTask implements ILoadEGTask  {
         }
     }
     
-    private String loadStringDependecyElement(FileObject fo)   { 
+    private String loadStringDependecyElement(String path)   { 
         //FOR EGTaskDataObject simple string 
-        try{
-            
-            InputStream is = fo.getInputStream();
-            Document doc = XMLUtil.parse(new InputSource(is), false, true, null, null);
+        DAOXmlUtility daoUtility = new DAOXmlUtility();
+        String dependencies = null;
+        try{     
             log.fine("Init load String dependency Element");
-            NodeList dependenciesTAG = doc.getElementsByTagName("dependencies");
-            if(dependenciesTAG.getLength() == 0)return null;
-            String dependencies = dependenciesTAG.item(0).getTextContent();
-            log.fine("Finish load String dependency Element");
-            
-            return dependencies;
+            org.jdom.Document document = daoUtility.buildDOM(path);
+            Element rootElement = document.getRootElement();
+            Element dependenciesElement = rootElement.getChild("dependencies");
+            if(dependenciesElement != null)   {
+                dependencies = dependenciesElement.getValue().trim();
+                log.fine("Finish load String dependency Element");
+                return dependencies;
+            }
         }catch(Exception ex)   {
             log.log(Level.WARNING,"load String Dependecy Element  FAILED",ex);
             System.err.println(".......");
         }
-        return null;
+        return dependencies;
     }
     
     private void loadStringMainMemoryDatabase(String path)   {
