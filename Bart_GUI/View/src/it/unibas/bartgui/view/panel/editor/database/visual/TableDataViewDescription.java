@@ -38,7 +38,7 @@ public class TableDataViewDescription implements MultiViewDescription,Serializab
 
     @Override
     public Image getIcon() {
-        return ImageUtilities.loadImage(R.IMAGE_DB_BLUE);
+        return ImageUtilities.loadImage(R.IMAGE_DB_TABLE);
     }
 
     @Override

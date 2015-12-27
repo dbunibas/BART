@@ -30,7 +30,7 @@ public class AuthoritativeSourceNode extends AbstractNode   {
         this.autoritativeSource = autoritativeSource;
         setName(autoritativeSource);
         setShortDescription(Bundle.HINT_AutoritativeSourceNode());
-        setIconBaseWithExtension(R.IMAGE_AUTORITATIVE);       
+        setIconBaseWithExtension(R.IMAGE_DB_TABLE);       
     }
     
     @Override

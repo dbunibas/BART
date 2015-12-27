@@ -53,9 +53,9 @@ public class VioGenQueryNode extends AbstractNode   {
         if (vio == null || task == null ) return null;
         
         StringBuilder sb = new StringBuilder();
-        sb.append(R.HTML_Hint);
-        sb.append("Comp: ");
-        sb.append(R.HTML_CL_Hint);
+        //sb.append(R.HTML_Hint);
+        //sb.append("Comp: ");
+        //sb.append(R.HTML_CL_Hint);
         sb.append(R.HTML_Node);
         sb.append(vio.getVioGenComparison());
         sb.append(R.HTML_CL_Node);

@@ -29,7 +29,7 @@ public class RandomErrorAttribute extends AbstractNode   {
         this.attribute=att;
         setName(NodeResource.NODE_RandomErrorAttribute);
         setShortDescription(Bundle.HINT_RandomErrorAttribute());
-        setIconBaseWithExtension(R.IMAGE_PIN); 
+        setIconBaseWithExtension(R.IMAGE_AUTORITATIVE); 
     }
 
     @Override

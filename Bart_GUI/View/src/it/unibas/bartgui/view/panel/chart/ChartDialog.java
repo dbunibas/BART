@@ -22,7 +22,7 @@ public class ChartDialog extends javax.swing.JDialog {
     
     public ChartDialog(JPanel inner,String title) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setIconImage(ImageUtilities.loadImage(R.IMAGE_BAR_CHART));
+        setIconImage(ImageUtilities.loadImage(R.IMAGE_PIE_CHART));
         setResizable(true);
         setAlwaysOnTop(false);
         setName(title);

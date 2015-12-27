@@ -28,7 +28,7 @@ public class DBTableNode extends AbstractNode   {
                 Lookups.fixed(dto.getEgtask(),dto,dsname,new TableNameContext(key)),
                 dto.getAbstractLookup()));
         this.key = key;
-        setIconBaseWithExtension(R.IMAGE_DB_TABLE);
+        setIconBaseWithExtension(R.IMAGE_DB_TABLE_GO);
         setName(key);
     } 
     

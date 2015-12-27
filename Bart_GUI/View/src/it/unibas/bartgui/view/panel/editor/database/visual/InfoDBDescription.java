@@ -34,7 +34,7 @@ public class InfoDBDescription implements MultiViewDescription,Serializable   {
 
     @Override
     public Image getIcon() {
-        return ImageUtilities.loadImage(R.IMAGE_DB_BLUE);
+        return ImageUtilities.loadImage(R.IMAGE_NODE_DBMS);
     }
 
     @Override

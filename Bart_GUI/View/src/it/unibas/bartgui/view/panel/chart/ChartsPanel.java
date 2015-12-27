@@ -288,13 +288,13 @@ public class ChartsPanel extends javax.swing.JPanel implements PropertyChangeLis
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(ChartsPanel.class, "ChartsPanel.jPanel2.border.title"), javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 204))); // NOI18N
 
-        vgq_time_barButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/pie-chart.png"))); // NOI18N
+        vgq_time_barButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/barchart.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(vgq_time_barButton, org.openide.util.NbBundle.getMessage(ChartsPanel.class, "ChartsPanel.vgq_time_barButton.text")); // NOI18N
-        vgq_time_barButton.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/disablepiechart.png"))); // NOI18N
+        vgq_time_barButton.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/disablebarchart.png"))); // NOI18N
 
-        vgq_err_barButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/pie-chart.png"))); // NOI18N
+        vgq_err_barButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/barchart.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(vgq_err_barButton, org.openide.util.NbBundle.getMessage(ChartsPanel.class, "ChartsPanel.vgq_err_barButton.text")); // NOI18N
-        vgq_err_barButton.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/disablepiechart.png"))); // NOI18N
+        vgq_err_barButton.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/disablebarchart.png"))); // NOI18N
 
         vgq_repButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/it/unibas/bartgui/view/panel/chart/icon/statistic.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(vgq_repButton, org.openide.util.NbBundle.getMessage(ChartsPanel.class, "ChartsPanel.vgq_repButton.text")); // NOI18N

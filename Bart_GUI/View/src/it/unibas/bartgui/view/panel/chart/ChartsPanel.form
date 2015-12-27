@@ -72,26 +72,26 @@
         <Component class="javax.swing.JButton" name="vgq_time_barButton">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/pie-chart.png"/>
+              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/barchart.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="it/unibas/bartgui/view/panel/chart/Bundle.properties" key="ChartsPanel.vgq_time_barButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="disabledIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/disablepiechart.png"/>
+              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/disablebarchart.png"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="vgq_err_barButton">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/pie-chart.png"/>
+              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/barchart.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="it/unibas/bartgui/view/panel/chart/Bundle.properties" key="ChartsPanel.vgq_err_barButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="disabledIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/disablepiechart.png"/>
+              <Image iconType="3" name="/it/unibas/bartgui/view/panel/chart/icon/disablebarchart.png"/>
             </Property>
           </Properties>
         </Component>

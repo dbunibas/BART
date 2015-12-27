@@ -27,7 +27,7 @@ public class AuthoritativeSourcesNode extends AbstractNode   {
                 new ProxyLookup(Lookups.fixed(egt,dto),dto.getAbstractLookup()));
         setName(NodeResource.NODE_AutoritativeSourcesNode);
         setShortDescription(Bundle.HINT_AutoritativeSourcesNode());
-        setIconBaseWithExtension(R.IMAGE_CIRCLE);
+        setIconBaseWithExtension(R.IMAGE_AUTORITATIVE);
     }
     
     @Override

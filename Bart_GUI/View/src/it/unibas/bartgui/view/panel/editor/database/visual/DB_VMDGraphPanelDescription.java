@@ -38,7 +38,7 @@ public class DB_VMDGraphPanelDescription implements MultiViewDescription,Seriali
 
     @Override
     public Image getIcon() {
-        return ImageUtilities.loadImage(R.IMAGE_DB_BLUE);
+        return ImageUtilities.loadImage(R.IMAGE_NODE_DBMS);
     }
 
     @Override

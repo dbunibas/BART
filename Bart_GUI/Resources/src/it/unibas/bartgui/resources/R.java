@@ -33,17 +33,17 @@ public class R {
     @StaticResource
     public static final String IMAGE_NODE_DIRTYSTRGATTRB = "it/unibas/bartgui/resources/icons/inkblotGrey.png";
     @StaticResource
-    public static final String IMAGE_NODE_DIRTYSTRATEGIES = "it/unibas/bartgui/resources/icons/dirtyStrategies.png";
+    public static final String IMAGE_NODE_DIRTYSTRATEGIES = "it/unibas/bartgui/resources/icons/paintcan.png";
     @StaticResource
     public static final String IMAGE_BART_GIF = "it/unibas/bartgui/resources/icons/BartSaturdayNightFever.gif";
     @StaticResource
     public static final String IMAGE_Traslucent = "it/unibas/bartgui/resources/icons/Traslucent.png";
     @StaticResource
-    public static final String IMAGE_CIRCLE = "it/unibas/bartgui/resources/icons/circle.png";
-    @StaticResource
     public static final String IMAGE_AUTORITATIVE = "it/unibas/bartgui/resources/icons/autoritative.png";
     @StaticResource
     public static final String IMAGE_DB_TABLE = "it/unibas/bartgui/resources/icons/database_table.png";
+    @StaticResource
+    public static final String IMAGE_DB_TABLE_GO = "it/unibas/bartgui/resources/icons/database_table_go.png";
     @StaticResource
     public static final String IMAGE_LOGO = "it/unibas/bartgui/resources/icons/Logo-BART.png";
     @StaticResource
@@ -51,7 +51,7 @@ public class R {
     @StaticResource
     public static final String IMAGE_Open_FILE = "it/unibas/bartgui/resources/icons/open-file.png";
     @StaticResource
-    public static final String IMAGE_PIE_CHART ="it/unibas/bartgui/resources/icons/pie-chart.png";
+    public static final String IMAGE_PIE_CHART ="it/unibas/bartgui/resources/icons/pie_chart.png";
     @StaticResource
     public static final String IMAGE_RED_SKULL="it/unibas/bartgui/resources/icons/RedSkul.png";
     @StaticResource
@@ -65,8 +65,6 @@ public class R {
     @StaticResource
     public static final String IMAGE_PIN="it/unibas/bartgui/resources/icons/pin.png";
     @StaticResource
-    public static final String IMAGE_NODE_EXPLORER="it/unibas/bartgui/resources/icons/configuration.png";
-    @StaticResource
     public static final String IMAGE_NODE_TEXT="it/unibas/bartgui/resources/icons/text.png";
     @StaticResource
     public static final String IMAGE_NODE_ARROW="it/unibas/bartgui/resources/icons/arrow.png";
@@ -77,25 +75,19 @@ public class R {
     @StaticResource
     public static final String IMAGE_NODE_ERR_PERC="it/unibas/bartgui/resources/icons/percentage.png";
     @StaticResource
-    public static final String IMAGE_NODE_VIOs_PROB="it/unibas/bartgui/resources/icons/strategy.png";
+    public static final String IMAGE_NODE_VIOs_PROB="it/unibas/bartgui/resources/icons/link.png";
     @StaticResource
-    public static final String IMAGE_NODE_VIO_PROB="it/unibas/bartgui/resources/icons/percentage.png";
+    public static final String IMAGE_NODE_VIO_PROB="it/unibas/bartgui/resources/icons/link.png";
     @StaticResource
-    public static final String IMAGE_NODE_VIOs_STRAT="it/unibas/bartgui/resources/icons/strategy.png";
+    public static final String IMAGE_NODE_VIOs_STRAT="it/unibas/bartgui/resources/icons/link.png";
     @StaticResource
-    public static final String IMAGE_NODE_VIO_STRAT="it/unibas/bartgui/resources/icons/strategy.png";
+    public static final String IMAGE_NODE_VIO_STRAT="it/unibas/bartgui/resources/icons/link.png";
     @StaticResource
     public static final String IMAGE_NODE_RANDS_ERR="it/unibas/bartgui/resources/icons/skull.png";
-    @StaticResource
-    public static final String IMAGE_DROP_D_CONF ="it/unibas/bartgui/resources/icons/gear24.png";
     @StaticResource
     public static final String IMAGE_NODE_DBMS_CONF = "it/unibas/bartgui/resources/icons/dbmsConf.png";
     @StaticResource
     public static final String IMAGE_NODE_DBMS = "it/unibas/bartgui/resources/icons/database.png";
     @StaticResource
     public static final String IMAGE_GEAR = "it/unibas/bartgui/resources/icons/gear.png";
-    @StaticResource
-    public static final String IMAGE_DB_BLUE = "it/unibas/bartgui/resources/icons/databaseBlu.png";
-    @StaticResource
-    public static final String IMAGE_BAR_CHART = "it/unibas/bartgui/resources/icons/barchart.png";
 }

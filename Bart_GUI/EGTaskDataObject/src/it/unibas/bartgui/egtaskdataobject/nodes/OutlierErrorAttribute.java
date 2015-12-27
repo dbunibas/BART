@@ -27,7 +27,7 @@ public class OutlierErrorAttribute extends AbstractNode  {
         this.tableName=tableName;
         setName(NodeResource.NODE_OutlierErrorAttribute);
         setShortDescription(Bundle.HINT_RandomErrorAttribute());
-        setIconBaseWithExtension(R.IMAGE_PIN); 
+        setIconBaseWithExtension(R.IMAGE_AUTORITATIVE); 
     }
 
     @Override
