@@ -111,7 +111,8 @@ public class ChartsPanel extends javax.swing.JPanel implements PropertyChangeLis
         while(it.hasNext())   {
             VGQ_Stat v = it.next();
             Repairability r = vioGenQueriesRepairability.get(v);
-            dts.add(r.getMean(), r.getConfidenceInterval(), v.getDependencyID(), v.getViogenquery());
+            //dts.add(r.getMean(), r.getConfidenceInterval(), v.getDependencyID(), v.getViogenquery());
+            dts.add(r.getMean(), r.getConfidenceInterval(),v.getViogenquery(),v.getDependencyID());
         }
         return dts;
     }

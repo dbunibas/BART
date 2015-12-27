@@ -34,6 +34,9 @@ public class StatisticChart {
     
     public static JPanel createStatisticBarChart(String title,String categoryX,String valueY,CategoryDataset dataset)   {
         final CategoryAxis xAxis = new CategoryAxis(categoryX);
+        xAxis.setLowerMargin(0.01d); // percentage of space before first bar
+        xAxis.setUpperMargin(0.01d); // percentage of space after last bar
+        xAxis.setCategoryMargin(0.05d); // percentage of space between categories
         final ValueAxis yAxis = new NumberAxis("Value");
         final CategoryPlot plot = new CategoryPlot(dataset, xAxis, yAxis, new StatisticalBarRenderer());
         JFreeChart statChart =  new JFreeChart(title, new Font("Helvetica", Font.BOLD, 14), plot, true);
