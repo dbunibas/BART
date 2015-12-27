@@ -40,8 +40,8 @@
                 <package>it.unibas.bart</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/bart-0.beta1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/bart-0.beta1.jar</binary-origin>
+                <runtime-relative-path>ext/bart-engine.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/bart-engine.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

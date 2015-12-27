@@ -6,14 +6,14 @@
     <description>Builds, tests, and runs the project it.unibas.bart.</description>
     <import file="nbproject/build-impl.xml"/>
 	
-	 <property file="../BartEngineWrapper.properties" />
+    <property file="../BartEngineWrapper.properties" />
 	 
     <target name="-bart-engine-no-test">
         <ant dir="${bartEngine.dir}" inheritAll="false" target="jar" />  
     </target>	
 	
-	<target name="build-init" depends="harness.build-init,-bart-engine-no-test">
-        <copy tofile="./release/modules/ext/bart-${bartEngine.ver}.jar">
+   <target name="build-init" depends="harness.build-init,-bart-engine-no-test">
+        <copy tofile="./release/modules/ext/bart-engine.jar">
             <fileset dir="${bartEngine.dir}/dist">
                 <include name="bart-${bartEngine.ver}.jar" />
             </fileset>

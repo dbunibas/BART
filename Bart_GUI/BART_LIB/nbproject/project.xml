@@ -577,96 +577,96 @@
                 <binary-origin>release/modules/ext/js-engine.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/h2-1.4.182.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/h2-1.4.182.jar</binary-origin>
+                <runtime-relative-path>ext/h2.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/h2.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/junit-4.11.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/junit-4.11.jar</binary-origin>
+                <runtime-relative-path>ext/junit.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/junit.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/simmetrics-1.6.2.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/simmetrics-1.6.2.jar</binary-origin>
+                <runtime-relative-path>ext/simmetrics.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/simmetrics.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/commons-csv-1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/commons-csv-1.1.jar</binary-origin>
+                <runtime-relative-path>ext/commons-csv.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-csv.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/jgrapht-core-0.9.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jgrapht-core-0.9.0.jar</binary-origin>
+                <runtime-relative-path>ext/jgrapht-core.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jgrapht-core.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/hamcrest-core-1.3.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/hamcrest-core-1.3.jar</binary-origin>
+                <runtime-relative-path>ext/hamcrest-core.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/hamcrest-core.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/c3p0-0.9.5-pre8.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/c3p0-0.9.5-pre8.jar</binary-origin>
+                <runtime-relative-path>ext/c3p0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/c3p0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/commons-lang-2.6.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/commons-lang-2.6.jar</binary-origin>
+                <runtime-relative-path>ext/commons-lang.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-lang.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/logback-core-1.1.2.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/logback-core-1.1.2.jar</binary-origin>
+                <runtime-relative-path>ext/logback-core.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/logback-core.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/commons-logging-1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/commons-logging-1.1.jar</binary-origin>
+                <runtime-relative-path>ext/commons-logging.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-logging.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/guava-14.0.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/guava-14.0.1.jar</binary-origin>
+                <runtime-relative-path>ext/guava.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/guava.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/slf4j-api-1.7.7.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/slf4j-api-1.7.7.jar</binary-origin>
+                <runtime-relative-path>ext/slf4j-api.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/slf4j-api.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/commons-io-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/commons-io-2.4.jar</binary-origin>
+                <runtime-relative-path>ext/commons-io.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-io.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/logback-classic-1.1.2.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/logback-classic-1.1.2.jar</binary-origin>
+                <runtime-relative-path>ext/logback-classic.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/logback-classic.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/antlr-3.1.1-runtime.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/antlr-3.1.1-runtime.jar</binary-origin>
+                <runtime-relative-path>ext/antlr-runtime.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/antlr-runtime.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/postgresql-9.1-903.jdbc3.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/postgresql-9.1-903.jdbc3.jar</binary-origin>
+                <runtime-relative-path>ext/postgresql-jdbc.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/postgresql-jdbc.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/jcs-1.3.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jcs-1.3.jar</binary-origin>
+                <runtime-relative-path>ext/jcs.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jcs.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/commons-math3-3.4.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/commons-math3-3.4.1.jar</binary-origin>
+                <runtime-relative-path>ext/commons-math.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-math.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/concurrent.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/concurrent.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/mybatis-3.1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/mybatis-3.1.1.jar</binary-origin>
+                <runtime-relative-path>ext/mybatis.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/mybatis.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/jep-2.4.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jep-2.4.1.jar</binary-origin>
+                <runtime-relative-path>ext/jep.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jep.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/mchange-commons-java-0.2.7.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/mchange-commons-java-0.2.7.jar</binary-origin>
+                <runtime-relative-path>ext/mchange-commons-java.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/mchange-commons-java.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/speedy-0.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/speedy-0.1.jar</binary-origin>
+                <runtime-relative-path>ext/speedy.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/speedy.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/xercesImpl.jar</runtime-relative-path>

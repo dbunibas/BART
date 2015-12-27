@@ -5,4 +5,175 @@
 <project name="lib" default="netbeans" basedir=".">
     <description>Builds, tests, and runs the project lib.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    <property file="../BartLibWrapper.properties" />
+    
+    <target name="build-init" depends="harness.build-init">
+        <copy tofile="./release/modules/ext/speedy.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="speedy*.jar" />
+            </fileset>
+        </copy> 
+        
+        <copy tofile="./release/modules/ext/antlr-runtime.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="antlr*runtime.jar" />
+            </fileset>
+        </copy>   
+        
+        <copy tofile="./release/modules/ext/c3p0.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="c3p0*.jar" />
+            </fileset>
+        </copy>  
+        
+        <copy tofile="./release/modules/ext/commons-csv.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="commons-csv-*.jar" />
+            </fileset>
+        </copy> 
+        
+        <copy tofile="./release/modules/ext/commons-io.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="commons-io-*.jar" />
+            </fileset>
+        </copy> 
+        
+        <copy tofile="./release/modules/ext/commons-lang.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="commons-lang-*.jar" />
+            </fileset>
+        </copy> 
+        
+        <copy tofile="./release/modules/ext/commons-logging.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="commons-logging-*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/commons-math.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="commons-math*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/concurrent.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="concurrent*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/guava.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="guava*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/h2.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="h2*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/hamcrest-core.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="hamcrest-core*.jar" />
+            </fileset>
+        </copy>
+        
+        
+        <copy tofile="./release/modules/ext/jcs.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="jcs*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/jdom.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="jdom*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/jep.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="jep*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/jgrapht-core.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="jgrapht-core*.jar" />
+            </fileset>
+        </copy>
+          
+          
+        <copy tofile="./release/modules/ext/js-engine.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="js-engine*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/js.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="js.jar" />
+            </fileset>
+        </copy>
+          
+          
+        <copy tofile="./release/modules/ext/junit.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="junit*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/logback-classic.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="logback-classic*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/logback-core.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="logback-core*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/mchange-commons-java.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="mchange-commons-java*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/mybatis.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="mybatis*.jar" />
+            </fileset>
+        </copy>
+          
+        <copy tofile="./release/modules/ext/postgresql-jdbc.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="postgresql*.jdbc*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/simmetrics.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="simmetrics*.jar" />
+            </fileset>
+        </copy>
+        
+        
+        <copy tofile="./release/modules/ext/xercesImpl.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="xercesImpl*.jar" />
+            </fileset>
+        </copy>
+        
+        <copy tofile="./release/modules/ext/slf4j-api.jar">
+            <fileset dir="${bartLib.dir}">
+                <include name="slf4j-api*.jar" />
+            </fileset>
+        </copy>
+     
+    </target>
 </project>
