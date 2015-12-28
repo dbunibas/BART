@@ -46,9 +46,11 @@ public final class Open implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         context.getLookup().lookup(OpenCookie.class).open();
-        DialogDisplayer.getDefault()
+        if(context.getEgtask() != null)   {
+            DialogDisplayer.getDefault()
                 .notify(new NotifyDescriptor
                         .Message(Bundle.MSG_Open(), 
                                 NotifyDescriptor.INFORMATION_MESSAGE));
+        }
     }
 }

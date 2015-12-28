@@ -35,7 +35,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @TopComponent.Description(
         preferredID = "ExplorerEGTaskTopComponent",
-        iconBase = "it/unibas/bartgui/resources/icons/configuration.png",
+        iconBase = "it/unibas/bartgui/resources/icons/gear.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)

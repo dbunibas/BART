@@ -73,8 +73,6 @@ public class R {
     @StaticResource
     public static final String IMAGE_NODE_DCS="it/unibas/bartgui/resources/icons/dependencies.png";
     @StaticResource
-    public static final String IMAGE_NODE_ERR_PERC="it/unibas/bartgui/resources/icons/percentage.png";
-    @StaticResource
     public static final String IMAGE_NODE_VIOs_PROB="it/unibas/bartgui/resources/icons/link.png";
     @StaticResource
     public static final String IMAGE_NODE_VIO_PROB="it/unibas/bartgui/resources/icons/link.png";
