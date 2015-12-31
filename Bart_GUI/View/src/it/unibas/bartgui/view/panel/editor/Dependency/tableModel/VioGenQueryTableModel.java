@@ -3,7 +3,7 @@ package it.unibas.bartgui.view.panel.editor.Dependency.tableModel;
 import bart.model.EGTask;
 import bart.utility.BartUtility;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
-import it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.DependecyParseUtil;
+import it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseUtil;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
@@ -65,7 +65,7 @@ public class VioGenQueryTableModel extends DefaultTableModel  {
             VioGenQueryData data = vectorVio.get(row);
             StringBuilder invComp = new StringBuilder();
             invComp.append("(");
-            invComp.append(DependecyParseUtil.invertComparison(data.getVioGenQuery()));
+            invComp.append(ParseUtil.invertComparison(data.getVioGenQuery()));
             invComp.append(")");
             String vioGenKey = BartUtility.getVioGenQueryKey(data.getId(),invComp.toString().trim());
             if(column == 2)   {

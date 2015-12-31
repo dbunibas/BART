@@ -68,7 +68,7 @@ public final class ReloadDependencies implements ActionListener {
         vioGenQueriesGenerator = new GenerateVioGenQueries();
     }
 
-    @Override
+    @Override// closeDependencyViewTopComponent
     public void actionPerformed(ActionEvent ev) {
         if(dto == null || dto.getEgtask() == null)return;       
         if(textPanel.getText().isEmpty())return;

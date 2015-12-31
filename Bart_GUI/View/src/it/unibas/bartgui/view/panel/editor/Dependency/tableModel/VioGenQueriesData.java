@@ -1,12 +1,7 @@
 package it.unibas.bartgui.view.panel.editor.Dependency.tableModel;
 
 
-import bart.model.errorgenerator.VioGenQuery;
 import java.util.Vector;
-import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 /**
  *

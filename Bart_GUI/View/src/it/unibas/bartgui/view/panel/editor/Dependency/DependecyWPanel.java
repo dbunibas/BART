@@ -51,11 +51,7 @@ public class DependecyWPanel extends javax.swing.JPanel {
     }
     
     public void setTextLabelDependency(String text)   {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(text);
-        sb.append("</html>");
-        labelDependency.setText(sb.toString());
+        labelDependency.setText(text);
     }
     
     

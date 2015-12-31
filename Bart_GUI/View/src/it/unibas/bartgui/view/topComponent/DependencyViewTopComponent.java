@@ -143,11 +143,11 @@ public final class DependencyViewTopComponent extends TopComponent {
                 EGTaskDataObjectDataObject dto = Utilities.actionsGlobalContext().lookup(EGTaskDataObjectDataObject.class);
                 if(dto == null)return;
                 EGTask egt = dto.getEgtask();
-                ParseDependency parseDC = new ParseDependency(dependency);
+                ParseDependency parser = new ParseDependency(dependency);
                 panel = new  DependencyOpenPanel();
-                panel.getPanelDependecy().setTextLabelDependency(parseDC.getDependencyHtml());
+                panel.getPanelDependecy().setTextLabelDependency(parser.parse());
                 
-                ParseVioGenQueries parseVGQ = new ParseVioGenQueries(parseDC.getMapHtml(), dependency, egt);
+                ParseVioGenQueries parseVGQ = new ParseVioGenQueries(parser.getVariablesColorMap(), dependency, egt);
                 VioGenQueryTableModel model = new VioGenQueryTableModel(dto,parseVGQ.getVioGenQueriesData().getVioGQVector());
                 model.addTableModelListener(new TableListener());
                 panel.getPanelVioGenQueriesWPanel().bind(model);

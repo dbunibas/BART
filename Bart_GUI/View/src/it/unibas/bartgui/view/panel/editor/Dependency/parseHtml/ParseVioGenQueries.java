@@ -1,21 +1,14 @@
 package it.unibas.bartgui.view.panel.editor.Dependency.parseHtml;
 
 import bart.model.EGTask;
+import bart.model.dependency.ComparisonAtom;
 import bart.model.dependency.Dependency;
+import bart.model.dependency.FormulaVariable;
 import bart.model.errorgenerator.VioGenQuery;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.EQUAL;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.GREATER;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.GREATER_EQ;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.LOWER;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.LOWER_EQ;
-import static it.unibas.bartgui.view.panel.editor.Dependency.parseHtml.ParseDependency.NOT_EQUAL;
 import it.unibas.bartgui.view.panel.editor.Dependency.tableModel.VioGenQueriesData;
 import it.unibas.bartgui.view.panel.editor.Dependency.tableModel.VioGenQueryData;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  *
@@ -26,136 +19,58 @@ public class ParseVioGenQueries {
     private Dependency dependency;
     private EGTask egt;
     private VioGenQueriesData vioGenQueriesData;
-    private Map<Integer,Object> comparisonMap = new HashMap<Integer, Object>();
-    private int cont = 0;
+    private Map<String,String> variablesColorMap;
 
-    public ParseVioGenQueries(Map<Integer,Object> mapHtml,Dependency dependency, EGTask egt) {
+    public ParseVioGenQueries(Map<String,String> variablesColorMap,Dependency dependency, EGTask egt) {
         this.dependency = dependency;
         this.egt = egt;
+        this.variablesColorMap = variablesColorMap;
         vioGenQueriesData = new VioGenQueriesData();
-        parse(mapHtml);       
+        parse();       
     }   
     
-    private void parse(Map<Integer,Object> mapHtml)   {
-        for(VioGenQuery v : this.dependency.getVioGenQueries())   {            
-            String comp = addSpace(v.getVioGenComparison().toString());
-            StringTokenizer tok = new StringTokenizer(comp);
-            while(tok.hasMoreTokens())   {
-                String tmp = tok.nextToken();           
-                if(tmp.contains("("))   {
-                    BracketLeft bf = new BracketLeft();
-                    bf.setPosition(cont++);
-                    comparisonMap.put(bf.getPosition(), bf);
-                    continue;
+    private void parse()   {     
+        for(VioGenQuery v : this.dependency.getVioGenQueries())   {  
+            StringBuilder html = new StringBuilder("<html>");
+            html.append(ParseUtil.BrkltLeft_HTML);
+            ComparisonAtom comp = v.getVioGenComparison();
+            if(comp.isVariableComparison())   {
+                html.append(ParseUtil.getVariableHTML(variablesColorMap,comp.getLeftArgument().trim()));
+                html.append(ParseUtil.getOperatorHTML(comp.getOperator().trim()));
+                html.append(ParseUtil.getVariableHTML(variablesColorMap,comp.getRightArgument().trim()));
+            }else{
+                FormulaVariable tmp = null;
+                if(comp.getRightVariable() != null)   {
+                    tmp = comp.getRightVariable();
+                }else{ 
+                    tmp = comp.getLeftVariable();
                 }
-                if(tmp.contains(")"))   {
-                    BracketRight br = new BracketRight();
-                    br.setPosition(cont++);
-                    comparisonMap.put(br.getPosition(), br);
-                    continue;
-                }
-                if(findOperator(tmp.trim(), cont++))   {
-                    continue;
-                }
-                if(tmp.contains("\""))   {
-                    Value val = new Value(tmp.trim());
-                    val.setPosition(cont++);
-                    comparisonMap.put(val.getPosition(), val);
-                    continue;
-                }
-                
-                Variable val = findVariable(tmp, mapHtml);
-                
-                if(val != null)   {
-                    comparisonMap.put(val.getPosition(), val);
-                    continue;
-                }             
-                
+                if(tmp == null)html.append("error in comparison");
                 try{
-                    NumberFormat.getInstance().parse(tmp.trim());
-                    MyNumber n = new MyNumber(tmp.trim());
-                    n.setPosition(cont++);
-                    comparisonMap.put(n.getPosition(), n);
-                }catch(Exception ex)   {}
-            }
+                    html.append(ParseUtil.getVariableHTML(variablesColorMap,tmp.getId().trim()));
+                    html.append(ParseUtil.getOperatorHTML(comp.getOperator().trim()));
+                    Number num = NumberFormat.getInstance().parse(comp.getConstant().trim());
+                    html.append(ParseUtil.Number_HTML_OpenTag);
+                    html.append(num);
+                    html.append(ParseUtil.Number_HTML_CloseTag);
+                }catch(Exception ex)  {
+                    html.append(ParseUtil.Value_HTML_OpenTag);
+                    html.append(comp.getConstant().trim());
+                    html.append(ParseUtil.Value_HTML_CloseTag);
+                }     
+            }         
+            html.append(ParseUtil.BrkltRight_HTML);
+            html.append("</html>");
             
             VioGenQueryData data = new VioGenQueryData();
-            StringBuilder compHtml = new StringBuilder("<html>");
             data.setId(dependency.getId().trim());
-            data.setPercentage(DependecyParseUtil.getPercentage(v, egt));
-            data.setQueryExecutor(DependecyParseUtil.getStrategy(v, egt));
+            data.setPercentage(ParseUtil.getPercentage(v, egt));
+            data.setQueryExecutor(ParseUtil.getStrategy(v, egt));
             data.setVioGenQuery(v);
-            Object[] o = comparisonMap.keySet().toArray();
-            Arrays.sort(o);
-            for(Object obj : o)   {
-                compHtml.append(comparisonMap.get((Integer)obj));    
-            }
-            compHtml.append("</html>");
-            data.setComparison(compHtml.toString());
+            data.setComparison(html.toString());
             vioGenQueriesData.addVio(data);
-            comparisonMap.clear();
         }   
     }   
-    
-    private Variable findVariable(String tmp,Map<Integer,Object> mapHtml)   {
-        for(Integer k : mapHtml.keySet())   {
-            if(mapHtml.get(k) instanceof Variable)   {
-                Variable var = (Variable)mapHtml.get(k);
-                    if(tmp.trim().equals(var.getValue()))   {
-                        Variable newVar = new Variable(var.getValue(), var.getColor());
-                        newVar.setPosition(cont++);
-                        return newVar;
-                    }
-                }
-            }
-        return null;
-    }
-    
-    private String addSpace(String t)   {
-        t = t.replace("(", " ( ");
-        t = t.replace(")", " ) ");
-        return t;
-    }
-    
-    private boolean findOperator(String operator,int cont) {
-        if (operator.contains(EQUAL)) {
-            Operator op = new Operator(EQUAL);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        if (operator.contains(NOT_EQUAL)) {
-            Operator op = new Operator(NOT_EQUAL);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        if (operator.contains(GREATER)) {
-            Operator op = new Operator(GREATER);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        if (operator.contains(LOWER)) {
-            Operator op = new Operator(LOWER);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        if (operator.contains(GREATER_EQ)) {
-            Operator op = new Operator(GREATER_EQ);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        if (operator.contains(LOWER_EQ)) {
-            Operator op = new Operator(LOWER_EQ);
-            op.setPosition(cont);
-            comparisonMap.put(op.getPosition(), op);
-            return true;
-        }
-        return false;
-    }
 
     public VioGenQueriesData getVioGenQueriesData()   {
         return vioGenQueriesData;
