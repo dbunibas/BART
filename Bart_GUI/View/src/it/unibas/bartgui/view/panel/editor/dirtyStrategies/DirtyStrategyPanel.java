@@ -266,6 +266,15 @@ public class DirtyStrategyPanel extends javax.swing.JPanel {
         initListnerCombo(db);
     }
     
+    public void initTableCombo(String tb,IDatabase db)   {
+        tableComboBox.removeAllItems();
+        tableComboBox.addItem(tb);
+        tableComboBox.setSelectedIndex(0);
+        ITable table = db.getTable(tb);
+        initAttributeCombo(table);
+        initListnerCombo(db);
+    }
+    
     private void initAttributeCombo(ITable table)   {
         attributeComboBox.removeAllItems();
         if(!table.getAttributes().isEmpty())   {

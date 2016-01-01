@@ -10,9 +10,11 @@ import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
 import it.unibas.bartgui.egtaskdataobject.notifier.DirtyStrategiesFactoryNotifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.openide.nodes.ChildFactory;
@@ -27,7 +29,7 @@ public class DirtyStrategiesFactory extends ChildFactory.Detachable<String>  {
     
     private ChangeListener listener;
     
-    private Map<String,Map<String,IDirtyStrategy>> map = new HashMap<>();
+    private Set<String> set = new HashSet<>();
     private EGTaskDataObjectDataObject dto;
     private EGTask egt;
     
@@ -39,25 +41,22 @@ public class DirtyStrategiesFactory extends ChildFactory.Detachable<String>  {
 
     @Override
     protected boolean createKeys(List<String> list) {
+        set.clear();
         if(egt.getConfiguration().getDirtyStrategiesMap()== null)return true;
         Iterator<AttributeRef> it = egt.getConfiguration().getDirtyStrategiesMap().keySet().iterator();
         while(it.hasNext())   {
             AttributeRef att = it.next();
-            if(map.containsKey(att.getTableName()) )   {
-                map.get(att.getTableName()).put(att.getName(), egt.getConfiguration().getDirtyStrategy(att));
-            }else{
-                Map<String,IDirtyStrategy> tmpMap = new HashMap<>();
-                tmpMap.put(att.getName(), egt.getConfiguration().getDirtyStrategy(att));
-                map.put(att.getTableName(),tmpMap);
+            if(!set.contains(att.getTableName().trim()) )   {
+                set.add(att.getTableName().trim());
             }
         }
-        list.addAll(map.keySet());
+        list.addAll(set);
         return true;
     }
     
     @Override
     protected Node createNodeForKey(String key) {
-        return new DirtyStrategyTableNode(egt, dto, key,map.get(key));
+        return new DirtyStrategyTableNode(egt, dto, key);
     }
 
     @Override

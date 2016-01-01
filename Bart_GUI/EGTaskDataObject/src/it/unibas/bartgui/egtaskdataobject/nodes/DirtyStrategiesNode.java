@@ -72,8 +72,10 @@ public class DirtyStrategiesNode extends AbstractNode   {
     @Override
     public Action[] getActions(boolean context) {
         Action[] result = new Action[]{
-            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDefaultStrategy"),
             Actions.forID("DirtyStrategyNode","it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDirtyStrategy"),
+            null,
+            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDefaultStrategy"),
+            Actions.forID("DirtyStrategiesNode","it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.RemoveDefaultDStrategy"),
             null,
             SystemAction.get(OpenLocalExplorerAction.class),
         };

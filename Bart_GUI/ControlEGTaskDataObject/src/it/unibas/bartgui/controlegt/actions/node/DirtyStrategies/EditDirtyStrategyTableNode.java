@@ -14,38 +14,40 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import org.openide.DialogDisplayer;
+import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 import speedy.model.database.EmptyDB;
 import speedy.model.database.IDatabase;
 
 @ActionID(
-        category = "DirtyStrategyNode",
-        id = "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDirtyStrategy"
+        category = "DirtyStrategiesNode",
+        id = "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDirtyStrategyTableNode"
 )
 @ActionRegistration(
-        displayName = "#CTL_EditDirtyStrategy",
-        popupText = "#MSG_EditDirtyStrategy_PopUp"
+        displayName = "#CTL_EditDirtyStrategyTableNode",
+        popupText = "#MSG_EditDirtyStrategyTableNode_PopUp"
 )
 @Messages({
-        "CTL_EditDirtyStrategy=New",
-        "MSG_NO_Target_DB=DataBase Target is Empty !!",
-        "MSG_DB_NO_TABLE=DataBase Target not have tables",
-        "MSG_EditDirtyStrategy_PopUp=New"
+    "CTL_EditDirtyStrategyTableNode=Edit",
+    "MSG_EditDirtyStrategyTableNode_PopUp=Edit"        
 })
-public final class EditDirtyStrategy implements ActionListener {
+public final class EditDirtyStrategyTableNode implements ActionListener {
 
-    private final EGTaskDataObjectDataObject context;
+    private final String context;
 
-    public EditDirtyStrategy(EGTaskDataObjectDataObject context) {
+    public EditDirtyStrategyTableNode(String context) {
         this.context = context;
+        
     }
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        EGTask egt = context.getEgtask();
+        EGTaskDataObjectDataObject dto = Utilities.actionsGlobalContext().lookup(EGTaskDataObjectDataObject.class);
+        EGTask egt = dto.getEgtask();
         if(egt == null)return;
         IDatabase db = egt.getTarget();
         if((db == null)||(db instanceof EmptyDB))   {
@@ -60,18 +62,17 @@ public final class EditDirtyStrategy implements ActionListener {
                             , NotifyDescriptor.INFORMATION_MESSAGE));
             return;
         }
-        
         DirtyStrategyPanel panel = new DirtyStrategyPanel();
-        panel.initTableCombo(db);
-        initButton(panel);
+        panel.initTableCombo(context,db);
+        initButton(panel,dto);
         Dialog d = ControlUtil.createDialog(panel, panel.getButtons());
-        d.setTitle(Bundle.CTL_EditDirtyStrategy());
+        d.setTitle(Bundle.CTL_EditDirtyStrategyTableNode());
         d.setVisible(true);
     }
     
-    private void initButton(DirtyStrategyPanel panel)    {
+    private void initButton(DirtyStrategyPanel panel,EGTaskDataObjectDataObject dto)    {
         for(Object o : panel.getButtons())   {
-            ((JButton)o).addActionListener(new EditDirtyStrategyButtonListener(panel, context));
+            ((JButton)o).addActionListener(new EditDirtyStrategyButtonListener(panel, dto));
         }
     }
 }

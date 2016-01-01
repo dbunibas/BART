@@ -15,8 +15,10 @@ import java.util.Iterator;
 import javax.swing.Action;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.openide.awt.Actions;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import speedy.model.database.AttributeRef;
@@ -25,19 +27,18 @@ import speedy.model.database.AttributeRef;
  *
  * @author Grandinetti Giovanni <grandinetti.giovanni13@gmail.com>
  */
+@NbBundle.Messages({
+    "HINT_DirtyStrategyAttributeNode= attribute"
+})
 public class DirtyStrategyAttributeNode extends AbstractNode   {
-
-    private String attribute;
-    private String dirtyStrategyTable;
-    
+ 
     private ChangeListener listener;
     
-    public DirtyStrategyAttributeNode(EGTask egt, EGTaskDataObjectDataObject dto, String dirtyStrategyTable, String attribute,IDirtyStrategy typo) {
-        super(Children.LEAF,new ProxyLookup(Lookups.fixed(egt,dto),dto.getAbstractLookup()));
-        this.attribute = attribute;
-        this.dirtyStrategyTable = dirtyStrategyTable;
-        setName(attribute);
+    public DirtyStrategyAttributeNode(EGTask egt, EGTaskDataObjectDataObject dto, AttributeRef attribute) {
+        super(Children.LEAF,new ProxyLookup(Lookups.fixed(attribute,egt,dto),dto.getAbstractLookup()));
+        setName(attribute.getName().trim());
         setIconBaseWithExtension(R.IMAGE_NODE_DIRTYSTRGATTRB);
+        setShortDescription(Bundle.HINT_DirtyStrategyAttributeNode());
         DirtyStrategyAttributeNodeNotifier.addChangeListener(listener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -49,18 +50,11 @@ public class DirtyStrategyAttributeNode extends AbstractNode   {
     @Override
     public String getHtmlDisplayName() {
         EGTask egt = getLookup().lookup(EGTask.class);        
-        Iterator<AttributeRef> it = egt.getConfiguration().getDirtyStrategiesMap().keySet().iterator();
-        IDirtyStrategy typo=null;
-        while(it.hasNext())   {
-             AttributeRef att = it.next();
-             if(att.getName().equals(attribute)&&att.getTableName().equals(dirtyStrategyTable))   {
-                 typo = egt.getConfiguration().getDirtyStrategy(att);
-                 break;
-             }
-        }
+        AttributeRef attribute = getLookup().lookup(AttributeRef.class);
+        IDirtyStrategy typo = egt.getConfiguration().getDirtyStrategy(attribute);
         StringBuilder sb = new StringBuilder();
         sb.append(R.HTML_Node);
-        sb.append(attribute);
+        sb.append(attribute.getName());
         sb.append(" - ");
         sb.append(R.HTML_CL_Node);
         sb.append(R.HTML_Hint);
@@ -71,7 +65,9 @@ public class DirtyStrategyAttributeNode extends AbstractNode   {
  
     @Override
     public Action[] getActions(boolean context) {
-        Action[] a = {};
+        Action[] a = {
+            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.RemoveAttributeDirtyStrategy"),
+        };
         return a;
     }
 

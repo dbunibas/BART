@@ -11,6 +11,7 @@ import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
 import it.unibas.bartgui.resources.R;
 import java.util.Map;
 import javax.swing.Action;
+import org.openide.awt.Actions;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle;
@@ -23,16 +24,14 @@ import speedy.model.database.AttributeRef;
  * @author Grandinetti Giovanni <grandinetti.giovanni13@gmail.com>
  */
 @NbBundle.Messages({
-    "HINT_DirtyStrategyTableNode= "
+    "HINT_DirtyStrategyTableNode= table"
 })
 public class DirtyStrategyTableNode extends AbstractNode   {
 
-    private String dirtyStrategyTable;
     
-    public DirtyStrategyTableNode(EGTask egt, EGTaskDataObjectDataObject dto, String dirtyStrategyTable,Map<String,IDirtyStrategy> map)    {
-        super(Children.create(new DirtyStrategyAttributeFactory(dirtyStrategyTable, map, dto, egt), true),
-                new ProxyLookup(Lookups.fixed(egt,dto),dto.getAbstractLookup()));
-        this.dirtyStrategyTable = dirtyStrategyTable;
+    public DirtyStrategyTableNode(EGTask egt, EGTaskDataObjectDataObject dto, String dirtyStrategyTable)    {
+        super(Children.create(new DirtyStrategyAttributeFactory(dirtyStrategyTable,dto, egt), true),
+                new ProxyLookup(Lookups.fixed(egt,dto,dirtyStrategyTable),dto.getAbstractLookup()));
         setName(dirtyStrategyTable);
         setShortDescription(Bundle.HINT_DirtyStrategyTableNode());
         setIconBaseWithExtension(R.IMAGE_NODE_DIRTYSTRTABLE);
@@ -40,6 +39,7 @@ public class DirtyStrategyTableNode extends AbstractNode   {
 
     @Override
     public String getHtmlDisplayName() {
+        String dirtyStrategyTable = getLookup().lookup(String.class);
         StringBuilder sb = new StringBuilder();
         sb.append(R.HTML_Node);
         sb.append(dirtyStrategyTable);
@@ -49,13 +49,17 @@ public class DirtyStrategyTableNode extends AbstractNode   {
 
     @Override
     public Action[] getActions(boolean context) {
-        Action[] a = {};
+        Action[] a = {
+            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDirtyStrategyTableNode"),
+            null,
+            Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.RemoveDirtyStrategyTableNode"),    
+        };
         return a;
     }
 
     @Override
     public Action getPreferredAction() {
-        return null;
+        return Actions.forID("DirtyStrategiesNode", "it.unibas.bartgui.controlegt.actions.node.DirtyStrategies.EditDirtyStrategyTableNode");
     }
     
     
