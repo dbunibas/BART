@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="http://db.unibas.it/projects/bart/images/Logo-BART.png"/>
+</p>
+
 BART
 ====
 
@@ -7,18 +11,33 @@ Additional material about the project (papers and example datasets) can be found
 
 ---
 
-### How to run an EGTask
+### BART GUI Screenshot ###
+![image](http://db.unibas.it/projects/bart/images/bart-screenshot.png)
+---
+
+### How to run the GUI
+In order to execute the GUI of Bart, you need to import the project into NetBeans ([link](https://netbeans.org/)), using the following steps: 
+
+1. In NetBeans, File -> Open projects... and select the project folder `Bart_GUI`
+2. Run the module `Bart_GUI`
+
+
+A binary release of GUI indipendent from NetBeans will be released in a few days.
+
+---
+
+### How to run an EGTask on the console
 Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employees/employees-dbms-2k-egtask.xml`
 
 ---
 
-### How to import project in NetBeans ####
-1. In NetBeans, File -> Open projects... and select the project folder
+### How to import BART_Engine project in NetBeans ####
+1. In NetBeans, File -> Open projects... and select the project folder `Bart_Engine`
 2. Execute ant target task `gfp`, either using command-line `ant gfp`, or using NetBeans (in the projects windows, right click on build.xml -> Run Target -> Other Targets -> gfp)
 
 ---
 
-### How to configure an EGTask
+### How to configure an EGTask manually
 An EGTask is specified in an .xml file, with 3 main sections:
 
 #####**1. Database configuration:** #####
