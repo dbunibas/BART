@@ -29,6 +29,9 @@ public class TypoAddString implements IDirtyStrategy {
     }
 
     private int selectRandomIndex(String value) {
+        if(value.isEmpty()){
+            return 0;
+        }
         Random generator = new Random();
         return generator.nextInt(value.length());
     }

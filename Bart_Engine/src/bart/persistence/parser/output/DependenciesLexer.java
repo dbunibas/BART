@@ -1,4 +1,4 @@
-// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2015-11-26 13:40:13
+// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2016-02-23 10:36:04
 
 package bart.persistence.parser.output;
 
@@ -419,17 +419,17 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = STRING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:9: ( '\"' ( LETTER | DIGIT | '-' | '.' | ' ' )+ '\"' )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:14: '\"' ( LETTER | DIGIT | '-' | '.' | ' ' )+ '\"'
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:9: ( '\"' ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+ '\"' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:14: '\"' ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+ '\"'
 			{
 			match('\"'); 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:18: ( LETTER | DIGIT | '-' | '.' | ' ' )+
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:18: ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+
 			int cnt3=0;
 			loop3:
 			while (true) {
 				int alt3=2;
 				int LA3_0 = input.LA(1);
-				if ( (LA3_0==' '||(LA3_0 >= '-' && LA3_0 <= '.')||(LA3_0 >= '0' && LA3_0 <= '9')||(LA3_0 >= 'A' && LA3_0 <= 'Z')||(LA3_0 >= 'a' && LA3_0 <= 'z')) ) {
+				if ( (LA3_0==' '||(LA3_0 >= '-' && LA3_0 <= '9')||(LA3_0 >= 'A' && LA3_0 <= 'Z')||(LA3_0 >= 'a' && LA3_0 <= 'z')) ) {
 					alt3=1;
 				}
 
@@ -437,7 +437,7 @@ public class DependenciesLexer extends Lexer {
 				case 1 :
 					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:
 					{
-					if ( input.LA(1)==' '||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+					if ( input.LA(1)==' '||(input.LA(1) >= '-' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 						input.consume();
 					}
 					else {

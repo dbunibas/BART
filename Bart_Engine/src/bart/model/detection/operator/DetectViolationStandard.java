@@ -17,6 +17,7 @@ import bart.model.errorgenerator.ViolationContext;
 import bart.utility.DependencyUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.Limit;
 
 public class DetectViolationStandard implements IDetectViolations, IInitializableOperator {
 
@@ -52,9 +53,9 @@ public class DetectViolationStandard implements IDetectViolations, IInitializabl
         }
         IFormula formula = dependency.getPremise();
         IAlgebraOperator treeRoot = treeBuilder.buildTreeForPremise(formula, task);
-//        Limit limit = new Limit(1);
-//        limit.addChild(treeRoot);
-//        treeRoot = limit;
+        Limit limit = new Limit(1);
+        limit.addChild(treeRoot);
+        treeRoot = limit;
         if (logger.isDebugEnabled()) logger.debug("Operator\n" + treeRoot.toString());
         ITupleIterator it = queryRunner.run(treeRoot, source, target);
         if (it.hasNext()) {
