@@ -20,7 +20,7 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.Actions;
-import org.openide.awt.UndoRedo;
+//import org.openide.awt.UndoRedo;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.AbstractLookup;
@@ -52,7 +52,7 @@ import org.openide.util.lookup.InstanceContent;
 })
 public final class DependenciesEditorTopComponent extends TopComponent {
 
-    private final UndoRedo.Manager UndoRedomanager = new UndoRedo.Manager();
+    //private final UndoRedo.Manager UndoRedomanager = new UndoRedo.Manager();
     private JScrollPane scrPane;
     private JTextPane textPane;
     private TextLineNumber textLineNumber;
@@ -82,7 +82,7 @@ public final class DependenciesEditorTopComponent extends TopComponent {
                 Actions.forID("DependenciesNode", 
                 "it.unibas.bartgui.controlegt.actions.node.DependenciesNode.Reset"));*/
         textPane = new JTextPane(new DependenciesStyleContext());
-        textPane.getDocument().addUndoableEditListener(UndoRedomanager);
+        //textPane.getDocument().addUndoableEditListener(UndoRedomanager);
         textPane.getDocument().addDocumentListener(new DocListener());
         
         JScrollPane scrPaneText = new JScrollPane();
@@ -99,11 +99,11 @@ public final class DependenciesEditorTopComponent extends TopComponent {
         add(scrPaneText,BorderLayout.CENTER);
         
     }
-    
+    /*
     @Override
     public UndoRedo getUndoRedo() {
         return UndoRedomanager;
-    }
+    }*/
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

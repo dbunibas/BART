@@ -89,24 +89,24 @@ public class DependenciesStyleContext extends DefaultStyledDocument   {
         while (wordR <= after) {
             if (wordR == after || String.valueOf(text.charAt(wordR)).matches("\\W")) {  
                 if (text.substring(wordL, wordR).matches("(\\W)*(\\\")")) {
-                    setCharacterAttributes(wordL, wordR - wordL, strAtt, false);
+                    setCharacterAttributes(wordL, wordR - wordL, strAtt, /*false*/true);
                 }else if (text.substring(wordL, wordR).matches("(\\W)*(\\d+)")) {
-                    setCharacterAttributes(wordL, wordR - wordL, number, false);
+                    setCharacterAttributes(wordL, wordR - wordL, number, /*false*/true);
                 }else if (text.substring(wordL, wordR).matches("(\\W)*(\\+|\\-|\\<|\\>|\\=|\\!)")) {
-                    setCharacterAttributes(wordL, wordR - wordL, operator, false);
+                    setCharacterAttributes(wordL, wordR - wordL, operator, /*false*/true);
                 }else if (text.substring(wordL, wordR).matches("(\\W)*(\\$((\\w)*))"))  {
-                    setCharacterAttributes(wordL, wordR - wordL, attributeAlias, false);
+                    setCharacterAttributes(wordL, wordR - wordL, attributeAlias, /*false*/true);
                 }else{
-                    setCharacterAttributes(wordL, wordR - wordL, normal, false);
+                    setCharacterAttributes(wordL, wordR - wordL, normal, /*false*/true);
                 }
                 try{
                     if (text.substring(wordL, (wordR+1)).matches("(\\W)*(\\w)*(\\:)")) {
-                        setCharacterAttributes(wordL, (wordR+1) - wordL, attribute, false);
+                        setCharacterAttributes(wordL, (wordR+1) - wordL, attribute, /*false*/true);
                     }
                 }catch(Exception ex){}
                 try{
                     if (text.substring(wordL, (wordR+1)).matches("(\\W)*(\\\")(.*)(\\\")")) {
-                        setCharacterAttributes(wordL, (wordR+1) - wordL, strAtt, false);
+                        setCharacterAttributes(wordL, (wordR+1) - wordL, strAtt, /*false*/true);
                     }
                 }catch(Exception ex){}
                 wordL = wordR;
@@ -125,24 +125,24 @@ public class DependenciesStyleContext extends DefaultStyledDocument   {
         if (before < 0) before = 0;
         int after = findFirstNonWordChar(text, offs);
         if (text.substring(before, after).matches("(\\W)*(\\\")")) {
-            setCharacterAttributes(before, after - before, strAtt, false);      
+            setCharacterAttributes(before, after - before, strAtt, /*false*/true);      
         }else if (text.substring(before, after).matches("(\\W)*(\\d+)")) {
-            setCharacterAttributes(before, after - before, number, false);
+            setCharacterAttributes(before, after - before, number, /*false*/true);
         }else if (text.substring(before, after).matches("(\\W)*(\\+|\\-|\\<|\\>|\\=|\\!)")) {
-            setCharacterAttributes(before, after - before, operator, false);
+            setCharacterAttributes(before, after - before, operator, /*false*/true);
         } else if (text.substring(before, after).matches("(\\W)*(\\$((\\w)*))"))  {
-            setCharacterAttributes(before, after - before, attributeAlias, false);
+            setCharacterAttributes(before, after - before, attributeAlias, /*false*/true);
         }else{
-            setCharacterAttributes(before, after - before, normal, false);
+            setCharacterAttributes(before, after - before, normal, /*false*/true);
         }
         try{
             if (text.substring(before, (after+1)).matches("(\\W)*(\\w)*(\\:)")) {
-                setCharacterAttributes(before, (after+1) - before, attribute, false);
+                setCharacterAttributes(before, (after+1) - before, attribute, /*false*/true);
             }
         }catch(Exception ex){}
         try{
             if (text.substring(before, (after+1)).matches("(\\W)*(\\\")(.*)(\\\")")) {
-                setCharacterAttributes(before, (after+1) - before, strAtt, false);
+                setCharacterAttributes(before, (after+1) - before, strAtt, /*false*/true);
             }
         }catch(Exception ex){}
         findComment(text);
@@ -172,7 +172,7 @@ public class DependenciesStyleContext extends DefaultStyledDocument   {
         int offs = 0;
         for(String l : line)   {          
             if(l.matches("(\\s)*(//)(.*)"))   {
-                setCharacterAttributes(offs, l.length(), comment, false);
+                setCharacterAttributes(offs, l.length(), comment, /*false*/true);
             }
             offs = offs+l.length()+1;
         }
