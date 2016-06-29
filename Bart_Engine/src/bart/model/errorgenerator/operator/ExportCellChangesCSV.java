@@ -3,6 +3,7 @@ package bart.model.errorgenerator.operator;
 import speedy.model.database.Cell;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
+import bart.model.errorgenerator.RandomCellChange;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +30,10 @@ public class ExportCellChangesCSV {
             outFile.getParentFile().mkdirs();
             out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
             for (ICellChange change : cellChanges.getChanges()) {
+                if (change instanceof RandomCellChange) {
+                    RandomCellChange randomCellChange = (RandomCellChange) change;
+                    if (!randomCellChange.isExport()) continue;
+                }
                 out.write(changeToCSV(change));
                 out.write("\n");
             }

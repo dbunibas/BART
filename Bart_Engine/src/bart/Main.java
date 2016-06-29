@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.exceptions.DAOException;
 import speedy.exceptions.DBMSException;
+import speedy.utility.PrintUtility;
 
 public class Main {
 
@@ -48,7 +49,7 @@ public class Main {
             }
             File taskFile = new File(relativePathTask).getAbsoluteFile();
             if (!taskFile.exists()) {
-                System.out.println("Unable to load task. File " + relativePathTask + " not found");
+                PrintUtility.printError("Unable to load task. File " + relativePathTask + " not found");
                 return;
             }
             String fileTask = taskFile.getAbsolutePath();
@@ -58,12 +59,12 @@ public class Main {
             }
             EGTask task;
             try {
-                System.out.println("*** Loading task " + fileTask + "... ");
+                PrintUtility.printMessage("*** Loading task " + fileTask + "... ");
                 task = daoTask.loadTask(fileTask);
-                System.out.println(" EGTask loaded!");
+                PrintUtility.printSuccess(" EGTask loaded!");
 //                System.out.println(task);
             } catch (DAOException ex) {
-                System.out.println("\nUnable to load task. \n" + ex.getLocalizedMessage());
+                PrintUtility.printError("\nUnable to load task. \n" + ex.getLocalizedMessage());
                 return;
             }
             if (options.contains("-checkCleanInstance")) {
@@ -71,50 +72,50 @@ public class Main {
                 return;
             }
             CellChanges changes = executeTask(task);
-            System.out.println("Total changes: " + changes.getChanges().size());
-            System.out.println(ErrorGeneratorStats.getInstance().toString());
+            PrintUtility.printInformation("Total changes: " + changes.getChanges().size());
+            PrintUtility.printMessage(ErrorGeneratorStats.getInstance().toString());
         } catch (Exception e) {
-            System.out.println("Unexpected exception! " + e.getLocalizedMessage());
+            PrintUtility.printError("Unexpected exception! " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
 
     private static void printUsage() {
-        System.out.print("****************    BART   ****************\n");
-        System.out.print("Usage: java -jar bart.jar <path_task.xml> [OPTION]\n");
-        System.out.print("  [Options]\n");
-        System.out.print("   -checkCleanInstance: Import data and check constraints. No error will be generated\n");
-        System.out.print("   -removeExistingDB: Drop existing DB\n");
+        PrintUtility.printInformation("****************    BART   ****************\n");
+        PrintUtility.printInformation("Usage: java -jar bart.jar <path_task.xml> [OPTION]\n");
+        PrintUtility.printInformation("  [Options]\n");
+        PrintUtility.printInformation("   -checkCleanInstance: Import data and check constraints. No error will be generated\n");
+        PrintUtility.printInformation("   -removeExistingDB: Drop existing DB\n");
     }
 
     private static CellChanges executeTask(EGTask task) throws ErrorGeneratorException {
-        System.out.println("*** Messing up...");
+        PrintUtility.printMessage("*** Messing up...");
         long start = new Date().getTime();
         CellChanges changes = generator.run(task);
         long end = new Date().getTime();
         double executionTime = (end - start) / 1000.0;
-        System.out.println("*** Execution time: " + executionTime + " sec");
-        System.out.println("*** Cell changes: " + changes.getChanges().size());
+        PrintUtility.printInformation("*** Execution time: " + executionTime + " sec");
+        PrintUtility.printInformation("*** Cell changes: " + changes.getChanges().size());
         if (changes.getChanges().size() < 50) {
             for (ICellChange change : changes.getChanges()) {
-                System.out.println(change);
+                PrintUtility.printMessage(change.toString());
             }
         }
         return changes;
     }
 
     private static void checkCleanInstance(EGTask task) {
-        System.out.println("*** Checking constraints...");
+        PrintUtility.printMessage("*** Checking constraints...");
         long start = new Date().getTime();
         try {
             cleanInstanceChecker.check(task.getDCs(), task.getSource(), task.getTarget(), task);
-            System.out.println("*** Database is clean!");
+            PrintUtility.printSuccess("*** Database is clean!");
         } catch (ErrorGeneratorException ex) {
-            System.out.println("*** " + ex.getLocalizedMessage());
+            PrintUtility.printError("*** " + ex.getLocalizedMessage());
         }
         long end = new Date().getTime();
         double executionTime = (end - start) / 1000.0;
-        System.out.println("*** Execution time: " + executionTime + " sec");
+        PrintUtility.printInformation("*** Execution time: " + executionTime + " sec");
     }
 
     private static void removeExistingDB(String fileTask) {
@@ -123,13 +124,13 @@ public class Main {
             return;
         }
         try {
-            System.out.println("Removing db " + accessConfiguration.getDatabaseName() + ", if exist...");
+            PrintUtility.printInformation("Removing db " + accessConfiguration.getDatabaseName() + ", if exist...");
             BartDBMSUtility.deleteDB(accessConfiguration);
-            System.out.println("Database removed!");
+            PrintUtility.printSuccess("Database removed!");
         } catch (DBMSException ex) {
             String message = ex.getMessage();
             if (!message.contains("does not exist")) {
-                logger.warn("Unable to drop database.\n" + ex.getLocalizedMessage());
+                PrintUtility.printError("Unable to drop database.\n" + ex.getLocalizedMessage());
             }
         }
     }

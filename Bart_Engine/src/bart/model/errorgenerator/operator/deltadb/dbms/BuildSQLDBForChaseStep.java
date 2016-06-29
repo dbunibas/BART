@@ -162,7 +162,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
                 }
                 materializedTableName = tableName + "_" + dependencyId + "_" + cleanStepId;
             }
-            CreateTableAs createTable = new CreateTableAs(materializedTableName, materializedTableName, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), distinct);
+            CreateTableAs createTable = new CreateTableAs(materializedTableName, materializedTableName, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), distinct, true);
             createTable.addChild(algebraRoot);
             resultOperator = createTable;
             if (logger.isDebugEnabled()) logger.debug("Algebra for extract database: \n" + resultOperator);
@@ -256,7 +256,7 @@ public class BuildSQLDBForChaseStep implements IBuildDatabaseForChaseStep {
         IAlgebraOperator resultOperator;
         String tableName = BartConstants.DELTA_TMP_TABLES + BartDBMSUtility.attributeRefToAliasSQL(attribute) + "_" + cleanStepId;
         String tableAlias = BartDBMSUtility.attributeRefToAliasSQL(attribute);
-        CreateTableAs createTable = new CreateTableAs(tableName, tableAlias, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), false);
+        CreateTableAs createTable = new CreateTableAs(tableName, tableAlias, ((DBMSDB) deltaDB).getAccessConfiguration().getSchemaName(), false, true);
         createTable.addChild(project);
         resultOperator = createTable;
         if (logger.isDebugEnabled()) logger.debug("Algebra tree for attribute: " + attribute + "\n" + resultOperator);

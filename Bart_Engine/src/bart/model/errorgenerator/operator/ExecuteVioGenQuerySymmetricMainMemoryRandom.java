@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.PrintUtility;
 
 public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQueryExecutor, IInitializableOperator {
 
@@ -64,8 +65,8 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
             return;
         }
         if (!task.getConfiguration().isGenerateAllChanges() && task.getConfiguration().isPrintLog()) {
-            System.out.println("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
-            System.out.println(sampleSize + " changes required");
+            PrintUtility.printInformation("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
+            PrintUtility.printInformation(sampleSize + " changes required");
         }
         List<EquivalenceClassQuery> equivalenceClassQueries = vioGenQuery.getFormula().getFormulaWithAdornments().getEquivalenceClassQueries();
         Set<DiscardedTuplePair> discardedTuples = new HashSet<DiscardedTuplePair>();
@@ -91,7 +92,7 @@ public class ExecuteVioGenQuerySymmetricMainMemoryRandom implements IVioGenQuery
             executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
-        if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
+        if (task.getConfiguration().isPrintLog()) PrintUtility.printSuccess("Executed changes: " + executedChanges);
     }
 
     private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, Set<DiscardedTuplePair> discardedTuples,

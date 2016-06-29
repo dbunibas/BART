@@ -46,15 +46,7 @@ public class TypoAddString implements IDirtyStrategy {
         }
         return prefix + chars + suffix;
     }
-    
-    public String getChars() {
-        return chars;
-    }
 
-    public int getCharsToAdd() {
-        return charsToAdd;
-    }
-    
     @Override
     public String toString() {
         return "TypoAddString{" + "chars=" + chars + ", charsToAdd=" + charsToAdd + '}';

@@ -2,6 +2,8 @@ package bart.persistence;
 
 import bart.model.EGTaskConfiguration;
 import bart.model.OutlierErrorConfiguration;
+import bart.model.VioGenQueryConfiguration;
+import bart.model.errorgenerator.OrderingAttribute;
 import speedy.model.database.AttributeRef;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
 import bart.model.errorgenerator.operator.valueselectors.TypoAddString;
@@ -25,6 +27,9 @@ public class DAOEGTaskConfiguration {
 
     private static Logger logger = LoggerFactory.getLogger(DAOEGTaskConfiguration.class);
     private DAOXmlUtility daoUtility = new DAOXmlUtility();
+
+    public DAOEGTaskConfiguration() {
+    }
 
     public EGTaskConfiguration loadConfiguration(String fileTask) {
         try {
@@ -207,10 +212,32 @@ public class DAOEGTaskConfiguration {
             OutlierErrorConfiguration outlierErrorConfiguration = extractOutlierErrorConfiguration(outlierErrorsConfiguration);
             conf.setOutlierErrorConfiguration(outlierErrorConfiguration);
         }
+        Element partialOrderConfiguration = configurationElement.getChild("partialOrder");
+        if (partialOrderConfiguration != null) {
+            if (logger.isDebugEnabled()) logger.debug("* Partial order configuration");
+            List<Element> dependencies = getMandatoryElements(partialOrderConfiguration, "dependency");
+            for (Element dependency : dependencies) {
+                Element nameElement = getMandatoryElement(dependency, "name");
+                if (logger.isDebugEnabled()) logger.debug("Dependecy name: " + nameElement.getText().trim());
+                Element attributeElement = getMandatoryElement(dependency, "attribute");
+                Attribute attributeOrder = attributeElement.getAttribute("ordering");
+                Attribute attributeTable = getMandatoryAttribute(attributeElement, "table");
+                String attributeName = attributeElement.getText().trim();
+                String ordering = attributeOrder != null ? attributeOrder.getValue().trim() : OrderingAttribute.ASC;
+                OrderingAttribute orderingAttribute = new OrderingAttribute(attributeName, attributeTable.getValue().trim(), ordering);
+                if (logger.isDebugEnabled()) logger.debug(orderingAttribute.toString());
+                conf.getVioGenOrderingAttributes().put(nameElement.getText().trim(), orderingAttribute);
+            }
+        }
+        Element vioGenQueriesConfiguration = configurationElement.getChild("vioGenQueriesConfiguration");
+        if (vioGenQueriesConfiguration != null) {
+            if (logger.isDebugEnabled()) logger.debug("* VioGenQueries configuration");
+            VioGenQueryConfiguration defaultConfig = conf.getDefaultVioGenQueryConfiguration();
+            double probabilityFactorForSymmetricQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForSymmetricQueries");
+            defaultConfig.setProbabilityFactorForSymmetricQueries(probabilityFactorForSymmetricQueries);
+            // TODO add others configuration
+        }
         return conf;
-    }
-
-    public DAOEGTaskConfiguration() {
     }
 
     private OutlierErrorConfiguration extractOutlierErrorConfiguration(Element outlierErrorsTag) {
@@ -291,5 +318,16 @@ public class DAOEGTaskConfiguration {
             throw new DAOException("Unable to load configuration. Missing required tag <" + elementName + ">");
         }
         return childred;
+    }
+    
+    private double extractDouble(Element father, String attributeName) {
+        Element child = father.getChild(attributeName);
+        double value = 0;
+        try {
+            value = Double.parseDouble(child.getValue().trim());
+        } catch (NumberFormatException numberFormatException) {
+            throw new DAOException("Unable to load configuration." + attributeName +" value must be a double" );
+        }
+        return value;
     }
 }

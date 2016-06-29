@@ -17,12 +17,10 @@ import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
 import speedy.model.database.operators.IDatabaseManager;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
-import bart.utility.BartDBMSUtility;
 import bart.utility.BartUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.model.database.dbms.DBMSDB;
-import speedy.persistence.relational.AccessConfiguration;
 
 public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChangeApplier {
 
@@ -39,10 +37,7 @@ public class ApplyCellChangesOnDeltaDB implements IInitializableOperator, IChang
         //TODO handle task.getConfiguration().isCloneTargetSchema()
         try {
             DBMSDB target = (DBMSDB) task.getTarget();
-//            databaseManager.removeClone(target, dirtySuffix);
-            AccessConfiguration accessConfiguration = target.getAccessConfiguration().clone();
-            accessConfiguration.setSchemaName(accessConfiguration.getSchemaName() + dirtySuffix);
-            BartDBMSUtility.removeSchema(accessConfiguration.getSchemaName(), BartDBMSUtility.getTempAccessConfiguration(accessConfiguration));
+            databaseManager.removeClone(target, dirtySuffix);
         } catch (Exception e) {
         }
         IDatabase deltaDB = deltaBuilder.generate(task.getTarget(), task, BartConstants.CHASE_STEP_ROOT);

@@ -24,8 +24,13 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.nfunk.jep.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.OperatorFactory;
 import speedy.exceptions.DAOException;
 import speedy.exceptions.DBMSException;
+import speedy.model.algebra.Scan;
+import speedy.model.algebra.Select;
+import speedy.model.algebra.operators.ITupleIterator;
+import speedy.model.database.operators.IRunQuery;
 
 public class BartDBMSUtility {
 
@@ -352,6 +357,7 @@ public class BartDBMSUtility {
 //        workSchema.setSchemaName(BartConstants.WORK_SCHEMA);
 //        return workSchema;
 //    }
+
     private static String getTempDBName(AccessConfiguration accessConfiguration, String tempDBName) {
         String uri = accessConfiguration.getUri();
         if (uri.lastIndexOf("/") != -1) {
@@ -555,16 +561,26 @@ public class BartDBMSUtility {
         return attributeRef;
     }
 
-    public static void removeSchema(String schema, AccessConfiguration accessConfiguration) {
-        String function = "DROP SCHEMA IF EXISTS " + schema + " CASCADE;";
-        QueryManager.executeScript(function, accessConfiguration, true, true, false, false);
-    }
-
     public static void createSchema(AccessConfiguration accessConfiguration) {
         StringBuilder result = new StringBuilder();
         result.append("DROP SCHEMA IF EXISTS ").append(accessConfiguration.getSchemaName()).append(" CASCADE;\n");
         result.append("CREATE SCHEMA ").append(accessConfiguration.getSchemaName()).append(";\n\n");
         QueryManager.executeScript(result.toString(), accessConfiguration, true, true, false, true);
+    }
+    
+    public static Tuple getTuple(IDatabase database, long rowId, String tableName) {
+        IRunQuery queryRunner = OperatorFactory.getInstance().getQueryRunner(database);
+        TableAlias tableAlias = new TableAlias(tableName);
+        Scan scan = new Scan(tableAlias);
+        Expression expression = new Expression("oid == \"" + rowId + "\"");
+        expression.changeVariableDescription("oid", new AttributeRef(tableAlias, "oid"));
+        Select select = new Select(expression);
+        select.addChild(scan);
+        ITupleIterator result = queryRunner.run(select, null, database);
+        Tuple tuple = null;
+        if (result.hasNext()) tuple = result.next();
+        result.close();
+        return tuple;
     }
 
 }

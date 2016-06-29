@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.PrintUtility;
 
 public class ExecuteVioGenQueryStandardMainMemoryRandom implements IVioGenQueryExecutor {
 
@@ -50,8 +51,8 @@ public class ExecuteVioGenQueryStandardMainMemoryRandom implements IVioGenQueryE
             return;
         }
         if (!task.getConfiguration().isGenerateAllChanges() && task.getConfiguration().isPrintLog()) {
-            System.out.println("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
-            System.out.println(sampleSize + " changes required");
+            PrintUtility.printInformation("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
+            PrintUtility.printInformation(sampleSize + " changes required");
         }
         int initialChanges = allCellChanges.getChanges().size();
         generateChanges(vioGenQuery, allCellChanges, sampleSize, offset, discardedTuples, start, task);
@@ -61,7 +62,7 @@ public class ExecuteVioGenQueryStandardMainMemoryRandom implements IVioGenQueryE
             executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
-        if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
+        if (task.getConfiguration().isPrintLog()) PrintUtility.printSuccess("Executed changes: " + executedChanges);
     }
 
     private void generateChanges(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, int offset, Set<Tuple> discardedTuples, long start, EGTask task) {

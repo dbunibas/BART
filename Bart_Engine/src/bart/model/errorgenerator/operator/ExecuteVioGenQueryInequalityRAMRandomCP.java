@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.PrintUtility;
 
 public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExecutor, IInitializableOperator {
 
@@ -60,8 +61,8 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
             return;
         }
         if (!task.getConfiguration().isGenerateAllChanges() && task.getConfiguration().isPrintLog()) {
-            System.out.println("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
-            System.out.println(sampleSize + " changes required");
+            PrintUtility.printInformation("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
+            PrintUtility.printInformation(sampleSize + " changes required");
         }
         if (logger.isInfoEnabled()) logger.info("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
         if (logger.isInfoEnabled()) logger.info(sampleSize + " changes required");
@@ -74,7 +75,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCP implements IVioGenQueryExec
             executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, usedTuples, initialChanges, sampleSize, start, task);
         }
         int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
-        if (task.getConfiguration().isPrintLog()) System.out.println("Executed changes: " + executedChanges);
+        if (task.getConfiguration().isPrintLog()) PrintUtility.printSuccess("Executed changes: " + executedChanges);
     }
 
     private void findVioGenQueries(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<CrossProductTuplePair> discardedTuples, Set<Tuple> usedTuples, long start, EGTask task) {

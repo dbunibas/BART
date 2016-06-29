@@ -15,12 +15,14 @@ import bart.model.detection.operator.EstimateRepairability;
 import bart.model.errorgenerator.VioGenQueryCellChange;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
+import bart.model.errorgenerator.OrderingAttribute;
 import bart.model.errorgenerator.OutlierCellChange;
 import bart.model.errorgenerator.RandomCellChange;
 import bart.model.errorgenerator.VioGenQuery;
 import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ public class APrioriGenerator implements IInitializableOperator {
     private ExportCellChangesCSV cellChangesExporter = new ExportCellChangesCSV();
     private ExecuteRandomErrors randomErrors = new ExecuteRandomErrors();
     private ExecuteOutlierErrors outlierErrors = new ExecuteOutlierErrors();
+    private ExecutePartialOrderErrors partialOrderErrors = new ExecutePartialOrderErrors();
 
     private IExportDatabase databaseExporter;
     private IChangeApplier changeApplier;
@@ -123,6 +126,7 @@ public class APrioriGenerator implements IInitializableOperator {
                 int beforeChanges = allCellChanges.getChanges().size();
                 IVioGenQueryExecutor executor = executorSelector.getExecutorForVioGenQuery(vioGenQuery, task);
                 executor.execute(vioGenQuery, allCellChanges, task);
+                executePartialOrderChanges(task, allCellChanges, dc);
                 int afterChanges = allCellChanges.getChanges().size();
                 long end = new Date().getTime();
                 ErrorGeneratorStats.getInstance().addVioGenQueryTime(vioGenQuery, end - start);
@@ -144,6 +148,7 @@ public class APrioriGenerator implements IInitializableOperator {
         long end = System.currentTimeMillis();
         long seconds = (end - start) / 1000;
         if (task.getConfiguration().isPrintLog()) System.out.println("Time for generating outliers (s): " + seconds);
+        ErrorGeneratorStats.getInstance().addStat(ErrorGeneratorStats.NUMBER_CHANGES, cellChanges.getChanges().size());
         return cellChanges;
     }
 
@@ -153,7 +158,18 @@ public class APrioriGenerator implements IInitializableOperator {
         if (task.getConfiguration().isPrintLog()) System.out.println("*** Step 4: Executing random cell changes");
         if (task.getConfiguration().isPrintLog()) System.out.println(BartConstants.PRINT_SEPARATOR);
         CellChanges cellChanges = randomErrors.execute(task, detectableChanges);
+        ErrorGeneratorStats.getInstance().addStat(ErrorGeneratorStats.NUMBER_CHANGES, cellChanges.getChanges().size());
         return cellChanges;
+    }
+
+    private void executePartialOrderChanges(EGTask task, CellChanges cellChanges, Dependency dc) {
+        if (!task.getConfiguration().containsOrderingAttributes()) return;
+        Map<String, OrderingAttribute> vioGenOrderingAttributes = task.getConfiguration().getVioGenOrderingAttributes();
+        OrderingAttribute orderingAttribute = vioGenOrderingAttributes.get(dc.getId());
+        if (orderingAttribute == null) return;
+        CellChanges partialOrderCellChanges = partialOrderErrors.execute(task, cellChanges, dc);
+        mergeChanges(cellChanges, partialOrderCellChanges);
+        ErrorGeneratorStats.getInstance().addStat(ErrorGeneratorStats.NUMBER_CHANGES, cellChanges.getChanges().size());
     }
 
     private void checkChanges(CellChanges cellChanges, EGTask task) {

@@ -363,4 +363,10 @@ public class BartUtility {
         double random = new Random().nextDouble();
         return random < probability;
     }
+    
+    // DATE METHOD
+    
+    public static boolean isDate(String type) {
+        return (type.equals(Types.DATE) || type.equals(Types.DATETIME));
+    }
 }

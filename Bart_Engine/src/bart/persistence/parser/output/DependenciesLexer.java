@@ -1,4 +1,4 @@
-// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2016-02-23 10:36:04
+// $ANTLR 3.5.1 /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g 2016-02-24 12:11:49
 
 package bart.persistence.parser.output;
 
@@ -419,17 +419,16 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = STRING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:9: ( '\"' ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+ '\"' )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:14: '\"' ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+ '\"'
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:9: ( '\"' (~ ( '\\r' | '\\n' | '\"' ) )* '\"' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:19: '\"' (~ ( '\\r' | '\\n' | '\"' ) )* '\"'
 			{
 			match('\"'); 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:134:18: ( LETTER | DIGIT | '-' | '.' | ' ' | '/' )+
-			int cnt3=0;
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:23: (~ ( '\\r' | '\\n' | '\"' ) )*
 			loop3:
 			while (true) {
 				int alt3=2;
 				int LA3_0 = input.LA(1);
-				if ( (LA3_0==' '||(LA3_0 >= '-' && LA3_0 <= '9')||(LA3_0 >= 'A' && LA3_0 <= 'Z')||(LA3_0 >= 'a' && LA3_0 <= 'z')) ) {
+				if ( ((LA3_0 >= '\u0000' && LA3_0 <= '\t')||(LA3_0 >= '\u000B' && LA3_0 <= '\f')||(LA3_0 >= '\u000E' && LA3_0 <= '!')||(LA3_0 >= '#' && LA3_0 <= '\uFFFF')) ) {
 					alt3=1;
 				}
 
@@ -437,7 +436,7 @@ public class DependenciesLexer extends Lexer {
 				case 1 :
 					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:
 					{
-					if ( input.LA(1)==' '||(input.LA(1) >= '-' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
 					}
 					else {
@@ -449,11 +448,8 @@ public class DependenciesLexer extends Lexer {
 					break;
 
 				default :
-					if ( cnt3 >= 1 ) break loop3;
-					EarlyExitException eee = new EarlyExitException(3, input);
-					throw eee;
+					break loop3;
 				}
-				cnt3++;
 			}
 
 			match('\"'); 
@@ -473,10 +469,10 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = NUMBER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:8: ( ( '-' )? ( DIGIT )+ ( '.' ( DIGIT )+ )? )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:12: ( '-' )? ( DIGIT )+ ( '.' ( DIGIT )+ )?
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:8: ( ( '-' )? ( DIGIT )+ ( '.' ( DIGIT )+ )? )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:12: ( '-' )? ( DIGIT )+ ( '.' ( DIGIT )+ )?
 			{
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:12: ( '-' )?
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:12: ( '-' )?
 			int alt4=2;
 			int LA4_0 = input.LA(1);
 			if ( (LA4_0=='-') ) {
@@ -484,7 +480,7 @@ public class DependenciesLexer extends Lexer {
 			}
 			switch (alt4) {
 				case 1 :
-					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:13: '-'
+					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:13: '-'
 					{
 					match('-'); 
 					}
@@ -492,7 +488,7 @@ public class DependenciesLexer extends Lexer {
 
 			}
 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:19: ( DIGIT )+
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:19: ( DIGIT )+
 			int cnt5=0;
 			loop5:
 			while (true) {
@@ -525,7 +521,7 @@ public class DependenciesLexer extends Lexer {
 				cnt5++;
 			}
 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:26: ( '.' ( DIGIT )+ )?
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:26: ( '.' ( DIGIT )+ )?
 			int alt7=2;
 			int LA7_0 = input.LA(1);
 			if ( (LA7_0=='.') ) {
@@ -533,10 +529,10 @@ public class DependenciesLexer extends Lexer {
 			}
 			switch (alt7) {
 				case 1 :
-					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:27: '.' ( DIGIT )+
+					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:27: '.' ( DIGIT )+
 					{
 					match('.'); 
-					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:135:31: ( DIGIT )+
+					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:31: ( DIGIT )+
 					int cnt6=0;
 					loop6:
 					while (true) {
@@ -590,8 +586,8 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = NULL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:9: ( '#NULL#' )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:136:18: '#NULL#'
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:137:9: ( '#NULL#' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:137:18: '#NULL#'
 			{
 			match("#NULL#"); 
 
@@ -609,7 +605,7 @@ public class DependenciesLexer extends Lexer {
 	// $ANTLR start "DIGIT"
 	public final void mDIGIT() throws RecognitionException {
 		try {
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:137:15: ( '0' .. '9' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:138:15: ( '0' .. '9' )
 			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -632,7 +628,7 @@ public class DependenciesLexer extends Lexer {
 	// $ANTLR start "LETTER"
 	public final void mLETTER() throws RecognitionException {
 		try {
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:138:16: ( 'a' .. 'z' | 'A' .. 'Z' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:139:16: ( 'a' .. 'z' | 'A' .. 'Z' )
 			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -657,10 +653,10 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = WHITESPACE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:139:12: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:139:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:12: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
 			{
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:139:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
 			int cnt8=0;
 			loop8:
 			while (true) {
@@ -710,12 +706,12 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = LINE_COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:14: ( '//' (~ ( '\\r' | '\\n' ) )* )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:18: '//' (~ ( '\\r' | '\\n' ) )*
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:14: ( '//' (~ ( '\\r' | '\\n' ) )* )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:18: '//' (~ ( '\\r' | '\\n' ) )*
 			{
 			match("//"); 
 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:140:23: (~ ( '\\r' | '\\n' ) )*
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:23: (~ ( '\\r' | '\\n' ) )*
 			loop9:
 			while (true) {
 				int alt9=2;
@@ -761,11 +757,11 @@ public class DependenciesLexer extends Lexer {
 		try {
 			int _type = EXPRESSION;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:11: ( '{' ( . )* '}' )
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:18: '{' ( . )* '}'
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:142:11: ( '{' ( . )* '}' )
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:142:18: '{' ( . )* '}'
 			{
 			match('{'); 
-			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:21: ( . )*
+			// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:142:21: ( . )*
 			loop10:
 			while (true) {
 				int alt10=2;
@@ -779,7 +775,7 @@ public class DependenciesLexer extends Lexer {
 
 				switch (alt10) {
 				case 1 :
-					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:141:22: .
+					// /Users/donatello/Projects/BART/src/bart/persistence/parser/Dependencies.g:142:22: .
 					{
 					matchAny(); 
 					}

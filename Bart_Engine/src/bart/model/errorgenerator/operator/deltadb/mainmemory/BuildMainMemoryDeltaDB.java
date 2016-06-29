@@ -65,6 +65,15 @@ public class BuildMainMemoryDeltaDB implements IBuildDeltaDB {
                 BartUtility.addIfNotContained(result, DependencyUtility.unAlias(attribute));
             }
         }
+        if (task.getConfiguration().isRandomErrors()) {
+            for (String table : task.getConfiguration().getTablesForRandomErrors()) {
+                Set<String> attributes = task.getConfiguration().getAttributesForRandomErrors(table);
+                for (String attribute : attributes) {
+                    AttributeRef attributeRef = new AttributeRef(table, attribute);
+                    result.add(attributeRef);
+                }
+            }
+        }
         return result;
     }
 

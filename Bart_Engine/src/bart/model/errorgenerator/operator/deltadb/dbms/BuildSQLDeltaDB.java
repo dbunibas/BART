@@ -8,6 +8,7 @@ import speedy.model.database.IDatabase;
 import speedy.model.database.dbms.DBMSDB;
 import speedy.model.database.dbms.DBMSTable;
 import bart.model.dependency.Dependency;
+import bart.model.errorgenerator.OrderingAttribute;
 import bart.model.errorgenerator.operator.deltadb.IBuildDeltaDB;
 import speedy.persistence.relational.AccessConfiguration;
 import speedy.persistence.relational.QueryManager;
@@ -18,11 +19,12 @@ import bart.utility.ErrorGeneratorStats;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BuildSQLDeltaDB  implements IBuildDeltaDB{
+public class BuildSQLDeltaDB implements IBuildDeltaDB {
 
     private static Logger logger = LoggerFactory.getLogger(BuildSQLDeltaDB.class);
 
@@ -50,6 +52,23 @@ public class BuildSQLDeltaDB  implements IBuildDeltaDB{
             Set<AttributeRef> attributes = DependencyUtility.findRelevantAttributes(dc.getPremise());
             for (AttributeRef attribute : attributes) {
                 BartUtility.addIfNotContained(result, DependencyUtility.unAlias(attribute));
+            }
+        }
+        if (task.getConfiguration().containsOrderingAttributes()) {
+            Map<String, OrderingAttribute> mapOrderingAttributes = task.getConfiguration().getVioGenOrderingAttributes();
+            for (String dependencyId : mapOrderingAttributes.keySet()) {
+                OrderingAttribute oa = mapOrderingAttributes.get(dependencyId);
+                AttributeRef attributeRef = oa.getAttributeRef();
+                BartUtility.addIfNotContained(result, DependencyUtility.unAlias(attributeRef));
+            }
+        }
+        if (task.getConfiguration().isRandomErrors()) {
+            for(String table: task.getConfiguration().getTablesForRandomErrors()) {
+                Set<String> attributes = task.getConfiguration().getAttributesForRandomErrors(table);
+                for (String attribute : attributes) {
+                    AttributeRef attributeRef = new AttributeRef(table, attribute);
+                    result.add(attributeRef);
+                }
             }
         }
         return result;

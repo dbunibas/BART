@@ -49,6 +49,8 @@
     <!--<logger name="bart.model.errorgenerator.operator.ExtractPostSampleFromQuery" level="DEBUG"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.DBMSStatsSampleStrategy" level="DEBUG"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.TableSizeSampleStrategy" level="DEBUG"/>-->
+    <!--<logger name="bart.model.errorgenerator.operator.ExecutePartialOrderErrors" level="TRACE"/>-->
+    <!--<logger name="bart.model.errorgenerator.operator.valueselectors.PartialOrderValueSelector" level="TRACE"/>-->
     <!--<logger name="bart.model.detection.operator.DetectViolationsSymmetric" level="DEBUG"/>-->
     <!--<logger name="bart.model.detection.operator.EstimateRepairability" level="DEBUG"/>-->
     <!--<logger name="bart.model.dependency.analysis.FindFormulaWithAdornments" level="DEBUG"/>-->
@@ -64,9 +66,10 @@
     <!--<logger name="bart.model.algebra.ExtractRandomSample" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.PooledDbConnectionFactory" level="TRACE"/>-->
     <!--<logger name="bart.utility.DBMSUtility" level="DEBUG"/>-->
-    <!--<logger name="bart.persistence.relational.QueryManager" level="TRACE"/>-->
     <!--     SPEEDY     -->
     <!--<logger name="speedy.utility.DBMSUtility" level="DEBUG"/>-->
+    <!--<logger name="speedy.persistence.relational.QueryStatManager" level="DEBUG"/>-->
+    <!--<logger name="speedy.persistence.relational.QueryManager" level="TRACE"/>-->
     <!--     STATS     -->
     <!--<logger name="bart.model.errorgenerator.operator.ErrorGeneratorStats" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.QueryStatManager" level="DEBUG"/>-->
