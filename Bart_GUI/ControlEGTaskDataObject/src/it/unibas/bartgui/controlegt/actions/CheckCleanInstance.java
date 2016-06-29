@@ -75,7 +75,7 @@ public final class CheckCleanInstance implements ActionListener {
 
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(esito)   {                
                     StatusBar.setStatus(Bundle.MSG_STATUS_Clean(), 10,5000);
                     DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(
@@ -89,7 +89,7 @@ public final class CheckCleanInstance implements ActionListener {
                 }
             }
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     }
     
     private class checkCleanRunnable implements Runnable   {    

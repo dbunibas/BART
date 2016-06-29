@@ -38,6 +38,10 @@ public class TypoRemoveString implements IDirtyStrategy {
         return prefix + suffix;
     }
 
+    public int getCharsToRemove() {
+        return charsToRemove;
+    }
+
     @Override
     public String toString() {
         return "TypoRemoveString{" + "charsToRemove=" + charsToRemove + '}';

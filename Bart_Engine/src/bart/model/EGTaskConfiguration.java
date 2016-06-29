@@ -334,6 +334,10 @@ public class EGTaskConfiguration {
         return defaultDirtyStrategy;
     }
 
+    public Map<AttributeRef, IDirtyStrategy> getDirtyStrategiesMap() {
+        return dirtyStrategiesMap;
+    }
+
     public boolean containsOrderingAttributes() {
         return !this.vioGenOrderingAttributes.isEmpty();
     }

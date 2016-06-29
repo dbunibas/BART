@@ -93,7 +93,7 @@ public class SaveEGTask implements ISave   {
 
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(esito)   {
                     System.out.println(Bundle.MSG_SaveEGTask_OK(dto.getPrimaryFile().getName()));
                 }else{
@@ -104,7 +104,7 @@ public class SaveEGTask implements ISave   {
             }
             
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     }   
 
      private class SaveEgtaskRunnable implements Runnable   {

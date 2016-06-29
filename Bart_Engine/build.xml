@@ -29,6 +29,10 @@
             <pathelement location="${lib.dir}/commons-math3-${commons-math3.ver}.jar" />
             <pathelement location="${lib.dir}/commons-csv-${commons-csv.ver}.jar" />
             <pathelement location="${lib.dir}/commons-lang-${commons-lang.ver}.jar" />
+            <pathelement location="${lib.dir}/jackson-annotations-${jackson.ver}.jar" />
+            <pathelement location="${lib.dir}/jackson-core-${jackson.ver}.jar" />
+            <pathelement location="${lib.dir}/jackson-databind-${jackson.ver}.jar" />
+            <pathelement location="${lib.dir}/jackson-dataformat-csv-${jackson.ver}.jar" />
 
             <!-- JDBC Drivers -->
             <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />

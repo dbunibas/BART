@@ -44,7 +44,7 @@ import speedy.model.database.EmptyDB;
     "MSG_RunEGTask_NO_DataObj=EGTASK NULL IN DATAOBJECT",
     "MSG_RunEGTask_NO_DB_Source=DB Suorce is not set",
     "MSG_RunEGTask_NO_DB_Target=DB Target is not set",
-    "MSG_RunEGTask_NO_DEPendencies=NO DEPENCIES",
+    "MSG_RunEGTask_NO_DEPendencies=NO DEPENDENCIES",
 })
 @ServiceProvider(service = IRunEGTask.class)
 public class RunEGTask implements IRunEGTask  {
@@ -82,12 +82,12 @@ public class RunEGTask implements IRunEGTask  {
                                                     , NotifyDescriptor.INFORMATION_MESSAGE));
                 return;
         }
-        if((dto.getDependencies() == null) || dto.getDependencies().isEmpty())  {
-            log.fine("No Dependencies");
-                DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(Bundle.MSG_RunEGTask_NO_DEPendencies()
-                                                    , NotifyDescriptor.INFORMATION_MESSAGE));
-                return;
-        }
+//        if((dto.getDependencies() == null) || dto.getDependencies().isEmpty())  {
+//            log.fine("No Dependencies");
+//                DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(Bundle.MSG_RunEGTask_NO_DEPendencies()
+//                                                    , NotifyDescriptor.INFORMATION_MESSAGE));
+//                return;
+//        }
         
         generator = new APrioriGenerator();
         
@@ -96,7 +96,7 @@ public class RunEGTask implements IRunEGTask  {
         T.addTaskListener(new TaskListener() {
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(esito)   {
                     log.fine("RUN Executed OK");
                     DataBaseConfigurationNotifier.fire();
@@ -107,7 +107,7 @@ public class RunEGTask implements IRunEGTask  {
                 }
             }
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     } 
     
     private class RunEGTaskRunnable implements Runnable   {

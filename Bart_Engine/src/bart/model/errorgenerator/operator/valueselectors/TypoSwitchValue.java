@@ -24,6 +24,10 @@ public class TypoSwitchValue implements IDirtyStrategy {
         return new ConstantValue(valueString);
     }
 
+    public int getCharsToSwitch() {
+        return charsToSwitch;
+    }
+
     private int getRandomIndex(String value) {
         Random generator = new Random();
         int index = generator.nextInt(value.length());

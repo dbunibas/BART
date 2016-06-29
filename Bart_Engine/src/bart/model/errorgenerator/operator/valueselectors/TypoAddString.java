@@ -29,11 +29,19 @@ public class TypoAddString implements IDirtyStrategy {
     }
 
     private int selectRandomIndex(String value) {
-        if(value.isEmpty()){
+        if (value.isEmpty()) {
             return 0;
         }
         Random generator = new Random();
         return generator.nextInt(value.length());
+    }
+
+    public String getChars() {
+        return chars;
+    }
+
+    public int getCharsToAdd() {
+        return charsToAdd;
     }
 
     private String insertValue(String valueString, String chars, int selectRandomIndex) {

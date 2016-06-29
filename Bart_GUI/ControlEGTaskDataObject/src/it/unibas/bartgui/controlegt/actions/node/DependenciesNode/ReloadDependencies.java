@@ -86,7 +86,7 @@ public final class ReloadDependencies implements ActionListener {
         T.addTaskListener(new TaskListener() {
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(esito)   {     
                     dto.setEgtModified(true);
                     StatusBar.setStatus(Bundle.MSG_ReloadDependenciesExecuted(), 10,5000);
@@ -101,7 +101,7 @@ public final class ReloadDependencies implements ActionListener {
                 OutputWindow.closeOutputWindowStream(io.getOut(), io.getErr());
             }
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     }
     
     private class reloadDependeciesRunnable implements Runnable   {

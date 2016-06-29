@@ -102,7 +102,7 @@ public final class Export implements ActionListener {
         T.addTaskListener(new TaskListener() {
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(result)   {
                     System.out.println(Bundle.MSG_SAVE_OK(fileName));
                 }else{
@@ -111,7 +111,7 @@ public final class Export implements ActionListener {
                 OutputWindow.closeOutputWindowStream(io.getOut(), io.getErr());
             }
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     }
     
     
