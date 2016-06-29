@@ -8,6 +8,7 @@
         <path id="compile.classpath">
             <pathelement location="${build.dir}" />
             <pathelement location="${lib.dir}/speedy-${speedy.ver}.jar" />
+            <pathelement location="${lib.dir}/lunatic-${lunaticEngine.ver}.jar" />
             <pathelement location="${lib.dir}/slf4j-api-${slf4j.ver}.jar" />
             <pathelement location="${lib.dir}/logback-core-${logback.ver}.jar" />
             <pathelement location="${lib.dir}/logback-classic-${logback.ver}.jar" />
@@ -33,7 +34,6 @@
             <pathelement location="${lib.dir}/jackson-core-${jackson.ver}.jar" />
             <pathelement location="${lib.dir}/jackson-databind-${jackson.ver}.jar" />
             <pathelement location="${lib.dir}/jackson-dataformat-csv-${jackson.ver}.jar" />
-
             <!-- JDBC Drivers -->
             <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />
             <pathelement location="${lib.dir}/h2-1.4.182.jar" />
@@ -308,6 +308,33 @@
         <condition property="manifest.present">
             <available file="${dist.dir}/MANIFEST.MF" type="file" />    
         </condition>
+    </target>
+
+    <target name="-light-create-manifest" depends="init, -light-init-version, -check-manifest" unless="manifest.present" >
+        <manifest file="${dist.dir}/MANIFEST.MF" >
+            <attribute name="Built-by" value="${user.name}" />
+            <attribute name="Implementation-Version" value="${major.version}.${minor.version}-build${build.number}" />
+        </manifest>
+    </target>
+
+    <target name="light-jar" depends="-light-init-version, build, -check-manifest, -light-create-manifest" description="crea il jar">
+        <jar destfile="${dist.dir}/${ant.project.name}-${major.version}.${minor.version}.jar"
+             manifest="${dist.dir}/MANIFEST.MF">
+            <fileset dir="${build.dir}">
+                <include name="**/*.*" />
+                <exclude name="**/conf/**" />
+                <exclude name="**/resources/**" />
+                <exclude name="logback.xml" />
+            </fileset>
+        </jar>
+    </target>
+    
+    <target name="light-deploy" depends="light-jar" description="copia il jar sul classpath">
+        <copy todir="${lib.dir}">
+            <fileset dir="${dist.dir}">
+                <include name="${ant.project.name}-*.jar" />
+            </fileset>
+        </copy>
     </target>
 
     <!-- deploy -->
