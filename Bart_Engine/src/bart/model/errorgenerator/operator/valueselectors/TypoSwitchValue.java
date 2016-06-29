@@ -14,12 +14,16 @@ public class TypoSwitchValue implements IDirtyStrategy {
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
+        if (valueString.length() < 2) {
+            return new ConstantValue("***");
+        }
         String originalValue = valueString;
-        while (valueString.equals(originalValue)) {
-            for (int i = 0; i < charsToSwitch; i++) {
-                int index = getRandomIndex(valueString);
-                valueString = swapAt(valueString, index);
-            }
+        for (int i = 0; i < charsToSwitch; i++) {
+            int index = getRandomIndex(valueString);
+            valueString = swapAt(valueString, index);
+        }
+        if (originalValue.equals(valueString)) {
+            valueString += "***";
         }
         return new ConstantValue(valueString);
     }

@@ -13,17 +13,15 @@ public class TypoAddString implements IDirtyStrategy {
     private static final Logger logger = LoggerFactory.getLogger(TypoAddString.class);
 
     public TypoAddString(String chars, int charsToAdd) {
+        assert (charsToAdd > 0 && chars.length() > 0);
         this.chars = chars;
         this.charsToAdd = charsToAdd;
     }
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
-        String originalValue = valueString;
-        while (valueString.equals(originalValue)) {
-            for (int i = 0; i < charsToAdd; i++) {
-                valueString = insertValue(valueString, chars, selectRandomIndex(valueString));
-            }
+        for (int i = 0; i < charsToAdd; i++) {
+            valueString = insertValue(valueString, chars, selectRandomIndex(valueString));
         }
         return new ConstantValue(valueString);
     }

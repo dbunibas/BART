@@ -17,7 +17,7 @@ public class TypoRandom implements IDirtyStrategy {
         if (randomStrategy == 2) {
             return new TypoSwitchValue(1).generateNewValue(value);
         }
-        throw new UnsupportedOperationException("No others strategy");
+        throw new UnsupportedOperationException("Unknown strategy");
     }
 
     private String randomString() {

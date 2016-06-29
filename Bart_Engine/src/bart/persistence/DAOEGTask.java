@@ -66,6 +66,7 @@ public class DAOEGTask {
             loadDependecies(dependenciesElement, task);
             return task;
         } catch (Throwable ex) {
+            System.out.println("****** " + ex);
             logger.error(ex.getLocalizedMessage());
             ex.printStackTrace();
             String message = "Unable to load egtask from file " + fileTask;
@@ -133,8 +134,8 @@ public class DAOEGTask {
                 for (Object inputFileObj : importXmlElement.getChildren("input")) {
                     Element inputFileElement = (Element) inputFileObj;
                     String fileName = inputFileElement.getText();
-                    if(inputFileElement.getAttribute("table") == null) throw new DAOException("Attribute table for the tag 'input' is mandatory");
-                    if(inputFileElement.getAttribute("type") == null) throw new DAOException("Attribute type for the tag 'input' is mandatory. Use CSV or XML as value");
+                    if (inputFileElement.getAttribute("table") == null) throw new DAOException("Attribute table for the tag 'input' is mandatory");
+                    if (inputFileElement.getAttribute("type") == null) throw new DAOException("Attribute type for the tag 'input' is mandatory. Use CSV or XML as value");
                     String tableName = inputFileElement.getAttribute("table").getValue();
                     String type = inputFileElement.getAttribute("type").getValue();
                     fileName = filePathTransformator.expand(fileTask, fileName);

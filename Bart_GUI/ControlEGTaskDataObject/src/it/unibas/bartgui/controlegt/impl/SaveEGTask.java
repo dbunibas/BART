@@ -100,7 +100,7 @@ public class SaveEGTask implements ISave   {
                     System.err.println(Bundle.MSG_SaveEGTask_Failed(dto.getPrimaryFile().getName()));                  
                 }
                 OutputWindow.closeOutputWindowStream(io.getOut(), io.getErr());
-                d.setVisible(false);
+//                d.setVisible(false);
             }
             
         });

@@ -202,7 +202,7 @@ public class DAOEGTaskConfiguration {
                 }
                 if (logger.isDebugEnabled()) logger.debug("\t* Table: " + tableName.getValue() + " --- Percentage: " + percentageErrorElement.getTextTrim() + " --- Attributes to dirty: " + attributes);
                 conf.addTableForRandomErrors(tableName.getValue(), attributes);
-                conf.addPercentageForRandomErrors(tableName.getValue(), Integer.parseInt(percentageErrorElement.getTextTrim()));
+                conf.addPercentageForRandomErrors(tableName.getValue(), Double.parseDouble(percentageErrorElement.getTextTrim()));
             }
         }
         Element outlierErrorsConfiguration = configurationElement.getChild("outlierErrors");
@@ -233,9 +233,34 @@ public class DAOEGTaskConfiguration {
         if (vioGenQueriesConfiguration != null) {
             if (logger.isDebugEnabled()) logger.debug("* VioGenQueries configuration");
             VioGenQueryConfiguration defaultConfig = conf.getDefaultVioGenQueryConfiguration();
-            double probabilityFactorForSymmetricQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForSymmetricQueries");
-            defaultConfig.setProbabilityFactorForSymmetricQueries(probabilityFactorForSymmetricQueries);
-            // TODO add others configuration
+            Double probabilityFactorForSymmetricQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForSymmetricQueries");
+            if (probabilityFactorForSymmetricQueries != null) {
+                defaultConfig.setProbabilityFactorForSymmetricQueries(probabilityFactorForSymmetricQueries);
+            }
+            Double probabilityFactorForStandardQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForStandardQueries");
+            if (probabilityFactorForStandardQueries != null) {
+                defaultConfig.setProbabilityFactorForStandardQueries(probabilityFactorForStandardQueries);
+            }
+            Double offsetFactorForStandardQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForStandardQueries");
+            if (offsetFactorForStandardQueries != null) {
+                defaultConfig.setOffsetFactorForStandardQueries(offsetFactorForStandardQueries);
+            }
+            Double offsetFactorForSymmetricQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForSymmetricQueries");
+            if (offsetFactorForSymmetricQueries != null) {
+                defaultConfig.setOffsetFactorForSymmetricQueries(offsetFactorForSymmetricQueries);
+            }
+            Double probabilityFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForInequalityQueries");
+            if (probabilityFactorForInequalityQueries != null) {
+                defaultConfig.setProbabilityFactorForInequalityQueries(probabilityFactorForInequalityQueries);
+            }
+            Double offsetFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForInequalityQueries");
+            if (offsetFactorForInequalityQueries != null) {
+                defaultConfig.setOffsetFactorForInequalityQueries(offsetFactorForInequalityQueries);
+            }
+            Double windowSizeFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "windowSizeFactorForInequalityQueries");
+            if (windowSizeFactorForInequalityQueries != null) {
+                defaultConfig.setWindowSizeFactorForInequalityQueries(windowSizeFactorForInequalityQueries);
+            }
         }
         return conf;
     }
@@ -319,14 +344,17 @@ public class DAOEGTaskConfiguration {
         }
         return childred;
     }
-    
-    private double extractDouble(Element father, String attributeName) {
+
+    private Double extractDouble(Element father, String attributeName) {
         Element child = father.getChild(attributeName);
+        if (child == null) {
+            return null;
+        }
         double value = 0;
         try {
             value = Double.parseDouble(child.getValue().trim());
         } catch (NumberFormatException numberFormatException) {
-            throw new DAOException("Unable to load configuration." + attributeName +" value must be a double" );
+            throw new DAOException("Unable to load configuration." + attributeName + " value must be a double");
         }
         return value;
     }

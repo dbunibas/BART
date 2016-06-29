@@ -25,7 +25,7 @@ public class EGTaskConfiguration {
     private boolean exportDirtyDB = false;
     private String exportDirtyDBType = BartConstants.CSV;
     private String exportDirtyDBPath = null;
-    private boolean estimateRepairability = false;
+    private boolean estimateRepairability = true;
     private boolean cloneTargetSchema = true;
     private String cloneSuffix = BartConstants.DIRTY_SUFFIX;
     private boolean useSymmetricOptimization = true;
@@ -41,7 +41,7 @@ public class EGTaskConfiguration {
     private VioGenQueryConfiguration defaultVioGenQueryConfiguration = new VioGenQueryConfiguration();
     private boolean randomErrors = false;
     private Map<String, Set<String>> tablesForRandomErrors = new HashMap<String, Set<String>>(); // key: tableName  values: attributesToDirty
-    private Map<String, Integer> tablesPercentageForRandomErrors = new HashMap<String, Integer>(); // key: tableName values: percentage;
+    private Map<String, Double> tablesPercentageForRandomErrors = new HashMap<String, Double>(); // key: tableName values: percentage;
     private boolean outlierErrors = false;
     private OutlierErrorConfiguration outlierErrorConfiguration = new OutlierErrorConfiguration();
     private IDirtyStrategy defaultDirtyStrategy;
@@ -292,11 +292,11 @@ public class EGTaskConfiguration {
         return tablesForRandomErrors.get(tableName);
     }
 
-    public void addPercentageForRandomErrors(String tableName, int percentage) {
+    public void addPercentageForRandomErrors(String tableName, double percentage) {
         this.tablesPercentageForRandomErrors.put(tableName, percentage);
     }
 
-    public int getPercentageForRandomErrors(String tableName) {
+    public double getPercentageForRandomErrors(String tableName) {
         return tablesPercentageForRandomErrors.get(tableName);
     }
 

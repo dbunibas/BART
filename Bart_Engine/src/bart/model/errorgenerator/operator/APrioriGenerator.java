@@ -51,7 +51,7 @@ public class APrioriGenerator implements IInitializableOperator {
         if (logger.isDebugEnabled()) logger.debug("Executing APriori Algorithm on task " + task);
         EGTaskConfiguration configuration = task.getConfiguration();
         if (configuration.isPrintLog()) System.out.println(BartConstants.PRINT_SEPARATOR);
-        if (configuration.isPrintLog()) System.out.println("*** Executing a priori algorithm on task\n" + task);
+//        if (configuration.isPrintLog()) System.out.println("*** Executing a priori algorithm on task\n" + task);
         if (configuration.isCheckCleanInstance()) {
             cleanInstanceChecker.check(task.getDCs(), task.getSource(), task.getTarget(), task);
         }

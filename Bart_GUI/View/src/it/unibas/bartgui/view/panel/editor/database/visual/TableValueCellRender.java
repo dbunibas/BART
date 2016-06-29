@@ -10,13 +10,13 @@ import javax.swing.table.DefaultTableCellRenderer;
  *
  * @author Grandinetti Giovanni <grandinetti.giovanni13@gmail.com>
  */
-public class TableValueCellRender extends DefaultTableCellRenderer   {
+public class TableValueCellRender extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        String cell = value.toString();
-        if(cell.contains("<!CellChanged!>"))    {
-           String cellValue = cell.replace("<!CellChanged!>", "");
+        String cell = (value == null ? "" : value.toString());
+        if (cell.contains("<!CellChanged!>")) {
+            String cellValue = cell.replace("<!CellChanged!>", "");
             JLabel label = new JLabel();
             label.setOpaque(true);
             label.setBackground(new Color(255, 92, 51));
@@ -26,7 +26,5 @@ public class TableValueCellRender extends DefaultTableCellRenderer   {
         }
         return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     }
-    
-    
-    
+
 }

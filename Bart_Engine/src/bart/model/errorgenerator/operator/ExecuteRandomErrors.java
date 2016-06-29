@@ -42,18 +42,15 @@ public class ExecuteRandomErrors implements IInitializableOperator {
     }
 
     private void dirtyTable(String tableName, EGTask task, CellChanges cellChanges, CellChanges detectableChanges) {
-        /*
-         Dirties table at most for percentage wrt attributes to dirty sizes
-         */
         if (task.getConfiguration().isDebug()) System.out.println("Start to add random errors into table: " + tableName);
         ITable table = task.getTarget().getTable(tableName);
         if (task.getConfiguration().isPrintLog()) System.out.println("Adding random errors into table: " + tableName + " - size: " + table.getSize());
         Set<String> attributesForRandomErrors = task.getConfiguration().getAttributesForRandomErrors(tableName);
         if (task.getConfiguration().isDebug()) System.out.println("Attributes to dirty: " + attributesForRandomErrors);
         checkAttributes(table, attributesForRandomErrors);
-        int percentage = task.getConfiguration().getPercentageForRandomErrors(tableName);
+        double percentage = task.getConfiguration().getPercentageForRandomErrors(tableName);
         if (task.getConfiguration().isDebug()) System.out.println("Percentage to dirty for attributes: " + percentage);
-        double percentageValue = ((double) percentage) / 100;
+        double percentageValue = percentage / 100.0;
         ITupleIterator it = table.getTupleIterator();
         while (it.hasNext()) {
             Tuple tuple = it.next();
@@ -72,6 +69,7 @@ public class ExecuteRandomErrors implements IInitializableOperator {
 
         }
         it.close();
+        if (task.getConfiguration().isDebug()) System.out.println("Random errors generated");
     }
 
     private RandomCellChange buildCellChange(Cell cell, EGTask task) {

@@ -9,18 +9,20 @@ public class TypoRemoveString implements IDirtyStrategy {
     private int charsToRemove;
 
     public TypoRemoveString(int charsToRemove) {
+        assert (charsToRemove > 0);
         this.charsToRemove = charsToRemove;
     }
 
     public IValue generateNewValue(IValue value) {
         String valueString = value + "";
-        String originalValue = valueString;
-        while (originalValue.equals(valueString)) {
-            int changes = 0;
-            while (!valueString.isEmpty() && changes < charsToRemove) {
-                int randomIndex = selectRandomIndex(valueString);
-                valueString = removeChars(valueString, randomIndex);
-                changes++;
+        if (valueString.length() <= charsToRemove) {
+            return (valueString.isEmpty() ? new ConstantValue("***") : new ConstantValue(""));
+        }
+        for (int i = 0; i < charsToRemove; i++) {
+            int randomIndex = selectRandomIndex(valueString);
+            valueString = removeChars(valueString, randomIndex);
+            if (valueString.isEmpty()) {
+                break;
             }
         }
         return new ConstantValue(valueString);

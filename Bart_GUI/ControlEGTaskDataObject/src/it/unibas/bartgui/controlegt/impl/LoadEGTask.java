@@ -114,7 +114,7 @@ public class LoadEGTask implements ILoadEGTask  {
 
             @Override
             public void taskFinished(Task task) {
-                d.setVisible(false);
+//                d.setVisible(false);
                 if(esito)   {
                     log.fine("Esito true -> Dataobject to CentralLookup");
                     RootNodeNotifier.fire();
@@ -129,10 +129,10 @@ public class LoadEGTask implements ILoadEGTask  {
                     egtDO.getLookup().lookup(OpenCookie.class).open();
                     StatusBar.setStatus(Bundle.MSG_STATUS_ConfLoadError(), 10, 3000);
                 }
-                d.setVisible(false);
+//                d.setVisible(false);
             }
         });
-        d.setVisible(true);
+//        d.setVisible(true);
     }
 
     

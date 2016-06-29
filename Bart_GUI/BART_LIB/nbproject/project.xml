@@ -676,6 +676,22 @@
                 <runtime-relative-path>ext/jdom.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jdom.jar</binary-origin>
             </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jackson-annotations.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jackson-annotations.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jackson-core.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jackson-core.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jackson-databind.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jackson-databind.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jackson-dataformat-csv.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jackson-dataformat-csv.jar</binary-origin>
+            </class-path-extension>
         </data>
     </configuration>
 </project>
