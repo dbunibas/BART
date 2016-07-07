@@ -73,6 +73,7 @@
     <!--<logger name="speedy.persistence.file.operators.ImportCSVFileWithCopy" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.file.operators.ImportXMLFile" level="DEBUG"/>-->
     <!--<logger name="speedy.model.algebra.operators.sql.SQLBatchInsert" level="DEBUG"/>-->
+    <logger name="speedy.persistence.xml.operators.TransformFilePaths" level="DEBUG"/>
     <!--     STATS     -->
     <!--<logger name="bart.model.errorgenerator.operator.ErrorGeneratorStats" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.QueryStatManager" level="DEBUG"/>-->
