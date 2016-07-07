@@ -15,17 +15,6 @@ Additional material about the project (papers and example datasets) can be found
 ![image](http://db.unibas.it/projects/bart/images/bart-screenshot.png)
 ---
 
-### How to run the GUI
-In order to execute the GUI of Bart, you need to import the project into NetBeans ([link](https://netbeans.org/)), using the following steps: 
-
-1. In NetBeans, File -> Open projects... and select the project folder `Bart_GUI`
-2. Run the module `Bart_GUI`
-
-
-A binary release of GUI indipendent from NetBeans will be released in a few days.
-
----
-
 ### How to run an EGTask on the console
 Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employees/employees-dbms-2k-egtask.xml`
 
