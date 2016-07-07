@@ -70,6 +70,9 @@
     <!--<logger name="speedy.utility.DBMSUtility" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.relational.QueryStatManager" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.relational.QueryManager" level="TRACE"/>-->
+    <!--<logger name="speedy.persistence.file.operators.ImportCSVFileWithCopy" level="DEBUG"/>-->
+    <!--<logger name="speedy.persistence.file.operators.ImportXMLFile" level="DEBUG"/>-->
+    <!--<logger name="speedy.model.algebra.operators.sql.SQLBatchInsert" level="DEBUG"/>-->
     <!--     STATS     -->
     <!--<logger name="bart.model.errorgenerator.operator.ErrorGeneratorStats" level="DEBUG"/>-->
     <!--<logger name="bart.persistence.relational.QueryStatManager" level="DEBUG"/>-->
