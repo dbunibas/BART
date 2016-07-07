@@ -302,22 +302,6 @@ public class VioGenQueryConfigurationWrapper implements Serializable   {
     }
 
     /**
-     * @return the maxNumberOfRowsForSingleTupleQueries
-     */
-    public int getMaxNumberOfRowsForSingleTupleQueries() {
-        return cfg.getMaxNumberOfRowsForSingleTupleQueries();
-    }
-
-    /**
-     * @param maxNumberOfRowsForSingleTupleQueries the maxNumberOfRowsForSingleTupleQueries to set
-     */
-    public void setMaxNumberOfRowsForSingleTupleQueries(int maxNumberOfRowsForSingleTupleQueries) {
-        int old = cfg.getMaxNumberOfRowsForSingleTupleQueries();
-        pcs.firePropertyChange("maxNumberOfRowsForSingleTupleQueries", old, maxNumberOfRowsForSingleTupleQueries);
-        cfg.setMaxNumberOfRowsForSingleTupleQueries(maxNumberOfRowsForSingleTupleQueries);
-    }
-
-    /**
      * @return the useLimitInStandardQueries
      */
     public boolean isUseLimitInStandardQueries() {

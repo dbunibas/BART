@@ -15,6 +15,12 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>it.unibas.bart.gui.branding</code-name-base>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>it.unibas.bartgui.egtaskdataobject</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -86,6 +92,12 @@
                     <run-dependency>
                         <release-version>1</release-version>
                         <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modules.autoupdate.services</code-name-base>
+                    <run-dependency>
+                        <specification-version>1.51.2</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>

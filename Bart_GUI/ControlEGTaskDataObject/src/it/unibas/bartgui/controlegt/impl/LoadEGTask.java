@@ -66,13 +66,15 @@ import speedy.utility.DBMSUtility;
     "# {0} - file name",
     "MSG_STATUS_Close=File {0} is modified. \n Save it ?"
 })
-public class LoadEGTask implements ILoadEGTask  {
-    private static Logger log; 
-    static{
+public class LoadEGTask implements ILoadEGTask {
+
+    private static Logger log;
+
+    static {
         log = Logger.getLogger(LoadEGTask.class.getName());
         log.setLevel(Level.INFO);
     }
-    
+
     private DataObject egtDO;
     private EGTaskConfiguration conf;
     private static DAOEGTaskConfiguration daoTaskConfiguration = new DAOEGTaskConfiguration();
@@ -82,32 +84,31 @@ public class LoadEGTask implements ILoadEGTask  {
     private EGTask task = null;
     private String fileTask;
     private boolean esito = false;
-    
-    
+
     @Override
-    public void load(FileObject file) { 
-        
+    public void load(FileObject file) {
+
         log.fine("Close EGTaskDataObjectDataObject");
         EGTaskDataObjectDataObject oldDto = CentralLookup.getDefLookup().lookup(EGTaskDataObjectDataObject.class);
-        if((oldDto != null)&&(!oldDto.close()))return;
-        
+        if ((oldDto != null) && (!oldDto.close())) return;
+
         log.fine("Close TopComponents");
-        for(TopComponent tc : WindowManager.getDefault().getRegistry().getOpened())   {
-            if(WindowManager.getDefault().isEditorTopComponent(tc))   {
+        for (TopComponent tc : WindowManager.getDefault().getRegistry().getOpened()) {
+            if (WindowManager.getDefault().isEditorTopComponent(tc)) {
                 tc.close();
-            }         
+            }
         }
-        
-        try{
+
+        try {
             log.fine("Find DataObject for a file");
             egtDO = DataObject.find(file);
-        }catch(DataObjectNotFoundException donf)   {
+        } catch (DataObjectNotFoundException donf) {
             ErrorManager.getDefault().notify(ErrorManager.ERROR, donf);
             StatusBar.setStatus(Bundle.MSG_STATUS_ConfNotLoaded(), 10, 3000);
-            log.log(Level.SEVERE,"DataObject notFound",donf);
+            log.log(Level.SEVERE, "DataObject notFound", donf);
             return;
         }
-        
+
         final Dialog d = BusyDialog.getBusyDialog();
         RequestProcessor.Task T = RequestProcessor.getDefault().post(new LoadEGTaskRunnable());
         T.addTaskListener(new TaskListener() {
@@ -115,14 +116,14 @@ public class LoadEGTask implements ILoadEGTask  {
             @Override
             public void taskFinished(Task task) {
 //                d.setVisible(false);
-                if(esito)   {
+                if (esito) {
                     log.fine("Esito true -> Dataobject to CentralLookup");
                     RootNodeNotifier.fire();
                     CentralLookup.getDefLookup().add(egtDO);
                     log.fine("Set Node Statistic");
                     CentralLookup.getDefLookup().add(new RootNodeStatistic(Children.create(new StatisticNodeFactory(), true)));
                     StatusBar.setStatus(Bundle.MSG_STATUS_ConfLoaded(), 10, 3000);
-                }else{
+                } else {
                     log.fine("Esito false -> ");
                     RootNodeNotifier.fire();
                     CentralLookup.getDefLookup().add(egtDO);
@@ -135,9 +136,8 @@ public class LoadEGTask implements ILoadEGTask  {
 //        d.setVisible(true);
     }
 
-    
-   
-    private class LoadEGTaskRunnable implements Runnable   {
+    private class LoadEGTaskRunnable implements Runnable {
+
         @Override
         public void run() {
             log.fine("START THREAD LOAD EGTASK");
@@ -147,171 +147,147 @@ public class LoadEGTask implements ILoadEGTask  {
             final ProgressHandle progr = ProgressHandleFactory.createHandle("Loading.... EGTask");
             progr.start();
             FileLock lock = null;
-            try{
+            try {
                 log.fine("lock primary file");
                 lock = egtDO.getPrimaryFile().lock();
-                
+
                 File taskFile = FileUtil.toFile(egtDO.getPrimaryFile());
-                 progr.progress("File loaded");
-                log.fine("File loaded -> "+taskFile.getName());
+                progr.progress("File loaded");
+                log.fine("File loaded -> " + taskFile.getName());
                 fileTask = taskFile.getAbsolutePath();
-                
+
                 conf = daoTaskConfiguration.loadConfiguration(fileTask);
-                 progr.progress("Configuration loaded");
+                progr.progress("Configuration loaded");
                 log.fine("Configuration loaded");
-                
+
                 if (conf.isRecreateDBOnStart()) {
                     log.fine("Remove DB if exist");
                     progr.progress("Remove DB if exist");
                     removeExistingDB(fileTask);
                 }
-                
-                task = daoTask.loadTask(fileTask);  
+
+                task = daoTask.loadTask(fileTask);
                 progr.progress("EGTask loaded");
                 log.fine("EGTask loaded");
-                
-                if((task.getTarget()!= null) && (!(task.getTarget()instanceof EmptyDB)) )   {
-                        log.fine("Generate Dependency");
-                        for (Dependency dc : task.getDCs()) {
+
+                if ((task.getTarget() != null) && (!(task.getTarget() instanceof EmptyDB))) {
+                    log.fine("Generate Dependency");
+                    for (Dependency dc : task.getDCs()) {
                         dc.setVioGenQueries(vioGenQueriesGenerator.generateVioGenQueries(dc, task));
-                    }                   
+                    }
                 }
 
                 progr.progress("Dependency generated");
                 log.fine("Dependency generated");
-               
-                
-                
+
                 String dependencies = loadStringDependecyElement(fileTask);
                 loadStringMainMemoryDatabase(fileTask);
                 task.setAbsolutePath(fileTask);
-                ((EGTaskDataObjectDataObject)egtDO).setEGTask(task);
-                ((EGTaskDataObjectDataObject)egtDO).setDependencies((dependencies == null) ? null : dependencies.trim());
+                ((EGTaskDataObjectDataObject) egtDO).setEGTask(task);
+                ((EGTaskDataObjectDataObject) egtDO).setDependencies((dependencies == null) ? null : dependencies.trim());
 
-                System.out.println("CONFIGURATION: "+egtDO.getPrimaryFile().getName()+"  LOADED");
-                esito=true;
+                System.out.println("CONFIGURATION: " + egtDO.getPrimaryFile().getName() + "  LOADED");
+                esito = true;
                 log.fine("FINISH LOAD EGTASK");
-            }catch(FileAlreadyLockedException farl){
-                progr.progress("File Locked FileAlreadyLockedException");
-                log.log(Level.SEVERE,"File Locked FileAlreadyLockedException",farl);
-                ErrorManager.getDefault().notify(ErrorManager.USER,farl);
-                System.err.println("File Locked FileAlreadyLockedException");
-                esito=false;
-            }catch(DAOException daoe){
-                progr.progress("Error load configuration DAOException");
-                log.log(Level.SEVERE,"Error load configuration DAOException",daoe);
-                ErrorManager.getDefault().notify(ErrorManager.USER,daoe);
-                System.err.println("ERROR LOANDING CONFIGURATION DAOException");
-                esito=false;
-            }catch(DBMSException dbmsex){
-                progr.progress("Error load configuration DBMSException");
-                log.log(Level.SEVERE,"Error load configuration DBMSException",dbmsex);
-                CentralLookup.getDefLookup().add(egtDO);
-                ErrorManager.getDefault().notify(ErrorManager.USER,dbmsex);
-                System.err.println("ERROR LOANDING CONFIGURATION DBMSException");
-                esito=false;
-            }catch(Exception ex){
-                progr.progress("Error load configuration");
-                log.log(Level.SEVERE,"Error load configuration",ex);
-                CentralLookup.getDefLookup().add(egtDO);
-                ErrorManager.getDefault().notify(ErrorManager.USER,ex);
-                System.err.println("ERROR LOANDING CONFIGURATION Exception");
-                esito=false;
-            }finally{
-                if(lock != null)lock.releaseLock();
+            } catch (Exception ex) {
+                progr.progress("An error occurred. " + ex.getLocalizedMessage());
+                log.log(Level.SEVERE, "An error occurred", ex);
+                ErrorManager.getDefault().notify(ErrorManager.USER, ex);
+                System.err.println("An error occurred " + ex.getLocalizedMessage());
+                esito = false;
+            } finally {
+                if (lock != null) lock.releaseLock();
                 OutputWindow.closeOutputWindowStream(io.getOut(), io.getErr());
                 progr.finish();
                 log.fine("Close OutputWindow and progressBar");
             }
         }
     }
-    
-    private String loadStringDependecyElement(String path)   { 
+
+    private String loadStringDependecyElement(String path) {
         //FOR EGTaskDataObject simple string 
         DAOXmlUtility daoUtility = new DAOXmlUtility();
         String dependencies = null;
-        try{     
+        try {
             log.fine("Init load String dependency Element");
             org.jdom.Document document = daoUtility.buildDOM(path);
             Element rootElement = document.getRootElement();
             Element dependenciesElement = rootElement.getChild("dependencies");
-            if(dependenciesElement != null)   {
+            if (dependenciesElement != null) {
                 dependencies = dependenciesElement.getValue().trim();
                 log.fine("Finish load String dependency Element");
                 return dependencies;
             }
-        }catch(Exception ex)   {
-            log.log(Level.WARNING,"load String Dependecy Element  FAILED",ex);
+        } catch (Exception ex) {
+            log.log(Level.WARNING, "load String Dependecy Element  FAILED", ex);
             System.err.println(".......");
         }
         return dependencies;
     }
-    
-    private void loadStringMainMemoryDatabase(String path)   {
+
+    private void loadStringMainMemoryDatabase(String path) {
         //FOR EGTaskDataObject simple string 
-        try{
+        try {
             log.entering(getClass().getName(), "loadStringMainMemoryDatabase");
             log.fine("Init load String reference to file MainMemory DB");
             DAOXmlUtility daoUtility = new DAOXmlUtility();
             org.jdom.Document document = daoUtility.buildDOM(path);
             Element rootElement = document.getRootElement();
-            Element keySource= rootElement.getChild("source");
-            if(keySource != null)   {
-                loadForKeyMainMem(keySource,path);
+            Element keySource = rootElement.getChild("source");
+            if (keySource != null) {
+                loadForKeyMainMem(keySource, path);
             }
-            Element keyTarget= rootElement.getChild("target");
-            if(keyTarget != null)   {
-                loadForKeyMainMem(keyTarget,path);
+            Element keyTarget = rootElement.getChild("target");
+            if (keyTarget != null) {
+                loadForKeyMainMem(keyTarget, path);
             }
             log.fine("Finish load String reference to file MainMemory DB");
             log.exiting(getClass().getName(), "loadStringMainMemoryDatabase");
-        }catch(Exception ex)   {
-            log.log(Level.WARNING,"load String MainMemoryDatabase",ex);
+        } catch (Exception ex) {
+            log.log(Level.WARNING, "load String MainMemoryDatabase", ex);
             log.exiting(getClass().getName(), "loadStringMainMemoryDatabase");
             System.err.println(".......");
         }
     }
-    
-    private void loadForKeyMainMem(Element keyElement,String path)   {
+
+    private void loadForKeyMainMem(Element keyElement, String path) {
         Element typeElement = keyElement.getChild("type");
-        if(typeElement.getValue().equals("XML"))   {
+        if (typeElement.getValue().equals("XML")) {
             Element xmlElement = keyElement.getChild("xml");
             String schemaRelativeFile = xmlElement.getChild("xml-schema").getValue();
             String schemaAbsoluteFile = filePathTransformator.expand(path, schemaRelativeFile);
             String instanceRelativeFile = xmlElement.getChild("xml-instance").getValue();
             String instanceAbsoluteFile = null; //Optional field
             if (instanceRelativeFile != null && !instanceRelativeFile.trim().isEmpty()) {
-                        instanceAbsoluteFile = filePathTransformator.expand(path, instanceRelativeFile);
+                instanceAbsoluteFile = filePathTransformator.expand(path, instanceRelativeFile);
             }
-            if(keyElement.getValue().equals("source"))   {
-                ((EGTaskDataObjectDataObject)egtDO).setXmlInstanceFilePathSourceDB(instanceAbsoluteFile);
-                ((EGTaskDataObjectDataObject)egtDO).setXmlSchemaFilePathSourceDB(schemaAbsoluteFile);
-                ((EGTaskDataObjectDataObject)egtDO).setMainMemoryGenerateSource(false);
+            if (keyElement.getValue().equals("source")) {
+                ((EGTaskDataObjectDataObject) egtDO).setXmlInstanceFilePathSourceDB(instanceAbsoluteFile);
+                ((EGTaskDataObjectDataObject) egtDO).setXmlSchemaFilePathSourceDB(schemaAbsoluteFile);
+                ((EGTaskDataObjectDataObject) egtDO).setMainMemoryGenerateSource(false);
             }
-            if(keyElement.getValue().equals("target"))   {
-                ((EGTaskDataObjectDataObject)egtDO).setXmlInstanceFilePathTargetDB(instanceAbsoluteFile);
-                ((EGTaskDataObjectDataObject)egtDO).setXmlSchemaFilePathTargetDB(schemaAbsoluteFile);
-                ((EGTaskDataObjectDataObject)egtDO).setMainMemoryGenerateTager(false);
+            if (keyElement.getValue().equals("target")) {
+                ((EGTaskDataObjectDataObject) egtDO).setXmlInstanceFilePathTargetDB(instanceAbsoluteFile);
+                ((EGTaskDataObjectDataObject) egtDO).setXmlSchemaFilePathTargetDB(schemaAbsoluteFile);
+                ((EGTaskDataObjectDataObject) egtDO).setMainMemoryGenerateTager(false);
             }
         }
-        if(typeElement.getValue().equals("GENERATE"))   {
+        if (typeElement.getValue().equals("GENERATE")) {
             Element plainInstanceElement = keyElement.getChild("generate");
             String plainInstance = plainInstanceElement.getValue();
-            if(keyElement.getName().equals("source"))   {
-                ((EGTaskDataObjectDataObject)egtDO).setPlainInstanceGenerateSourceDB(plainInstance.trim());
-                ((EGTaskDataObjectDataObject)egtDO).setMainMemoryGenerateSource(true);
+            if (keyElement.getName().equals("source")) {
+                ((EGTaskDataObjectDataObject) egtDO).setPlainInstanceGenerateSourceDB(plainInstance.trim());
+                ((EGTaskDataObjectDataObject) egtDO).setMainMemoryGenerateSource(true);
             }
-            if(keyElement.getName().equals("target"))   {
-                ((EGTaskDataObjectDataObject)egtDO).setPlainInstanceGenerateTargetDB(plainInstance.trim());
-                ((EGTaskDataObjectDataObject)egtDO).setMainMemoryGenerateTager(true);
+            if (keyElement.getName().equals("target")) {
+                ((EGTaskDataObjectDataObject) egtDO).setPlainInstanceGenerateTargetDB(plainInstance.trim());
+                ((EGTaskDataObjectDataObject) egtDO).setMainMemoryGenerateTager(true);
             }
         }
     }
-    
 
-       
     private static void removeExistingDB(String fileTask) {
-        try {        
+        try {
             AccessConfiguration accessConfiguration = loadTargetAccessConfiguration(fileTask);
             if (accessConfiguration == null) {
                 return;
@@ -322,12 +298,12 @@ public class LoadEGTask implements ILoadEGTask  {
         } catch (DBMSException ex) {
             String message = ex.getMessage();
             if (!message.contains("does not exist")) {
-                log.log(Level.WARNING,"Unable to drop database.\n", ex);
+                log.log(Level.WARNING, "Unable to drop database.\n", ex);
                 System.out.println("Unable to drop database. does not exist\n");
             }
-        }catch (Exception ex)   {
-           log.log(Level.WARNING,"Unable to drop database.\n",ex);
-            System.out.println("Unable to drop database.\n"+ex);
+        } catch (Exception ex) {
+            log.log(Level.WARNING, "Unable to drop database.\n", ex);
+            System.out.println("Unable to drop database.\n" + ex);
         }
     }
 
@@ -348,4 +324,4 @@ public class LoadEGTask implements ILoadEGTask  {
         return accessConfiguration;
     }
 
-} 
+}

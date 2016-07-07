@@ -20,13 +20,12 @@ public class VioGenQueryConfiguration implements Cloneable {
     private double offsetFactorForSymmetricQueries = 0.3;
     private double offsetFactorForInequalityQueries = 0.3;
     private double offsetFactorForSingleTupleQueries = 0.3;
-    private int maxNumberOfRowsForSingleTupleQueries = 3;
     private boolean useLimitInStandardQueries = true;
     private boolean useLimitInSymmetricQueries = false;
     private boolean useLimitInInequalityQueries = true;
     private boolean useLimitInSingleTupleQueries = true;
     private boolean useOffsetInStandardQueries = true;
-    private boolean useOffsetInSymmetricQueries = false;
+    private boolean useOffsetInSymmetricQueries = true;
     private boolean useOffsetInInequalityQueries = true;
     private boolean useOffsetInSingleTupleQueries = false;
     private String queryExecutor;
@@ -244,14 +243,6 @@ public class VioGenQueryConfiguration implements Cloneable {
 
     public void setProbabilityFactorForSingleTupleQueries(double probabilityFactorForSingleTupleQueries) {
         this.probabilityFactorForSingleTupleQueries = probabilityFactorForSingleTupleQueries;
-    }
-
-    public int getMaxNumberOfRowsForSingleTupleQueries() {
-        return maxNumberOfRowsForSingleTupleQueries;
-    }
-
-    public void setMaxNumberOfRowsForSingleTupleQueries(int maxNumberOfRowsForSingleTupleQueries) {
-        this.maxNumberOfRowsForSingleTupleQueries = maxNumberOfRowsForSingleTupleQueries;
     }
 
     public String getQueryExecutor() {

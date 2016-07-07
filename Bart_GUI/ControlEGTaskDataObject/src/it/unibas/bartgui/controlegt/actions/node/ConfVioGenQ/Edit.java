@@ -129,11 +129,6 @@ public final class Edit implements ActionListener {
                                 .setOffsetFactorForSingleTupleQueries(Double.parseDouble(panel.getPanel()
                                                         .getOffsetFactorForSingleTupleQueriesjTextField1().getText()));
                         
-                        task.getConfiguration()
-                                .getDefaultVioGenQueryConfiguration()
-                                .setMaxNumberOfRowsForSingleTupleQueries(Integer.parseInt(panel.getPanel()
-                                                        .getMaxNumberOfRowsForSingleTupleQueriesjTextField1().getText()));
-                        
                         
                         task.getConfiguration()
                                 .getDefaultVioGenQueryConfiguration()
@@ -211,8 +206,6 @@ public final class Edit implements ActionListener {
         panel.getPanel().getOffsetFactorForSymmetricQueriesjTextField1().setText(c.getOffsetFactorForSymmetricQueries()+"");
         panel.getPanel().getOffsetFactorForInequalityQueriesjTextField1().setText(c.getOffsetFactorForInequalityQueries()+"");
         panel.getPanel().getOffsetFactorForSingleTupleQueriesjTextField1().setText(c.getOffsetFactorForSingleTupleQueries()+"");
-        
-        panel.getPanel().getMaxNumberOfRowsForSingleTupleQueriesjTextField1().setText(c.getMaxNumberOfRowsForSingleTupleQueries()+"");
         
         panel.getPanel().getUseLimitInStandardQueriesjCheckBox1().setSelected(c.isUseLimitInStandardQueries());
         panel.getPanel().getUseLimitInSymmetricQueriesjCheckBox1().setSelected(c.isUseLimitInSymmetricQueries());
