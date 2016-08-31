@@ -25,7 +25,7 @@ public class EGTaskConfiguration {
     private boolean exportDirtyDB = false;
     private String exportDirtyDBType = BartConstants.CSV;
     private String exportDirtyDBPath = null;
-    private boolean estimateRepairability = true;
+    private boolean estimateRepairability = false;
     private boolean cloneTargetSchema = true;
     private String cloneSuffix = BartConstants.DIRTY_SUFFIX;
     private boolean useSymmetricOptimization = true;
