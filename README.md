@@ -21,7 +21,7 @@ Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employ
 ---
 
 ### How to configure an EGTask
-An EGTask is specified in an .xml file ([here a template](https://github.com/dbunibas/BART/tree/master/examples/template-task)), with the following sections:
+An EGTask is specified in an .xml file ([here a template](https://github.com/dbunibas/BART/blob/master/examples/template-task/template-egtask.xml)), with the following sections:
 
 #####**1. Database configuration** #####
 Is used to specify the JDBC parameters to access the DBMS.
