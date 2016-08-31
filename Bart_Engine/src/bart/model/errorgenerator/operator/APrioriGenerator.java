@@ -107,7 +107,6 @@ public class APrioriGenerator implements IInitializableOperator {
             if (task.getConfiguration().isPrintLog()) System.out.println(BartUtility.printCollection(dc.getVioGenQueries()));
         }
         vioGenQueriesGenerator.setErrorPercentages(task);
-
     }
 
     private CellChanges executeVioGenQueries(EGTask task) {

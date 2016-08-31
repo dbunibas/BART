@@ -410,6 +410,9 @@ public class BartDBMSUtility {
         if (columnType.equals(Types.BOOLEAN)) {
             return "bool";
         }
+        if (columnType.equals(Types.LONG)) {
+            return "float";
+        }
         return "text";
     }
 

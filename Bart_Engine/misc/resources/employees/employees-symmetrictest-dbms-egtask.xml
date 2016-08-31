@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <source>
+    <type>DBMS</type>
+    <access-configuration>
+      <driver>org.postgresql.Driver</driver>
+      <uri>jdbc:postgresql:bart_employees</uri>
+      <schema>source</schema>
+      <login>pguser</login>
+      <password>pguser</password>
+    </access-configuration>
+    <init-db>
+<![CDATA[
+create schema source;
+SET search_path = source, pg_catalog;
+
+create table md (
+  oid serial,
+  name varchar(50),
+  salary float,
+  manager varchar(50)
+);
+
+insert into md(name, salary, manager) values ('Bob', 1000, 'John');
+]]>
+    </init-db>
+  </source>
+  <target> 
+    <type>DBMS</type>
+    <access-configuration>
+      <driver>org.postgresql.Driver</driver>
+      <uri>jdbc:postgresql:bart_employees</uri>
+      <schema>target</schema>
+      <login>pguser</login>
+      <password>pguser</password>
+    </access-configuration>
+    <init-db>
+<![CDATA[
+create schema target;
+SET search_path = target, pg_catalog;
+
+create table emp (
+  oid serial,
+  name varchar(50),
+  dept varchar(50),
+  salary float,
+  manager varchar(50)
+);
+
+insert into emp(name, dept, salary, manager) values ('Bob', 'Marketing', 1000, 'John');
+insert into emp(name, dept, salary, manager) values ('John', 'Marketing', 2000, 'Carl');
+insert into emp(name, dept, salary, manager) values ('John', 'Marketing', 3000, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Mark', 'Staff', 1000, 'Frank');
+insert into emp(name, dept, salary, manager) values ('Frank', 'Sales', 2000, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Frank', 'Sales', 2500, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Frank', 'Sales', 3500, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Carl', 'Managment', 5000, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Ross', 'Shipping', 1300, 'John');
+insert into emp(name, dept, salary, manager) values ('Jeff', 'Shipping', 1300, 'John');
+insert into emp(name, dept, salary, manager) values ('Jess', 'Shipping', 1500, 'Carl');
+insert into emp(name, dept, salary, manager) values ('Jess', 'Shipping', 1500, 'Carl');
+]]>
+    </init-db>
+  </target>
+    <dependencies>
+<![CDATA[
+DCs:
+e1: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $d1 != $d2 -> #fail.
+
+e2: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $d1 == $d2, $d1 == "Sales", $m1 != $m2 -> #fail.
+
+e3: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+        $d1 == "Staff", $s1 != 1000 -> #fail.
+
+e4: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    md(name: $n2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $m1 != $m2 -> #fail.
+
+e5: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $m1 == $n2, $s2 < $s1 -> #fail.
+
+//e6: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+//    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+//        $n1 == $n2, $d1 != $d2, $n1 == "John" -> #fail.
+
+e7: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $s1 == $s2 -> #fail.
+
+e8: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $m1 == $m2, $s1 == $s2, $s1 > 1000 -> #fail.
+
+e9: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $d1 != $d2, $d1 == "Sales" -> #fail.
+
+e10: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+        $n1 == $n2, $d1 == $d2, $m1 != $m2 -> #fail.
+]]>
+    </dependencies>
+    <authoritativeSources>
+        <source>md</source>
+    </authoritativeSources>
+    <configuration>
+        <!-- EMPTY CONFIGURATION - (for test only) -->
+    </configuration>
+</task>

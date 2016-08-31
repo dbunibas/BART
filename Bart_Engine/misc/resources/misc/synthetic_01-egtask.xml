@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+    <target>    
+        <type>GENERATE</type>
+        <generate>
+<![CDATA[
+SCHEMA:
+r(a, b, c)
+INSTANCE:
+r(a: "a1", b: "b1", c: "c1")
+r(a: "a2", b: "b2", c: "c2")
+]]>
+        </generate>
+    </target>
+    <dependencies>
+<![CDATA[
+DCs:
+d1: r(a: $x1, b: $y1, c: $z1), 
+    r(a: $x2, b: $y2, c: $z2), 
+        $x1 == $x2, $y1 != $y2 -> #fail.
+
+d2: r(a: $x1, b: $y1, c: $z1), 
+    r(a: $x2, b: $y2, c: $z2), 
+        $x1 == $y2, $y1 != $x2 -> #fail.
+
+d3: r(a: $x1, b: $y1, c: $z1), 
+    r(a: $x2, b: $y2, c: $z2), 
+    r(a: $x3, b: $y3, c: $z3), 
+    r(a: $x4, b: $y4, c: $z4), 
+        $x1 == $x3, $x2 == $x4,
+        $x1 == $y2, $y1 != $x2,
+        $x3 == $y4, $y3 != $x4 -> #fail.
+]]>
+    </dependencies>
+    <configuration>
+        <!-- EMPTY CONFIGURATION - (for test only) -->
+    </configuration>
+</task>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE doc [
+<!ENTITY SIZE "5">
+]>
+<task>
+    <!-- ****************************************************
+                                         DATABASES
+    **************************************************** -->
+    <source>
+        <type>DBMS</type>
+        <access-configuration>
+            <driver>org.postgresql.Driver</driver>
+            <uri>jdbc:postgresql:bart_employees_&SIZE;</uri>
+            <schema>source</schema>
+            <login>pguser</login>
+            <password>pguser</password>
+        </access-configuration>
+        <import createTables="true">
+            <input table="md" type="xml">./xml/&SIZE;tuples_md.xml</input>
+        </import>
+    </source>
+    <target> 
+        <type>DBMS</type>
+        <access-configuration>
+            <driver>org.postgresql.Driver</driver>
+            <uri>jdbc:postgresql:bart_employees_&SIZE;</uri>
+            <schema>target</schema>
+            <login>pguser</login>
+            <password>pguser</password>
+        </access-configuration>
+        <import createTables="true">
+            <input table="emp" type="xml">./xml/&SIZE;tuples_emp.xml</input>
+        </import>
+    </target>
+
+    <!-- ****************************************************
+                                         DEPENDENCIES
+    **************************************************** -->
+    <dependencies>
+<![CDATA[
+DCs:
+e1: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+    $n1 == $n2, $d1 != $d2 -> #fail.
+
+e2: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+    $n1 == $n2, $d1 == $d2, $d1 == "Sales", $m1 != $m2 -> #fail.
+
+e3: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+    $d1 == "Staff", $s1 != 1000 -> #fail.
+
+e4: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+md(name: $n2, salary: $s2, manager: $m2), 
+    $n1 == $n2, $m1 != $m2 -> #fail.
+
+e5: emp(name: $n1, dept: $d1, salary: $s1, manager: $m1), 
+emp(name: $n2, dept: $d2, salary: $s2, manager: $m2), 
+    $m1 == $n2, $s2 < $s1 -> #fail.
+]]>
+    </dependencies>
+    <authoritativeSources>
+        <source>md</source>
+    </authoritativeSources>
+
+
+    <!-- ****************************************************
+                                         CONFIGURATION
+    **************************************************** -->
+    <configuration>
+        <printLog>true</printLog>
+        <!-- To load DB only the first time and then generate a copy with changes -->
+        <recreateDBOnStart>false</recreateDBOnStart>
+        <applyCellChanges>false</applyCellChanges>
+        <cloneTargetSchema>false</cloneTargetSchema>
+
+        <!-- To load DB every time on start and then apply changes without copying -->
+        <!--
+        <recreateDBOnStart>false</recreateDBOnStart>
+        <applyCellChanges>true</applyCellChanges>
+        <cloneTargetSchema>true</cloneTargetSchema>
+        -->
+
+        <!-- To generate all possible changes (default = false - slow, only for toy examples)-->
+        <!--<generateAllChanges>true</generateAllChanges>-->
+
+        <!-- Avoid interactions among changes. (default = true) -->
+        <!--<avoidInteractions>false</avoidInteractions>-->
+
+        <!-- Error percentages for dependencies and comparisons 
+        All percentages are wrt table sizes (# tuples) -->
+        <errorPercentages>
+            <defaultPercentage>0.0</defaultPercentage>
+            <vioGenQueries>
+                <vioGenQuery id="e1">
+                    <comparison>(n1 == n2)</comparison>
+                    <percentage>20.0</percentage> 
+                </vioGenQuery>
+                <!--<vioGenQuery id="e1">
+                        <comparison>(d1 != d2)</comparison>
+                        <percentage>27.0</percentage> 
+                </vioGenQuery> -->
+                <vioGenQuery id="e5">
+                    <comparison>(s2 &lt; s1)</comparison>
+                    <percentage>20</percentage>
+                </vioGenQuery> 
+            </vioGenQueries>
+        </errorPercentages>
+
+
+
+    </configuration>
+</task>
