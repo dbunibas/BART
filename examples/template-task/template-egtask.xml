@@ -76,6 +76,9 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
         <!-- To check, at the end of the process, if changes are detectable. (default = false) -->
         <checkChanges>true</checkChanges>
 
+        <!-- To compute an estimate of the repairability. Requires checkChanges = true. (default = false) -->
+        <estimateRepairability>true</estimateRepairability>
+
         <!-- To use an optimized strategy for updates. (default = true) -->
         <useDeltaDBForChanges>true</useDeltaDBForChanges>
 
