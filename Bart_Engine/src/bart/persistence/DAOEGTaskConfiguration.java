@@ -244,10 +244,12 @@ public class DAOEGTaskConfiguration {
             Double offsetFactorForStandardQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForStandardQueries");
             if (offsetFactorForStandardQueries != null) {
                 defaultConfig.setOffsetFactorForStandardQueries(offsetFactorForStandardQueries);
+                defaultConfig.setUseOffsetInStandardQueries(true);
             }
             Double offsetFactorForSymmetricQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForSymmetricQueries");
             if (offsetFactorForSymmetricQueries != null) {
                 defaultConfig.setOffsetFactorForSymmetricQueries(offsetFactorForSymmetricQueries);
+                defaultConfig.setUseOffsetInSymmetricQueries(true);
             }
             Double probabilityFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "probabilityFactorForInequalityQueries");
             if (probabilityFactorForInequalityQueries != null) {
@@ -256,6 +258,7 @@ public class DAOEGTaskConfiguration {
             Double offsetFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "offsetFactorForInequalityQueries");
             if (offsetFactorForInequalityQueries != null) {
                 defaultConfig.setOffsetFactorForInequalityQueries(offsetFactorForInequalityQueries);
+                defaultConfig.setUseOffsetInInequalityQueries(true);
             }
             Double windowSizeFactorForInequalityQueries = extractDouble(vioGenQueriesConfiguration, "windowSizeFactorForInequalityQueries");
             if (windowSizeFactorForInequalityQueries != null) {
