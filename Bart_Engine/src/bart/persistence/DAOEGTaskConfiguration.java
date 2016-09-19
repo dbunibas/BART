@@ -84,6 +84,11 @@ public class DAOEGTaskConfiguration {
             conf.setExportCellChanges(Boolean.parseBoolean(exportCellChangesElement.getText()));
             if (logger.isDebugEnabled()) logger.debug("* exportCellChanges " + conf.isExportCellChanges());
             if (conf.isExportCellChanges()) {
+                String attributeValueFull = exportCellChangesElement.getAttributeValue("full");
+                if (attributeValueFull != null) {
+                    if (logger.isDebugEnabled()) logger.debug("ExportFullChanges: " + attributeValueFull.equalsIgnoreCase("true"));
+                    conf.setExportCellChangesFull(attributeValueFull.equalsIgnoreCase("true"));
+                }
                 Element exportCellChangesPathElement = configurationElement.getChild("exportCellChangesPath");
                 if (exportCellChangesPathElement == null) {
                     throw new DAOException("exportCellChanges requires the exportCellChangesPath option");

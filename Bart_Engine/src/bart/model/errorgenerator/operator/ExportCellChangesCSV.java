@@ -21,7 +21,7 @@ public class ExportCellChangesCSV {
     private TransformFilePaths filePathTransformator = new TransformFilePaths();
     private static String SEPARATOR = ",";
 
-    public void export(CellChanges cellChanges, String path, String taskPath) {
+    public void export(CellChanges cellChanges, String path, String taskPath, boolean full) {
         path = expandPath(taskPath, path);
         Writer out = null;
         try {
@@ -34,7 +34,7 @@ public class ExportCellChangesCSV {
                     RandomCellChange randomCellChange = (RandomCellChange) change;
                     if (!randomCellChange.isExport()) continue;
                 }
-                out.write(changeToCSV(change));
+                out.write(changeToCSV(change, full));
                 out.write("\n");
             }
         } catch (Exception ex) {
@@ -50,7 +50,7 @@ public class ExportCellChangesCSV {
         }
     }
 
-    private String changeToCSV(ICellChange change) {
+    private String changeToCSV(ICellChange change, boolean full) {
         StringBuilder sb = new StringBuilder();
         Cell originalCell = change.getCell();
         sb.append(originalCell.getTupleOID()).append(".").append(originalCell.getAttribute());
@@ -58,6 +58,10 @@ public class ExportCellChangesCSV {
         sb.append(change.getNewValue());
         sb.append(SEPARATOR);
         sb.append(originalCell.getValue());
+        if (full) {
+            sb.append(SEPARATOR);
+            sb.append(change.getViolatedDependencies());
+        }
         return sb.toString();
     }
 

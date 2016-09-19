@@ -21,6 +21,7 @@ public class EGTaskConfiguration {
     private boolean avoidInteractions = true;
     private boolean applyCellChanges = false;
     private boolean exportCellChanges = false;
+    private boolean exportCellChangesFull = false;
     private String exportCellChangesPath = null;
     private boolean exportDirtyDB = false;
     private String exportDirtyDBType = BartConstants.CSV;
@@ -142,6 +143,14 @@ public class EGTaskConfiguration {
 
     public void setExportCellChanges(boolean exportCellChanges) {
         this.exportCellChanges = exportCellChanges;
+    }
+
+    public boolean isExportCellChangesFull() {
+        return exportCellChangesFull;
+    }
+
+    public void setExportCellChangesFull(boolean exportCellChangesFull) {
+        this.exportCellChangesFull = exportCellChangesFull;
     }
 
     public String getExportCellChangesPath() {
