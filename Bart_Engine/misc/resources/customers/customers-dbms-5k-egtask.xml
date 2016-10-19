@@ -108,7 +108,7 @@ fd2: treatments(ssn: $ssn1, salary: $salary1, insurance: $insur1, treatment: $tr
                     <strategy>TypoRandom</strategy>
                 </attribute>
                 <attribute table="customers" name="name">
-                    <strategy charsToRemove="3">TypoActiveDomain</strategy>
+                    <strategy>TypoActiveDomain</strategy>
                 </attribute>
                 <attribute table="customers" name="city">
                     <strategy charsToSwitch="3">TypoSwitchValue</strategy>
