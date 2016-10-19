@@ -6,6 +6,7 @@ import speedy.model.database.dbms.DBMSDB;
 import bart.model.detection.Violations;
 import bart.model.detection.operator.DetectViolations;
 import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import bart.model.errorgenerator.operator.APrioriGenerator;
 import speedy.persistence.relational.AccessConfiguration;
 import bart.test.utility.UtilityTest;
@@ -45,6 +46,9 @@ public class TestDetectViolations extends TestCase {
     public void testRun() {
         CellChanges cellChanges = generator.run(task);
         if (logger.isDebugEnabled()) logger.debug("Changes: " + cellChanges.getChanges().size());
+        for (ICellChange change : cellChanges.getChanges()) {
+            if (logger.isTraceEnabled()) logger.trace(change.toString());
+        }
         AccessConfiguration dirtyTargetAC = ((DBMSDB) task.getTarget()).getAccessConfiguration().clone();
         String dirtySuffix = BartUtility.getDirtyCloneSuffix(task);
         dirtyTargetAC.setSchemaName(dirtyTargetAC.getSchemaName() + dirtySuffix);

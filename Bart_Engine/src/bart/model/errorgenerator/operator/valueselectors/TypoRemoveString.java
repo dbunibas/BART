@@ -1,5 +1,6 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
+import bart.model.EGTask;
 import speedy.model.database.ConstantValue;
 import speedy.model.database.IValue;
 import java.util.Random;
@@ -13,7 +14,7 @@ public class TypoRemoveString implements IDirtyStrategy {
         this.charsToRemove = charsToRemove;
     }
 
-    public IValue generateNewValue(IValue value) {
+    public IValue generateNewValue(IValue value, EGTask egTask) {
         String valueString = value + "";
         if (valueString.length() <= charsToRemove) {
             return (valueString.isEmpty() ? new ConstantValue("***") : new ConstantValue(""));

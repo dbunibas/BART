@@ -1,5 +1,6 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
+import bart.model.EGTask;
 import speedy.model.database.ConstantValue;
 import speedy.model.database.IValue;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ public class TypoAppendString implements IDirtyStrategy {
         this.charsToAdd = charsToAdd;
     }
 
-    public IValue generateNewValue(IValue value) {
+    public IValue generateNewValue(IValue value, EGTask egTask) {
         StringBuilder sb = new StringBuilder(value + "");
         for (int i = 0; i < charsToAdd; i++) {
             sb.append(chars);

@@ -1,5 +1,6 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
+import bart.model.EGTask;
 import speedy.model.database.ConstantValue;
 import speedy.model.database.IValue;
 import java.util.Random;
@@ -18,7 +19,7 @@ public class TypoAddString implements IDirtyStrategy {
         this.charsToAdd = charsToAdd;
     }
 
-    public IValue generateNewValue(IValue value) {
+    public IValue generateNewValue(IValue value, EGTask egTask) {
         String valueString = value + "";
         for (int i = 0; i < charsToAdd; i++) {
             valueString = insertValue(valueString, chars, selectRandomIndex(valueString));

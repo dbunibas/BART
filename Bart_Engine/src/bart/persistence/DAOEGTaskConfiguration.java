@@ -6,6 +6,7 @@ import bart.model.VioGenQueryConfiguration;
 import bart.model.errorgenerator.OrderingAttribute;
 import speedy.model.database.AttributeRef;
 import bart.model.errorgenerator.operator.valueselectors.IDirtyStrategy;
+import bart.model.errorgenerator.operator.valueselectors.TypoActiveDomain;
 import bart.model.errorgenerator.operator.valueselectors.TypoAddString;
 import bart.model.errorgenerator.operator.valueselectors.TypoAppendString;
 import bart.model.errorgenerator.operator.valueselectors.TypoRandom;
@@ -163,7 +164,7 @@ public class DAOEGTaskConfiguration {
         if (dirtyStrategiesElement != null) {
             Element defaultStrategyElement = getMandatoryElement(dirtyStrategiesElement, "defaultStrategy");
             Element strategyElement = getMandatoryElement(defaultStrategyElement, "strategy");
-            IDirtyStrategy defaultDirtyStrategy = getDirtyStrategy(strategyElement);
+            IDirtyStrategy defaultDirtyStrategy = getDirtyStrategy(strategyElement, null);
             conf.setDefaultDirtyStrategy(defaultDirtyStrategy);
             Element attributeStrategyElement = dirtyStrategiesElement.getChild("attributeStrategy");
             if (attributeStrategyElement != null) {
@@ -172,7 +173,7 @@ public class DAOEGTaskConfiguration {
                     Attribute nameAttribute = getMandatoryAttribute(attributeElement, "name");
                     AttributeRef attributeRef = new AttributeRef(tableAttribute.getValue().trim(), nameAttribute.getValue().trim());
                     Element strategyElementAttribute = getMandatoryElement(attributeElement, "strategy");
-                    IDirtyStrategy attributeDirtyStrategy = getDirtyStrategy(strategyElementAttribute);
+                    IDirtyStrategy attributeDirtyStrategy = getDirtyStrategy(strategyElementAttribute, attributeRef);
                     conf.addDirtyStrategyForAttribute(attributeRef, attributeDirtyStrategy);
                 }
             }
@@ -293,7 +294,7 @@ public class DAOEGTaskConfiguration {
         return outlierErrorConfiguration;
     }
 
-    private IDirtyStrategy getDirtyStrategy(Element strategyElement) {
+    private IDirtyStrategy getDirtyStrategy(Element strategyElement, AttributeRef attributeRef) {
         String strategyName = strategyElement.getText().trim();
         if (strategyName.equals(IDirtyStrategy.TYPO_ADD_STRING)) {
             Attribute charsAttribute = getMandatoryAttribute(strategyElement, "chars");
@@ -321,6 +322,12 @@ public class DAOEGTaskConfiguration {
             Attribute charsToAddAttribute = getMandatoryAttribute(strategyElement, "charsToSwitch");
             int times = Integer.parseInt(charsToAddAttribute.getValue().trim());
             return new TypoSwitchValue(times);
+        }
+        if (strategyName.equals(IDirtyStrategy.TYPO_ACTIVE_DOMAIN)) {
+            if (attributeRef == null) {
+                throw new IllegalArgumentException("Unable to set " + IDirtyStrategy.TYPO_ACTIVE_DOMAIN + " as default strategy");
+            }
+            return new TypoActiveDomain(attributeRef);
         }
         throw new DAOException("Unable to load dirty strategy for: " + strategyName);
     }

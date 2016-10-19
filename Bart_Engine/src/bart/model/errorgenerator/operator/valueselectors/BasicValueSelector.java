@@ -53,7 +53,7 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
             if (dirtyStrategy == null) {
                 dirtyStrategy = new TypoAppendString("-*", 1);
             }
-            return dirtyStrategy.generateNewValue(cell.getValue());
+            return dirtyStrategy.generateNewValue(cell.getValue(), task);
         }
         String oldValue = cell.getValue().toString();
         double oldDouble = Double.parseDouble(oldValue);

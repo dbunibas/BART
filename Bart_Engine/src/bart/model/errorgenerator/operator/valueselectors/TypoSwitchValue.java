@@ -1,5 +1,6 @@
 package bart.model.errorgenerator.operator.valueselectors;
 
+import bart.model.EGTask;
 import speedy.model.database.ConstantValue;
 import speedy.model.database.IValue;
 import java.util.Random;
@@ -12,7 +13,7 @@ public class TypoSwitchValue implements IDirtyStrategy {
         this.charsToSwitch = charsToSwitch;
     }
 
-    public IValue generateNewValue(IValue value) {
+    public IValue generateNewValue(IValue value, EGTask egTask) {
         String valueString = value + "";
         if (valueString.length() < 2) {
             return new ConstantValue("***");
