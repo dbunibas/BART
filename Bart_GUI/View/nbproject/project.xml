@@ -233,6 +233,7 @@
             </module-dependencies>
             <public-packages>
                 <package>it.unibas.bartgui.view</package>
+                <package>it.unibas.bartgui.view.panel</package>
                 <package>it.unibas.bartgui.view.panel.chart</package>
                 <package>it.unibas.bartgui.view.panel.editor.ConfEGTask</package>
                 <package>it.unibas.bartgui.view.panel.editor.ConfVioGenQ</package>

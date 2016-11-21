@@ -59,6 +59,8 @@ public class R {
     @StaticResource
     public static final String IMAGE_STATISTIC = "it/unibas/bartgui/resources/icons/statistic.png";
     @StaticResource
+    public static final String IMAGE_COMPARE = "it/unibas/bartgui/resources/icons/compare.png";
+    @StaticResource
     public static final String IMAGE_RUN = "it/unibas/bartgui/resources/icons/run.png";
     @StaticResource
     public static final String IMAGE_LINK="it/unibas/bartgui/resources/icons/link.png";

@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.model.algebra.operators.mainmemory.MainMemoryInsertTuple;
 import speedy.model.algebra.operators.mainmemory.MainMemoryUpdateCell;
+import speedy.model.database.operators.IAnalyzeDatabase;
+import speedy.model.database.operators.dbms.SQLAnalyzeDatabase;
+import speedy.model.database.operators.mainmemory.MainMemoryAnalyzeDatabase;
 
 public class OperatorFactory {
 
@@ -53,6 +56,9 @@ public class OperatorFactory {
     //
     private IDatabaseManager mainMemoryDatabaseManager = new MainMemoryDatabaseManager();
     private IDatabaseManager sqlDatabaseManager = new SQLDatabaseManager();
+    //
+    private IAnalyzeDatabase mainMemoryAnalyzer = new MainMemoryAnalyzeDatabase();
+    private IAnalyzeDatabase sqlAnalyzer = new SQLAnalyzeDatabase();
     //
     private IBuildDatabaseForChaseStep mainMemoryDatabaseBuilder = new BuildMainMemoryDBForChaseStep();
     private IBuildDatabaseForChaseStep sqlDatabaseBuilder = new BuildSQLDBForChaseStep();
@@ -99,6 +105,13 @@ public class OperatorFactory {
         return sqlDatabaseManager;
     }
 
+    public IAnalyzeDatabase getDatabaseAnalyzer(EGTask task) {
+        if (task.isMainMemory()) {
+            return mainMemoryAnalyzer;
+        }
+        return sqlAnalyzer;
+    }
+
     public ISampleStrategy getSampleStrategy(String strategy, EGTask task) {
         if (strategy.equals(BartConstants.SAMPLE_STRATEGY_TABLE_SIZE)) {
             return new TableSizeSampleStrategy();
@@ -128,7 +141,7 @@ public class OperatorFactory {
     }
 
     public IChangeApplier getChangeApplier(EGTask task) {
-        if(task.getConfiguration().isUseDeltaDBForChanges()){
+        if (task.getConfiguration().isUseDeltaDBForChanges()) {
             return new ApplyCellChangesOnDeltaDB();
         }
         return new ApplyCellChanges();
@@ -136,10 +149,9 @@ public class OperatorFactory {
 
     public IExportDatabase getDatabaseExporter(EGTask task) {
         String type = task.getConfiguration().getExportDirtyDBType();
-        if(BartConstants.CSV.equalsIgnoreCase(type)){
+        if (BartConstants.CSV.equalsIgnoreCase(type)) {
             return new ExportDatabaseCSV();
         }
         throw new IllegalArgumentException("Unsupported export type " + type);
     }
-
 }

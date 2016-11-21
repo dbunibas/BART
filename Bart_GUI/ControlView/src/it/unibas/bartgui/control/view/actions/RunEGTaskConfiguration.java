@@ -1,6 +1,5 @@
 package it.unibas.bartgui.control.view.actions;
 
-import it.unibas.bartgui.egtaskdataobject.NodeResource;
 import it.unibas.bartgui.egtaskdataobject.api.IRunEGTask;
 import it.unibas.bartgui.egtaskdataobject.EGTaskDataObjectDataObject;
 import it.unibas.bartgui.resources.R;
@@ -22,12 +21,13 @@ import org.openide.util.actions.CookieAction;
         id = "it.unibas.bartgui.control.view.actions.RunEGTaskConfiguration"
 )
 @ActionRegistration(
-        displayName ="not-used",
-        iconInMenu = false,
+        displayName ="Run",
+        iconInMenu = true,
         lazy = false
 )
 @ActionReferences({
-    @ActionReference(path = "Toolbars/File", position = 50),
+    @ActionReference(path = "Menu/Run", position = 1),
+    @ActionReference(path = "Toolbars/File", position = 150),
     @ActionReference(path = "Shortcuts", name = "D-R")
 })
 @Messages("CTL_RunEGTask=Run")

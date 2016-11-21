@@ -67,6 +67,38 @@
                 <package>ch.qos.logback.core.status</package>
                 <package>ch.qos.logback.core.subst</package>
                 <package>ch.qos.logback.core.util</package>
+                <package>com.fasterxml.jackson.annotation</package>
+                <package>com.fasterxml.jackson.core</package>
+                <package>com.fasterxml.jackson.core.base</package>
+                <package>com.fasterxml.jackson.core.filter</package>
+                <package>com.fasterxml.jackson.core.format</package>
+                <package>com.fasterxml.jackson.core.io</package>
+                <package>com.fasterxml.jackson.core.json</package>
+                <package>com.fasterxml.jackson.core.sym</package>
+                <package>com.fasterxml.jackson.core.type</package>
+                <package>com.fasterxml.jackson.core.util</package>
+                <package>com.fasterxml.jackson.databind</package>
+                <package>com.fasterxml.jackson.databind.annotation</package>
+                <package>com.fasterxml.jackson.databind.cfg</package>
+                <package>com.fasterxml.jackson.databind.deser</package>
+                <package>com.fasterxml.jackson.databind.deser.impl</package>
+                <package>com.fasterxml.jackson.databind.deser.std</package>
+                <package>com.fasterxml.jackson.databind.exc</package>
+                <package>com.fasterxml.jackson.databind.ext</package>
+                <package>com.fasterxml.jackson.databind.introspect</package>
+                <package>com.fasterxml.jackson.databind.jsonFormatVisitors</package>
+                <package>com.fasterxml.jackson.databind.jsonschema</package>
+                <package>com.fasterxml.jackson.databind.jsontype</package>
+                <package>com.fasterxml.jackson.databind.jsontype.impl</package>
+                <package>com.fasterxml.jackson.databind.module</package>
+                <package>com.fasterxml.jackson.databind.node</package>
+                <package>com.fasterxml.jackson.databind.ser</package>
+                <package>com.fasterxml.jackson.databind.ser.impl</package>
+                <package>com.fasterxml.jackson.databind.ser.std</package>
+                <package>com.fasterxml.jackson.databind.type</package>
+                <package>com.fasterxml.jackson.databind.util</package>
+                <package>com.fasterxml.jackson.dataformat.csv</package>
+                <package>com.fasterxml.jackson.dataformat.csv.impl</package>
                 <package>com.google.common.annotations</package>
                 <package>com.google.common.base</package>
                 <package>com.google.common.base.internal</package>
@@ -158,7 +190,6 @@
                 <package>junit.framework</package>
                 <package>junit.runner</package>
                 <package>junit.textui</package>
-                <package>lib</package>
                 <package>org.antlr.runtime</package>
                 <package>org.antlr.runtime.debug</package>
                 <package>org.antlr.runtime.misc</package>
@@ -527,12 +558,16 @@
                 <package>org.slf4j.spi</package>
                 <package>org.w3c.dom.html</package>
                 <package>speedy</package>
+                <package>speedy.comparison</package>
+                <package>speedy.comparison.operators</package>
+                <package>speedy.comparison.repairs</package>
                 <package>speedy.exceptions</package>
                 <package>speedy.model.algebra</package>
                 <package>speedy.model.algebra.aggregatefunctions</package>
                 <package>speedy.model.algebra.operators</package>
                 <package>speedy.model.algebra.operators.mainmemory</package>
                 <package>speedy.model.algebra.operators.sql</package>
+                <package>speedy.model.algebra.operators.sql.translator</package>
                 <package>speedy.model.algebra.sampling</package>
                 <package>speedy.model.database</package>
                 <package>speedy.model.database.dbms</package>
@@ -547,13 +582,16 @@
                 <package>speedy.model.database.operators.lazyloading</package>
                 <package>speedy.model.database.operators.mainmemory</package>
                 <package>speedy.model.expressions</package>
+                <package>speedy.model.thread</package>
                 <package>speedy.persistence</package>
                 <package>speedy.persistence.file</package>
+                <package>speedy.persistence.file.operators</package>
                 <package>speedy.persistence.relational</package>
                 <package>speedy.persistence.xml</package>
                 <package>speedy.persistence.xml.model</package>
                 <package>speedy.persistence.xml.operators</package>
                 <package>speedy.utility</package>
+                <package>speedy.utility.combinatorics</package>
                 <package>speedy.utility.comparator</package>
                 <package>speedy.utility.test</package>
                 <package>uk.ac.shef.wit.simmetrics</package>

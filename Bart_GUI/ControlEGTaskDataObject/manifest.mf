@@ -3,6 +3,6 @@ AutoUpdate-Show-In-Client: true
 OpenIDE-Module: it.unibas.bartgui.controlegt
 OpenIDE-Module-Layer: it/unibas/bartgui/controlegt/layer.xml
 OpenIDE-Module-Localizing-Bundle: it/unibas/bartgui/controlegt/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Specification-Version: 1.2
 
 

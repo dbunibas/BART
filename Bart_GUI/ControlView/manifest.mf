@@ -3,5 +3,5 @@ AutoUpdate-Show-In-Client: true
 OpenIDE-Module: it.unibas.bartgui.control.view
 OpenIDE-Module-Layer: it/unibas/bartgui/control/view/layer.xml
 OpenIDE-Module-Localizing-Bundle: it/unibas/bartgui/control/view/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Specification-Version: 1.2
 
