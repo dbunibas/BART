@@ -28,9 +28,8 @@ public class TestDetectableChanges extends TestCase {
     public void setUp() {
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-5-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-50-egtask.xml");
-        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-2k-egtask.xml");
-//        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-10k-egtask.xml");
-//        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getExperimentsFolder("employees/") + "employees-dbms-100k-egtask.xml");
+//        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-2k-egtask.xml");
+        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-10k-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("customers/") + "customers-dbms-5k-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getExperimentsFolder("tax/") + "tax-dbms-5k-egtask.xml");
         //
@@ -61,7 +60,7 @@ public class TestDetectableChanges extends TestCase {
             StringBuilder sb = new StringBuilder();
             for (ICellChange nonDetectableChange : nonDetectableChanges) {
                 VioGenQueryCellChange notDetectable = (VioGenQueryCellChange) nonDetectableChange;
-                sb.append("\t").append(nonDetectableChange.toString()).append(" [").append(notDetectable.getVioGenQuery().toShortString()).append("]\n");
+                sb.append("\t").append(nonDetectableChange.toShortString()).append(" [").append(notDetectable.getVioGenQuery().toShortString()).append("]\n");
                 sb.append("\t\t").append(notDetectable.getContext().toString()).append("\n");
             }
             if (logger.isDebugEnabled()) logger.debug("Non detectable changes:\n" + sb.toString());
