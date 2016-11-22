@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.SpeedyUtility;
 
 public class ExecuteOutlierErrors implements IInitializableOperator {
 
@@ -228,7 +229,7 @@ public class ExecuteOutlierErrors implements IInitializableOperator {
         AttributeRef attributeRef = cell.getAttributeRef();
         Attribute attribute = BartUtility.getAttribute(attributeRef, task);
         String type = attribute.getType();
-        if (!BartUtility.isNumeric(type)) {
+        if (!SpeedyUtility.isNumeric(type)) {
             throw new UnsupportedOperationException("Unable to generate outlier errors with non-numeric value. Type used:" + type);
         }
     }

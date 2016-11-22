@@ -3,6 +3,7 @@ package bart.model.errorgenerator.operator;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
+import bart.model.NumberOfChanges;
 import speedy.model.database.AttributeRef;
 import speedy.model.database.Tuple;
 import speedy.model.database.operators.IRunQuery;
@@ -33,7 +34,8 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
 
-    public void execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
+    @Override
+    public int execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
         if (!task.getConfiguration().isGenerateAllChanges()) {
             throw new IllegalArgumentException("Stardard operator can be used only to generate all changes");
         }
@@ -48,6 +50,7 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
         symmetricQueryBuilder.initializeQuery(vioGenQuery.getFormula().getFormulaWithAdornments(), task);
         List<EquivalenceClassQuery> equivalenceClassQueries = vioGenQuery.getFormula().getFormulaWithAdornments().getEquivalenceClassQueries();
         ExecuteVioGenQueryUtility.executeEquivalenceClassQuery(equivalenceClassQueries, queryRunner, task.getSource(), task.getTarget());
+        NumberOfChanges numberOfChanges = new NumberOfChanges();
         long start = new Date().getTime();
         while (true) {
             if (BartUtility.isTimeout(start, task)) {
@@ -59,12 +62,13 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
             if (equivalenceClasses.isEmpty()) {
                 break;
             }
-            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, allCellChanges, start, task);
+            findVioGenCellsForEquivalenceClasses(vioGenQuery, equivalenceClasses, allCellChanges, numberOfChanges, start, task);
         }
         ExecuteVioGenQueryUtility.closeIterators(equivalenceClassQueries);
+        return numberOfChanges.getChanges();
     }
 
-    private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, CellChanges allCellChanges, long start, EGTask task) {
+    private void findVioGenCellsForEquivalenceClasses(VioGenQuery vioGenQuery, List<EquivalenceClass> equivalenceClasses, CellChanges allCellChanges, NumberOfChanges numberOfChanges, long start, EGTask task) {
         assert (!equivalenceClasses.isEmpty()) : "Equivalence classes are empty!";
         EquivalenceClass firstEquivalenceClass = equivalenceClasses.get(0);
         FormulaWithAdornments formulaWithAdornment = vioGenQuery.getFormula().getFormulaWithAdornments();
@@ -106,7 +110,7 @@ public class ExecuteVioGenQuerySymmetric implements IVioGenQueryExecutor, IIniti
                 if (!verified) {
                     continue;
                 }
-                changesGenerator.handleTuplePair(firstTuple, secondTuple, vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
+                changesGenerator.handleTuplePair(firstTuple, secondTuple, vioGenQuery, allCellChanges, numberOfChanges, usedTuples, valueSelector, task);
             }
         }
     }

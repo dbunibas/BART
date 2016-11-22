@@ -6,7 +6,6 @@ import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
 import bart.model.dependency.FormulaVariable;
 import bart.model.dependency.FormulaVariableOccurrence;
 import speedy.model.expressions.Expression;
-import bart.persistence.Types;
 import speedy.persistence.relational.AccessConfiguration;
 import speedy.persistence.relational.QueryManager;
 import speedy.persistence.relational.SimpleDbConnectionFactory;
@@ -31,6 +30,7 @@ import speedy.model.algebra.Scan;
 import speedy.model.algebra.Select;
 import speedy.model.algebra.operators.ITupleIterator;
 import speedy.model.database.operators.IRunQuery;
+import speedy.utility.DBMSUtility;
 
 public class BartDBMSUtility {
 
@@ -337,7 +337,7 @@ public class BartDBMSUtility {
         for (int col = 1; col <= columns; col++) {
             String attributeName = metadata.getColumnName(col);
             String attributeType = metadata.getColumnTypeName(col);
-            Attribute attribute = new Attribute(tableName, attributeName, BartDBMSUtility.convertDBTypeToDataSourceType(attributeType));
+            Attribute attribute = new Attribute(tableName, attributeName, DBMSUtility.convertDBTypeToDataSourceType(attributeType));
             result.add(attribute);
         }
         return result;
@@ -364,56 +364,6 @@ public class BartDBMSUtility {
             return uri.substring(0, uri.lastIndexOf("/") + 1) + tempDBName;
         }
         return uri.substring(0, uri.lastIndexOf(":") + 1) + tempDBName;
-    }
-
-    public static String convertDBTypeToDataSourceType(String columnType) {
-        if (columnType.equalsIgnoreCase("varchar") || columnType.equalsIgnoreCase("char")
-                || columnType.equalsIgnoreCase("text") || columnType.equalsIgnoreCase("bpchar")
-                || columnType.equalsIgnoreCase("bit") || columnType.equalsIgnoreCase("mediumtext")
-                || columnType.equalsIgnoreCase("longtext")) {
-            return Types.STRING;
-        }
-        if (columnType.equalsIgnoreCase("serial") || columnType.equalsIgnoreCase("enum")) {
-            return Types.STRING;
-        }
-        if (columnType.equalsIgnoreCase("date")) {
-            return Types.DATE;
-        }
-        if (columnType.equalsIgnoreCase("datetime") || columnType.equalsIgnoreCase("timestamp")) {
-            return Types.DATETIME;
-        }
-        if (columnType.toLowerCase().startsWith("serial") || columnType.toLowerCase().startsWith("int") || columnType.toLowerCase().startsWith("tinyint") || columnType.toLowerCase().startsWith("bigint") || columnType.toLowerCase().startsWith("smallint")) {
-            return Types.INTEGER;
-        }
-        if (columnType.toLowerCase().startsWith("float") || columnType.toLowerCase().startsWith("real") || columnType.toLowerCase().startsWith("float")) {
-            return Types.DOUBLE;
-        }
-        if (columnType.equalsIgnoreCase("bool")) {
-            return Types.BOOLEAN;
-        }
-        return Types.STRING;
-    }
-
-    public static String convertDataSourceTypeToDBType(String columnType) {
-        if (columnType.equals(Types.DATE)) {
-            return "date";
-        }
-        if (columnType.equals(Types.DATETIME)) {
-            return "datetime";
-        }
-        if (columnType.equals(Types.INTEGER)) {
-            return "bigint";
-        }
-        if (columnType.equals(Types.DOUBLE)) {
-            return "float";
-        }
-        if (columnType.equals(Types.BOOLEAN)) {
-            return "bool";
-        }
-        if (columnType.equals(Types.LONG)) {
-            return "float";
-        }
-        return "text";
     }
 
     public static IValue convertDBMSValue(Object attributeValue) {

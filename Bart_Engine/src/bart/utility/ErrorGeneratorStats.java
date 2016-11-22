@@ -133,6 +133,7 @@ public class ErrorGeneratorStats {
         dependencyTimes.clear();
         vioGenQueriesRepairability.clear();
         dependencyRepairability.clear();
+        dependenciesErrors.clear();
     }
 
     @Override

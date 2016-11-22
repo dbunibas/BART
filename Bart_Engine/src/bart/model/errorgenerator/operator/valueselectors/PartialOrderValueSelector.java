@@ -4,7 +4,6 @@ import bart.model.EGTask;
 import bart.model.errorgenerator.ICellChange;
 import bart.model.errorgenerator.OrderingAttribute;
 import bart.persistence.Types;
-import bart.utility.BartUtility;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +21,7 @@ import speedy.model.database.dbms.DBMSDB;
 import speedy.persistence.relational.AccessConfiguration;
 import speedy.persistence.relational.QueryManager;
 import speedy.utility.DBMSUtility;
+import speedy.utility.SpeedyUtility;
 
 public class PartialOrderValueSelector implements INewValueSelectorStrategy {
 
@@ -83,17 +83,17 @@ public class PartialOrderValueSelector implements INewValueSelectorStrategy {
             resultSet.close();
             connection.close();
             return value;
-        } catch (SQLException sQLException) {
-            logger.error("Unable to execute query: " + query);
+        } catch (SQLException e) {
+            logger.error("Unable to execute query: " + query + ". " + e.getLocalizedMessage());
         }
         return null;
     }
 
     private IValue generateValue(IValue value, boolean min) {
-        if (BartUtility.isNumeric(value.getType())) {
+        if (SpeedyUtility.isNumeric(value.getType())) {
             return generateNumericalValue(value, min);
         }
-        if (BartUtility.isDate(value.getType())) {
+        if (SpeedyUtility.isDate(value.getType())) {
             return generateDateValue(value, min);
         }
         return generateStringValue(value, min);

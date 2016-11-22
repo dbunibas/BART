@@ -4,6 +4,7 @@ import bart.BartConstants;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
+import bart.model.NumberOfChanges;
 import bart.model.VioGenQueryConfiguration;
 import bart.model.algebra.operators.BuildAlgebraTree;
 import speedy.model.algebra.IAlgebraOperator;
@@ -54,7 +55,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
     }
 
     @Override
-    public void execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
+    public int execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
         if (task.getConfiguration().isPrintLog()) System.out.println("--- VioGen Query: " + vioGenQuery.toShortString());
         intitializeOperators(task);
         checkConditions(vioGenQuery, task);
@@ -62,26 +63,25 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
         int sampleSize = ExecuteVioGenQueryUtility.computeSampleSize(vioGenQuery, task);
         if (sampleSize == 0) {
             if (task.getConfiguration().isPrintLog()) System.out.println("No changes required");
-            return;
+            return 0;
         }
         if (!task.getConfiguration().isGenerateAllChanges() && task.getConfiguration().isPrintLog()) {
             PrintUtility.printInformation("Error percentage: " + vioGenQuery.getConfiguration().getPercentage());
             PrintUtility.printInformation(sampleSize + " changes required");
         }
         Set<TuplePair> discardedTuples = new HashSet<TuplePair>();
-        int initialChanges = allCellChanges.getChanges().size();
+        NumberOfChanges numberOfChanges = new NumberOfChanges();
         Set<Tuple> usedTuples = new HashSet<Tuple>();
-        findVioGenCells(vioGenQuery, allCellChanges, sampleSize, discardedTuples, usedTuples, start, task);
-        if (!ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
-            if (logger.isInfoEnabled()) logger.info("After first iteration there are " + (sampleSize - ((allCellChanges.getChanges().size()) - initialChanges)) + " remaining changes to perform!");
-            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, usedTuples, initialChanges, sampleSize, start, task);
+        findVioGenCells(vioGenQuery, allCellChanges, numberOfChanges, sampleSize, discardedTuples, usedTuples, start, task);
+        if (!ExecuteVioGenQueryUtility.checkIfFinished(numberOfChanges.getChanges(), sampleSize)) {
+            if (logger.isInfoEnabled()) logger.info("After first iteration there are " + (sampleSize - numberOfChanges.getChanges()) + " remaining changes to perform!");
+            executeDiscardedPairs(vioGenQuery, allCellChanges, discardedTuples, usedTuples, numberOfChanges, sampleSize, start, task);
         }
-        int executedChanges = (allCellChanges.getChanges().size()) - initialChanges;
-        if (task.getConfiguration().isPrintLog()) PrintUtility.printSuccess("Executed changes: " + executedChanges);
+        if (task.getConfiguration().isPrintLog()) PrintUtility.printSuccess("Executed changes: " + numberOfChanges.getChanges());
+        return numberOfChanges.getChanges();
     }
 
-    private void findVioGenCells(VioGenQuery vioGenQuery, CellChanges allCellChanges, int sampleSize, Set<TuplePair> discardedTuples, Set<Tuple> usedTuples, long start, EGTask task) {
-        int initialChanges = allCellChanges.getChanges().size();
+    private void findVioGenCells(VioGenQuery vioGenQuery, CellChanges allCellChanges, NumberOfChanges numberOfChanges, int sampleSize, Set<TuplePair> discardedTuples, Set<Tuple> usedTuples, long start, EGTask task) {
         int offset = computeOffset(vioGenQuery, task);
         Set<FormulaVariable> inequalityVariables = getInequalityVariables(vioGenQuery.getFormula().getFormulaWithAdornments());
         if (logger.isInfoEnabled()) logger.info("Inequality Variables: " + inequalityVariables);
@@ -120,8 +120,8 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
                 if (!verified) {
                     continue;
                 }
-                changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
-                if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
+                changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, numberOfChanges, usedTuples, valueSelector, task);
+                if (ExecuteVioGenQueryUtility.checkIfFinished(numberOfChanges.getChanges(), sampleSize)) {
                     return;
                 }
             }
@@ -169,7 +169,7 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
         return result;
     }
 
-    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<TuplePair> discardedTuples, Set<Tuple> usedTuples, int initialChanges, int sampleSize, long start, EGTask task) {
+    private void executeDiscardedPairs(VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<TuplePair> discardedTuples, Set<Tuple> usedTuples, NumberOfChanges numberOfChanges, int sampleSize, long start, EGTask task) {
         Iterator<TuplePair> it = discardedTuples.iterator();
         while (it.hasNext()) {
             if (BartUtility.isTimeout(start, task)) {
@@ -184,8 +184,8 @@ public class ExecuteVioGenQueryInequalityRAMRandomCPSymmetric implements IVioGen
             if (!verified) {
                 continue;
             }
-            changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, usedTuples, valueSelector, task);
-            if (ExecuteVioGenQueryUtility.checkIfFinished(allCellChanges, initialChanges, sampleSize)) {
+            changesGenerator.handleTuplePair(tuplePair.getFirstTuple(), tuplePair.getSecondTuple(), vioGenQuery, allCellChanges, numberOfChanges, usedTuples, valueSelector, task);
+            if (ExecuteVioGenQueryUtility.checkIfFinished(numberOfChanges.getChanges(), sampleSize)) {
                 return;
             }
         }

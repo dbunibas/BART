@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.DBMSUtility;
 
 public class BuildSQLDeltaDB implements IBuildDeltaDB {
 
@@ -63,7 +64,7 @@ public class BuildSQLDeltaDB implements IBuildDeltaDB {
             }
         }
         if (task.getConfiguration().isRandomErrors()) {
-            for(String table: task.getConfiguration().getTablesForRandomErrors()) {
+            for (String table : task.getConfiguration().getTablesForRandomErrors()) {
                 Set<String> attributes = task.getConfiguration().getAttributesForRandomErrors(table);
                 for (String attribute : attributes) {
                     AttributeRef attributeRef = new AttributeRef(table, attribute);
@@ -104,7 +105,7 @@ public class BuildSQLDeltaDB implements IBuildDeltaDB {
         script.append("CREATE TABLE ").append(deltaDBSchema).append(".").append(deltaRelationName).append("(").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.STEP).append(" text,").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.TID).append(" bigint,").append("\n");
-        script.append(BartConstants.INDENT).append(attributeName).append(" ").append(BartDBMSUtility.convertDataSourceTypeToDBType(attributeType)).append(",").append("\n");
+        script.append(BartConstants.INDENT).append(attributeName).append(" ").append(DBMSUtility.convertDataSourceTypeToDBType(attributeType)).append(",").append("\n");
         script.append(BartConstants.INDENT).append(BartConstants.GROUP_ID).append(" text").append("\n");
         script.append(") WITH OIDS;").append("\n\n");
 //        script.append("CREATE INDEX ").append(attributeName).append("_oid  ON ").append(deltaDBSchema).append(".").append(deltaRelationName).append(" USING btree(tid ASC);\n");
@@ -120,7 +121,7 @@ public class BuildSQLDeltaDB implements IBuildDeltaDB {
         script.append(BartConstants.INDENT).append(BartConstants.TID).append(" bigint,").append("\n");
 //        script.append(BartConstants.INDENT).append(BartConstants.OID).append(" integer,").append("\n");
         for (Attribute attribute : tableNonAffectedAttributes) {
-            script.append(BartConstants.INDENT).append(attribute.getName()).append(" ").append(BartDBMSUtility.convertDataSourceTypeToDBType(attribute.getType())).append(",\n");
+            script.append(BartConstants.INDENT).append(attribute.getName()).append(" ").append(DBMSUtility.convertDataSourceTypeToDBType(attribute.getType())).append(",\n");
         }
         BartUtility.removeChars(",\n".length(), script);
         script.append("\n").append(") WITH OIDS;").append("\n\n");
@@ -156,7 +157,7 @@ public class BuildSQLDeltaDB implements IBuildDeltaDB {
         StringBuilder script = new StringBuilder();
         String deltaRelationName = BartUtility.getDeltaRelationName(tableName, attributeName);
         script.append("INSERT INTO ").append(deltaDBSchema).append(".").append(deltaRelationName).append("\n");
-        script.append("SELECT cast('").append(rootStepId).append("' AS varchar) AS step, " + BartConstants.OID + ", ").append(attributeName);
+        script.append("SELECT cast('").append(rootStepId).append("' AS varchar) AS step, ").append(BartConstants.OID).append(", ").append(attributeName);
         script.append("\n").append(BartConstants.INDENT);
         script.append("FROM ").append(originalDBSchema).append(".").append(tableName).append(";");
         script.append("\n");

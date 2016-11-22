@@ -21,6 +21,8 @@ import speedy.model.database.mainmemory.datasource.nodes.SetNode;
 import speedy.model.database.mainmemory.datasource.nodes.TupleNode;
 import bart.BartConstants;
 import bart.model.EGTask;
+import bart.model.errorgenerator.CellChanges;
+import bart.model.errorgenerator.ICellChange;
 import speedy.model.database.Attribute;
 import speedy.model.database.CellRef;
 import speedy.model.database.IDatabase;
@@ -355,18 +357,16 @@ public class BartUtility {
     }
     // NUMERICAL METHOD
 
-    public static boolean isNumeric(String type) {
-        return (type.equals(BartConstants.NUMERIC) || type.equals(Types.LONG) || type.equals(Types.DOUBLE) || type.equals(Types.INTEGER));
-    }
-
     public static boolean pickRandom(double probability) {
         double random = new Random().nextDouble();
         return random < probability;
     }
-    
-    // DATE METHOD
-    
-    public static boolean isDate(String type) {
-        return (type.equals(Types.DATE) || type.equals(Types.DATETIME));
+
+    public static void mergeChanges(CellChanges cellChanges, CellChanges toAdd) {
+        if (toAdd == null) return;
+        Set<ICellChange> changes = toAdd.getChanges();
+        for (ICellChange change : changes) {
+            cellChanges.addChange(change);
+        }
     }
 }

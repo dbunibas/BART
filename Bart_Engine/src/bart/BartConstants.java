@@ -32,8 +32,8 @@ public class BartConstants {
     public static String NUMERIC = "NUMERIC";
 //    public static ValueConstraint STAR_VALUE_CONSTRAINT = new ValueConstraint(new ConstantValue("*"), BartConstants.NON_NUMERIC);
     public static String STAR_VALUE = "*";
-    public static IValue POSITIVE_INFINITY = new ConstantValue(Double.MAX_VALUE);
-    public static IValue NEGATIVE_INFINITY = new ConstantValue(-Double.MAX_VALUE);
+    public static IValue POSITIVE_INFINITY = new ConstantValue(Integer.MAX_VALUE);
+    public static IValue NEGATIVE_INFINITY = new ConstantValue(-Integer.MAX_VALUE);
     public static IValue ZERO = new ConstantValue(0);
 
     public static String OID = "oid";

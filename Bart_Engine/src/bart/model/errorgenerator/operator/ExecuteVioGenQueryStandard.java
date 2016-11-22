@@ -3,6 +3,7 @@ package bart.model.errorgenerator.operator;
 import bart.IInitializableOperator;
 import bart.OperatorFactory;
 import bart.model.EGTask;
+import bart.model.NumberOfChanges;
 import bart.model.algebra.operators.BuildAlgebraTree;
 import speedy.model.algebra.IAlgebraOperator;
 import speedy.model.algebra.operators.ITupleIterator;
@@ -28,7 +29,8 @@ public class ExecuteVioGenQueryStandard implements IVioGenQueryExecutor, IInitia
     private IRunQuery queryRunner;
     private INewValueSelectorStrategy valueSelector;
 
-    public void execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
+    @Override
+    public int execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task) {
         if (!task.getConfiguration().isGenerateAllChanges()) {
             throw new IllegalArgumentException("Stardard operator can be used only to generate all changes");
         }
@@ -45,6 +47,7 @@ public class ExecuteVioGenQueryStandard implements IVioGenQueryExecutor, IInitia
         if (logger.isDebugEnabled()) logger.debug("Executing " + query);
         if (task.getConfiguration().isPrintLog()) System.out.println("Executing " + vioGenQuery);
         if (task.getConfiguration().isDebug()) System.out.println("Query:\n" + query);
+        NumberOfChanges numberOfChanges = new NumberOfChanges();
         ITupleIterator tupleIterator = queryRunner.run(query, task.getSource(), task.getTarget());
         if (logger.isDebugEnabled()) logger.debug(BartUtility.printIterator(tupleIterator));
         while (tupleIterator.hasNext()) {
@@ -55,10 +58,11 @@ public class ExecuteVioGenQueryStandard implements IVioGenQueryExecutor, IInitia
             Tuple tuple = tupleIterator.next();
             List<VioGenQueryCellChange> changesForTuple = changesGenerator.generateChangesForStandardTuple(vioGenQuery, tuple, allCellChanges, valueSelector, task);
             if (!changesForTuple.isEmpty()) {
-                changesGenerator.addChanges(changesForTuple, allCellChanges);
+                changesGenerator.addChanges(changesForTuple, allCellChanges, numberOfChanges);
             }
         }
         tupleIterator.close();
+        return numberOfChanges.getChanges();
     }
 
     public void intitializeOperators(EGTask task) {

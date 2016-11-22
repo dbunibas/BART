@@ -11,6 +11,7 @@ public interface ICellChange {
     Set<String> getViolatedDependencies();
     void addViolatedDependency(String dependencyId);
     String toLongString();
+    String toShortString();
     String getType();
     void addBlackListValue(ValueConstraint value);
     void addWhiteListValue(ValueConstraint value);

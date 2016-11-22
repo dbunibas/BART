@@ -3,6 +3,7 @@ package bart.model.errorgenerator;
 import bart.BartConstants;
 import speedy.model.database.IValue;
 import bart.utility.BartUtility;
+import speedy.utility.SpeedyUtility;
 
 public class ValueConstraint {
 
@@ -21,7 +22,7 @@ public class ValueConstraint {
     public ValueConstraint(IValue start, String type) {
         this.start = start;
         this.type = type;
-        if (BartUtility.isNumeric(type)) {
+        if (SpeedyUtility.isNumeric(type)) {
             this.end = start;
         }
     }
@@ -89,7 +90,7 @@ public class ValueConstraint {
     }
 
     public boolean isNumeric() {
-        return BartUtility.isNumeric(type);
+        return SpeedyUtility.isNumeric(type);
     }
 
     public double getRange() {

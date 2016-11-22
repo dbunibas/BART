@@ -34,16 +34,19 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
             if (logger.isDebugEnabled()) logger.debug("Discarding context with empty candidate values...\n" + change);
             return null;
         }
+        IValue newValue;
         if (whiteValueConstraint.isStarConstraint()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for star value");
-            return generateNewValueForStar(whiteValueConstraint, originalCell, task);
+            newValue = generateNewValueForStar(whiteValueConstraint, originalCell, task);
         } else if (!whiteValueConstraint.isNumeric()) {
             if (logger.isDebugEnabled()) logger.debug("Generating new value for whitelist " + change.getWhiteList());
-            return new ConstantValue(whiteValueConstraint.toString());
+            newValue = new ConstantValue(whiteValueConstraint.toString());
         } else {
-            if (logger.isDebugEnabled()) logger.debug("Generating new value for blacklist " + change.getBlackList());
-            return generateNumericalValue(whiteValueConstraint, change.getBlackList());
+            if (logger.isDebugEnabled()) logger.debug("Generating new numerical value for blacklist " + change.getBlackList());
+            newValue = generateNumericalValue(whiteValueConstraint, change.getBlackList());
         }
+        if (logger.isDebugEnabled()) logger.debug("* New value: " + newValue);
+        return newValue;
     }
 
     private IValue generateNewValueForStar(ValueConstraint valueConstraint, Cell cell, EGTask task) {
@@ -57,7 +60,7 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         }
         String oldValue = cell.getValue().toString();
         double oldDouble = Double.parseDouble(oldValue);
-        int error = new Random().nextInt(doubleErrorRange);
+        int error = new Random().nextInt(doubleErrorRange) + 1;
         double newValue = oldDouble + error;
         if (valueConstraint.getType().equals(Types.INTEGER)) {
             return new ConstantValue((int) newValue);

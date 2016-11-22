@@ -136,6 +136,7 @@ public class RunEGTask implements IRunEGTask  {
                 System.out.println("*** Messing up...");
                 dto.getEgtask().setDirtyTarget(null);
                 DataBaseConfigurationNotifier.fire();
+                ErrorGeneratorStats.getInstance().resetStatistics();
                 long start = new Date().getTime();
                 CellChanges changes = generator.run(dto.getEgtask());
                 long end = new Date().getTime();

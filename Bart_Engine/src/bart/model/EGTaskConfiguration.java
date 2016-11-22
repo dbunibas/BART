@@ -35,6 +35,8 @@ public class EGTaskConfiguration {
     private String sampleStrategyForSymmetricQueries = BartConstants.SAMPLE_STRATEGY_TABLE_SIZE;
     private String sampleStrategyForInequalityQueries = BartConstants.SAMPLE_STRATEGY_TABLE_SIZE;
     private boolean detectEntireEquivalenceClasses = true;
+    private boolean autoSelectBestNumberOfThreads = true;
+    private int maxNumberOfThreads = 1;
 //    private Integer maxNumberOfInequalitiesInSymmetricQueries = null;
     private double sizeFactorReduction = 0.7;
     private Map<String, Double> vioGenQueryProbabilities = new HashMap<String, Double>();
@@ -357,6 +359,22 @@ public class EGTaskConfiguration {
 
     public void setVioGenOrderingAttributes(Map<String, OrderingAttribute> vioGenOrderingAttributes) {
         this.vioGenOrderingAttributes = vioGenOrderingAttributes;
+    }
+
+    public boolean isAutoSelectBestNumberOfThreads() {
+        return autoSelectBestNumberOfThreads;
+    }
+
+    public void setAutoSelectBestNumberOfThreads(boolean autoSelectBestNumberOfThreads) {
+        this.autoSelectBestNumberOfThreads = autoSelectBestNumberOfThreads;
+    }
+
+    public int getMaxNumberOfThreads() {
+        return maxNumberOfThreads;
+    }
+
+    public void setMaxNumberOfThreads(int maxNumberOfThreads) {
+        this.maxNumberOfThreads = maxNumberOfThreads;
     }
 
 //    public Integer getMaxNumberOfInequalitiesInSymmetricQueries() {

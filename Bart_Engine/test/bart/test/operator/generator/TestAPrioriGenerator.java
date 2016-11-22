@@ -19,8 +19,8 @@ public class TestAPrioriGenerator extends TestCase {
     public void setUp() {
 //        task = UtilityTest.loadEGTaskFromResources("employees/employees-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromResources("employees/employees-random-egtask.xml");
-//        task = UtilityTest.loadEGTaskFromResources("employees/employees-dbms-egtask.xml");
-        task = UtilityTest.loadEGTaskFromResources("employees/employees-dbms-2k-egtask.xml");
+        task = UtilityTest.loadEGTaskFromResources("employees/employees-dbms-egtask.xml");
+//        task = UtilityTest.loadEGTaskFromResources("employees/employees-dbms-2k-egtask.xml");
 //        task.getConfiguration().setGenerateAllChanges(true);
 //        task.getConfiguration().setUseSymmetricOptimization(false);
 //        task.getConfiguration().setGenerateAllChanges(true);
@@ -28,7 +28,7 @@ public class TestAPrioriGenerator extends TestCase {
 //        task.getConfiguration().setPrintLog(true);
 //        task.getConfiguration().setDebug(true);
 //        task.getConfiguration().setApplyCellChanges(false);
-        task.getConfiguration().getDefaultVioGenQueryConfiguration().setPercentage(0.1);
+//        task.getConfiguration().getDefaultVioGenQueryConfiguration().setPercentage(0.1);
         //
         task.getConfiguration().setEstimateRepairability(true);
         task.getConfiguration().setApplyCellChanges(true);

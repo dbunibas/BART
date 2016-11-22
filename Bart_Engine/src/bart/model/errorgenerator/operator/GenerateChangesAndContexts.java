@@ -2,6 +2,7 @@ package bart.model.errorgenerator.operator;
 
 import bart.BartConstants;
 import bart.model.EGTask;
+import bart.model.NumberOfChanges;
 import speedy.model.algebra.operators.GenerateTupleFromTuplePair;
 import speedy.model.database.Attribute;
 import speedy.model.database.AttributeRef;
@@ -52,9 +53,10 @@ public class GenerateChangesAndContexts {
         return false;
     }
 
-    public void addChanges(List<VioGenQueryCellChange> changes, CellChanges allCellChanges) {
+    public void addChanges(List<VioGenQueryCellChange> changes, CellChanges allCellChanges, NumberOfChanges numberOfChanges) {
         for (VioGenQueryCellChange change : changes) {
             allCellChanges.addChange(change);
+            numberOfChanges.addChange();
             allCellChanges.addAllCellsInViolationContext(change.getContext().getCells());
         }
     }
@@ -331,13 +333,13 @@ public class GenerateChangesAndContexts {
     /////////////////////////////////////////////////////////////////////////
     /////////////     CONTEXT AND CHANGE FOR TUPLE PAIRS
     /////////////////////////////////////////////////////////////////////////
-    public void handleTuplePair(Tuple firstTuple, Tuple secondTuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, Set<Tuple> usedTuples, INewValueSelectorStrategy valueSelector, EGTask task) {
+    public void handleTuplePair(Tuple firstTuple, Tuple secondTuple, VioGenQuery vioGenQuery, CellChanges allCellChanges, NumberOfChanges numberOfChanges, Set<Tuple> usedTuples, INewValueSelectorStrategy valueSelector, EGTask task) {
         Tuple mergedTuple = tupleMerger.generateTuple(firstTuple, secondTuple);
         List<VioGenQueryCellChange> changesForTuple = generateChangesForStandardTuple(vioGenQuery, mergedTuple, allCellChanges, valueSelector, task);
         if (changesForTuple.isEmpty()) {
             return;
         }
-        addChanges(changesForTuple, allCellChanges);
+        addChanges(changesForTuple, allCellChanges, numberOfChanges);
         if (task.getConfiguration().isAvoidInteractions() && ExecuteVioGenQueryUtility.isUsedInChanges(firstTuple, changesForTuple)) {
             usedTuples.add(firstTuple);
         }

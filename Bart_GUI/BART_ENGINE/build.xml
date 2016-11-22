@@ -18,14 +18,5 @@
                 <include name="bart-${bartEngine.ver}.jar" />
             </fileset>
         </copy>     
-    </target>	
-	
-    <target name="obfuscate" depends="clean, build-init">
-        <ant dir="${bartEngine.dir}" inheritAll="false" target="obfuscate" />  
-        <copy tofile="./release/modules/ext/bart-engine.jar">
-            <fileset dir="${bartEngine.dir}/dist/obfuscated">
-                <include name="bart*.jar" />
-            </fileset>
-        </copy>
-    </target>	 
+    </target>		 
 </project>

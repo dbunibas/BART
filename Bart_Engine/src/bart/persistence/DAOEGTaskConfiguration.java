@@ -271,6 +271,18 @@ public class DAOEGTaskConfiguration {
                 defaultConfig.setWindowSizeFactorForInequalityQueries(windowSizeFactorForInequalityQueries);
             }
         }
+        Element autoSelectBestNumberOfThreadsElement = configurationElement.getChild("autoSelectBestNumberOfThreads");
+        if (autoSelectBestNumberOfThreadsElement != null) {
+            conf.setAutoSelectBestNumberOfThreads(Boolean.parseBoolean(autoSelectBestNumberOfThreadsElement.getValue()));
+        }
+        Element maxNumberOfThreadsElement = configurationElement.getChild("maxNumberOfThreads");
+        if (maxNumberOfThreadsElement != null) {
+            conf.setMaxNumberOfThreads(Integer.parseInt(maxNumberOfThreadsElement.getValue()));
+        }
+        if (conf.isAutoSelectBestNumberOfThreads()) {
+            selectBestNumberOfThreads(conf);
+        }
+        if (conf.isPrintLog()) System.out.println("Using " + conf.getMaxNumberOfThreads() + " threads");
         return conf;
     }
 
@@ -372,5 +384,12 @@ public class DAOEGTaskConfiguration {
             throw new DAOException("Unable to load configuration." + attributeName + " value must be a double");
         }
         return value;
+    }
+
+    private void selectBestNumberOfThreads(EGTaskConfiguration configuration) {
+        int cores = Runtime.getRuntime().availableProcessors();
+//        int threads = (cores * 2) - 1;
+        int threads = cores;
+        configuration.setMaxNumberOfThreads(threads);
     }
 }

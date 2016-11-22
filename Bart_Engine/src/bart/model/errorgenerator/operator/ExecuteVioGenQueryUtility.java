@@ -144,7 +144,6 @@ public class ExecuteVioGenQueryUtility {
 //        }
 //        return verified;
 //    }
-
     public static Set<AttributeRef> filterTargetOccurrenceInTuple(Tuple tuple, Set<AttributeRef> occurrences) {
         Set<AttributeRef> result = new HashSet<AttributeRef>();
         for (AttributeRef attributeRef : occurrences) {
@@ -210,13 +209,15 @@ public class ExecuteVioGenQueryUtility {
         return value;
     }
 
-    public static boolean checkIfFinished(CellChanges allCellChanges, int initialChanges, int sampleSize) {
-        int totalChanges = allCellChanges.getChanges().size();
-        int executedChanges = totalChanges - initialChanges;
+//    public static boolean checkIfFinished(CellChanges allCellChanges, int initialChanges, int sampleSize) {
+//        int totalChanges = allCellChanges.getChanges().size();
+//        int executedChanges = totalChanges - initialChanges;
+//        return (executedChanges >= sampleSize);
+//    }
+
+    public static boolean checkIfFinished(int executedChanges, int sampleSize) {
         return (executedChanges >= sampleSize);
     }
-
-
 
     public static int computeSampleSize(VioGenQuery vioGenQuery, EGTask task) {
         VioGenQueryConfiguration configuration = vioGenQuery.getConfiguration();

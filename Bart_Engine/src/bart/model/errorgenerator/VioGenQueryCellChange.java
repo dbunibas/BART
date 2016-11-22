@@ -81,11 +81,9 @@ public class VioGenQueryCellChange extends AbstractCellChange {
 //        if (this.vioGenQuery != other.vioGenQuery && (this.vioGenQuery == null || !this.vioGenQuery.toShortString().equals(other.vioGenQuery.toShortString()))) return false;
 //        return true;
 //    }
-    
     @Override
     public String toShortString() {
-//        return new CellRef(this.getCell()).toString() + "." + this.getNewValue().toString();
-        return this.getCell().getTupleOID() + ":" + this.getCell().getAttributeRef().toStringNoAlias() + "." + this.getNewValue().toString();
+        return this.getCell().getTupleOID() + ":" + this.getCell().getAttributeRef().toStringNoAlias() + "." + (this.getNewValue() == null ? "null" : this.getNewValue().toString());
     }
 
     @Override

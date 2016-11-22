@@ -6,7 +6,7 @@ import bart.model.errorgenerator.VioGenQuery;
 
 public interface IVioGenQueryExecutor {
 
-    public void execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task);
+    public int execute(VioGenQuery vioGenQuery, CellChanges allCellChanges, EGTask task);
 
 //    public void initializeQuery(VioGenQuery vioGenQuery, EGTask task);
 
