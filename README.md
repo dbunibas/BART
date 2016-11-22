@@ -41,6 +41,10 @@ Is used to specify the JDBC parameters to access the DBMS.
 * **avoidInteractions**: Avoid interactions among changes. (default = true)
 * **errorPercentages**: Error percentages for dependencies and comparisons. All percentages are wrt table sizes (# tuples)
 
+---
+### Wiki ####
+[How to evaluate a data-cleaning tool](https://github.com/dbunibas/BART/wiki/How-to-evaluate-a-data-cleaning-tool)
+
 
 ---
 ### How to import BART_Engine source project in NetBeans ####
