@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,8 @@ public class CompareChangesDialog extends javax.swing.JDialog {
         btnChooseGenerated = new javax.swing.JButton();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
         comboScore = new javax.swing.JComboBox<>();
+        javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
+        txtVariablePrefixes = new javax.swing.JTextField();
         btnCompare = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
@@ -90,6 +93,10 @@ public class CompareChangesDialog extends javax.swing.JDialog {
         comboScore.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0.0", "0.5", "1.0" }));
         comboScore.setSelectedIndex(1);
 
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(CompareChangesDialog.class, "CompareChangesDialog.jLabel4.text")); // NOI18N
+
+        txtVariablePrefixes.setText(org.openide.util.NbBundle.getMessage(CompareChangesDialog.class, "CompareChangesDialog.txtVariablePrefixes.text")); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -108,13 +115,17 @@ public class CompareChangesDialog extends javax.swing.JDialog {
                         .addComponent(btnChooseExpected, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(5, 5, 5))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtGenerated, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                        .addComponent(txtGenerated)
                         .addGap(0, 0, 0)
                         .addComponent(btnChooseGenerated, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(comboScore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtVariablePrefixes, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,10 +140,12 @@ public class CompareChangesDialog extends javax.swing.JDialog {
                     .addComponent(jLabel2)
                     .addComponent(txtGenerated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnChooseGenerated))
-                .addGap(5, 5, 5)
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(comboScore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboScore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtVariablePrefixes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -210,8 +223,10 @@ public class CompareChangesDialog extends javax.swing.JDialog {
             showErrorMessage(error);
             return;
         }
+        String[] variablePrefixes = extractVariablePrefixes();
         long start = new Date().getTime();
-        List<PrecisionAndRecall> listPrecisionAndRecall = comparator.calculatePrecisionAndRecallValue(fileGenerated, fileExpected, Double.parseDouble(comboScore.getSelectedItem().toString()));
+        double scoreForVariable = Double.parseDouble(comboScore.getSelectedItem().toString());
+        List<PrecisionAndRecall> listPrecisionAndRecall = comparator.calculatePrecisionAndRecallValue(fileGenerated, fileExpected, scoreForVariable, variablePrefixes);
         Collections.sort(listPrecisionAndRecall);
         PrecisionAndRecall max = listPrecisionAndRecall.get(0);
         long end = new Date().getTime();
@@ -249,6 +264,14 @@ public class CompareChangesDialog extends javax.swing.JDialog {
             }
         }
         return sb.toString();
+    }
+
+    private String[] extractVariablePrefixes() {
+        String[] result = txtVariablePrefixes.getText().split(",");
+        for (int i = 0; i < result.length; i++) {
+            result[i] = result[i].trim();
+        }
+        return result;
     }
 
     private void enableActions() {
@@ -300,6 +323,7 @@ public class CompareChangesDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> comboScore;
     private javax.swing.JTextField txtExpected;
     private javax.swing.JTextField txtGenerated;
+    private javax.swing.JTextField txtVariablePrefixes;
     // End of variables declaration//GEN-END:variables
 
     class TextFieldListener implements DocumentListener {
