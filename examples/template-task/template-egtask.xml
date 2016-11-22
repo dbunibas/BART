@@ -64,6 +64,11 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
         <cloneTargetSchema>true</cloneTargetSchema>
         <cloneSuffix>_dirty</cloneSuffix>
 
+        <!-- To export the dirty db -->
+        <exportDirtyDB>true</exportDirtyDB>
+        <exportDirtyDBPath>/Temp/bart/example/</exportDirtyDBPath>
+        <exportDirtyDBType>CSV</exportDirtyDBType>
+
         <!-- To compute an estimate of the reparability (default = true) -->
         <estimateRepairability>true</estimateRepairability>
 
