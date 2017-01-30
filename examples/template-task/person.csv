@@ -1,4 +1,4 @@
-ssn, name, surname, city, zip
+ssn, name, surname, city, zip (integer)
 123, Jon, Snow, The Wall, 100
 123, Jon, Snow, Winterfell, 101
 345, Ed, Stark, Winterfell, 101
