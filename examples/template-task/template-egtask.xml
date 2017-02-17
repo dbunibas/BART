@@ -109,6 +109,9 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
 
         <!-- To control the way in which changing the value -->
         <dirtyStrategies>
+            <defaultStrategy>
+                <strategy chars="*" charsToAdd="3">TypoAddString</strategy>
+            </defaultStrategy> 
             <attributeStrategy>
                 <attribute table="person" name="city">
                     <strategy>TypoActiveDomain</strategy>
