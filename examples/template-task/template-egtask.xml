@@ -69,6 +69,10 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
         <exportDirtyDBPath>/Temp/bart/example/</exportDirtyDBPath>
         <exportDirtyDBType>CSV</exportDirtyDBType>
 
+        <!-- To export the changes -->
+        <exportCellChanges>true</exportCellChanges>
+        <exportCellChangesPath>/Temp/bart/example/changes.csv</exportCellChangesPath>
+
         <!-- To compute an estimate of the reparability (default = true) -->
         <estimateRepairability>true</estimateRepairability>
 
@@ -102,6 +106,23 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
                 </vioGenQuery>
             </vioGenQueries>
         </errorPercentages>
+
+        <!-- To control the way in which changing the value -->
+        <dirtyStrategies>
+            <attributeStrategy>
+                <attribute table="person" name="city">
+                    <strategy>TypoActiveDomain</strategy>
+                </attribute>
+            </attributeStrategy>
+            <!-- possible strategies
+                <strategy chars="*" charsToAdd="3">TypoAddString</strategy>
+                <strategy chars="*" charsToAdd="3">TypoAppendString</strategy>
+                <strategy charsToRemove="3">TypoRemoveString</strategy>
+                <strategy charsToSwitch="3">TypoSwitchValue</strategy>
+                <strategy>TypoActiveDomain</strategy>
+                <strategy>TypoRandom</strategy>
+            -->
+        </dirtyStrategies>
 
         <!-- The following parameters are used to control the sampling process.
             All the fields are optional, but they may be crucial to obtain a good random sample.
