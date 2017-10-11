@@ -41,6 +41,7 @@ public class UtilityTest {
     }
 
     public static EGTask loadEGTaskFromAbsolutePath(String fileTask) {
+        if (logger.isDebugEnabled()) logger.debug("Loading task " + fileTask);
         return loadEGTaskFromAbsolutePath(fileTask, false);
     }
 

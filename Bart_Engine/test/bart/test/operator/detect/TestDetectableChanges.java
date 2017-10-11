@@ -28,8 +28,8 @@ public class TestDetectableChanges extends TestCase {
     public void setUp() {
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-5-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-50-egtask.xml");
-//        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-2k-egtask.xml");
-        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-10k-egtask.xml");
+        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-2k-egtask.xml");
+//        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("employees/") + "employees-dbms-10k-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getResourcesFolder("customers/") + "customers-dbms-5k-egtask.xml");
 //        task = UtilityTest.loadEGTaskFromAbsolutePath(UtilityTest.getExperimentsFolder("tax/") + "tax-dbms-5k-egtask.xml");
         //
