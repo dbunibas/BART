@@ -155,7 +155,8 @@ public class ErrorGeneratorStats {
             sb.append("------ ERROR FOR VIOGENQUERIES ------").append("\n");
             int totalNumberOfChanges = 0;
             for (VioGenQuery d : sortVioGenQueries(vioGenQueriesErrors.keySet())) {
-                totalNumberOfChanges += vioGenQueriesErrors.get(d);
+                Long errorsForVioGenQuery = vioGenQueriesErrors.get(d);
+                totalNumberOfChanges += (errorsForVioGenQuery == null ? 0 : errorsForVioGenQuery);
                 sb.append(d.toShortString()).append(": \t").append(vioGenQueriesErrors.get(d)).append(" changes").append("\n");
             }
             sb.append("-------------------------").append("\n");

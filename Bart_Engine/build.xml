@@ -21,6 +21,8 @@
             <pathelement location="${lib.dir}/js-engine.jar" />  
             <pathelement location="${lib.dir}/simmetrics-1.6.2.jar" />  
             <pathelement location="${lib.dir}/jgrapht-core-${jgrapht-core.ver}.jar" />  
+            <pathelement location="${lib.dir}/jgrapht-ext-${jgrapht-core.ver}.jar" />
+            <pathelement location="${lib.dir}/jgraphx-${jgraphx.ver}.jar" />
             <pathelement location="${lib.dir}/c3p0-${c3p0.ver}.jar" />  
             <pathelement location="${lib.dir}/mchange-commons-java-${mchange.ver}.jar" />  
             <pathelement location="${lib.dir}/commons-io-2.4.jar" />  
@@ -35,7 +37,7 @@
             <pathelement location="${lib.dir}/jackson-databind-${jackson.ver}.jar" />
             <pathelement location="${lib.dir}/jackson-dataformat-csv-${jackson.ver}.jar" />
             <!-- JDBC Drivers -->
-            <pathelement location="${lib.dir}/postgresql-9.1-903.jdbc3.jar" />
+            <pathelement location="${lib.dir}/postgresql-${postgresql-jdbc.ver}.jar" />
             <pathelement location="${lib.dir}/h2-1.4.182.jar" />
         </path>
         <path id="test.classpath">
@@ -268,6 +270,7 @@
     
     <target name="run" depends="compile" description="Run the application">
         <java classname="${main.class}" fork="yes"  maxmemory="${run.maxmemory}">
+            <jvmarg value="-Djava.util.logging.config.class=bart.utility.JavaUtilLoggingConfig"/>
             <classpath refid="compile.classpath" />
             <arg value="${arg0}"/>
         </java>
@@ -279,6 +282,13 @@
             <arg value="${arg0}"/>
             <arg value="-removeExistingDB"/>
             <arg value="-checkCleanInstance"/>
+        </java>
+    </target>
+    
+    <target name="compareInstances" depends="compile" description="Run the application">
+        <java classname="bart.CompareInstance" fork="yes">
+            <classpath refid="compile.classpath" />
+            <arg value="${arg0}"/>
         </java>
     </target>
     

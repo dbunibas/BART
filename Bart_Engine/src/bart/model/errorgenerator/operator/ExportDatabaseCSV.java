@@ -31,21 +31,23 @@ public class ExportDatabaseCSV implements IExportDatabase {
     private static String SEPARATOR = ",";
     private static String NEW_LINE = "\n";
 
-    public void export(IDatabase database, String path, String taskPath) {
-        export(database, new CellChanges(), path, taskPath);
+    @Override
+    public void export(IDatabase database, String prefix, String path, String taskPath) {
+        export(database, prefix, new CellChanges(), path, taskPath);
     }
 
-    public void export(IDatabase database, CellChanges cellChanges, String path, String taskPath) {
+    @Override
+    public void export(IDatabase database, String prefix, CellChanges cellChanges, String path, String taskPath) {
         path = expandPath(taskPath, path);
         if (logger.isDebugEnabled()) logger.debug("Exporting database to path " + path);
         for (String tableName : database.getTableNames()) {
             ITable table = database.getTable(tableName);
-            exportTable(table, cellChanges, path);
+            exportTable(table, prefix, cellChanges, path);
         }
     }
 
-    private void exportTable(ITable table, CellChanges cellChanges, String path) {
-        path += File.separator + "dirty_" + table.getName() + ".csv";
+    private void exportTable(ITable table, String prefix, CellChanges cellChanges, String path) {
+        path += File.separator + prefix + "_" + table.getName() + ".csv";
         Writer out = null;
         try {
             File outFile = new File(path);

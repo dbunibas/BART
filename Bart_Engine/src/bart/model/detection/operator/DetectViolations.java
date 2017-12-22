@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.utility.PrintUtility;
 
 public class DetectViolations implements IInitializableOperator {
 
@@ -23,17 +24,24 @@ public class DetectViolations implements IInitializableOperator {
 
     private SelectQueryExecutor executorSelector = new SelectQueryExecutor();
     private FindFormulaWithAdornments symmetryFinder = new FindFormulaWithAdornments();
+    private DetectViolationStandard detectViolationsStandard = new DetectViolationStandard();
 
     //////////// CHECK IF DATABASE IS CLEAN
     public void check(List<Dependency> dependencies, IDatabase source, IDatabase target, EGTask task) throws ErrorGeneratorException {
         intitializeOperators(task);
         List<Dependency> violatedDependency = new ArrayList<Dependency>();
-        DetectViolationStandard detectViolationsStandard = new DetectViolationStandard();
         for (Dependency dependency : dependencies) {
-//            IDetectViolations detector = executorSelector.getExecutorForDependency(dependency, task);
-            boolean violated = detectViolationsStandard.check(dependency, source, target, task);
+            symmetryFinder.findFormulaWithAdornments(dependency.getPremise().getPositiveFormula(), task);
+            IDetectViolations detector = executorSelector.getExecutorForDependency(dependency, task);
+            if (task.getConfiguration().isPrintLog()) PrintUtility.printInformation("* Checking dependency " + dependency.getId());
+            if (logger.isDebugEnabled()) logger.debug("Detecting violations for dependency " + dependency.getId() + " using " + detector.getClass().getName());
+//            boolean violated = detectViolationsStandard.check(dependency, source, target, task);
+            boolean violated = detector.check(dependency, source, target, task);
             if (violated) {
+                if (task.getConfiguration().isPrintLog()) PrintUtility.printError("** Dependency " + dependency.getId() + " is violated");
                 violatedDependency.add(dependency);
+            } else {
+                if (task.getConfiguration().isPrintLog()) PrintUtility.printInformation("** No violations found");
             }
         }
         if (!violatedDependency.isEmpty()) {

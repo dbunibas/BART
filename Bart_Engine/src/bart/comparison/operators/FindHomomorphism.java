@@ -29,7 +29,7 @@ public class FindHomomorphism {
     private final static Logger logger = LoggerFactory.getLogger(FindHomomorphism.class);
 
     public InstanceMatchTask findHomomorphism(IDatabase sourceDb, IDatabase destinationDb) {
-        InstanceMatchTask result = new InstanceMatchTask(sourceDb, destinationDb);
+        InstanceMatchTask result = new InstanceMatchTask(this.getClass().getSimpleName(), sourceDb, destinationDb);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(sourceDb);
         List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(destinationDb);
         TupleMatches tupleMatches = findTupleMatches(sourceTuples, destinationTuples);

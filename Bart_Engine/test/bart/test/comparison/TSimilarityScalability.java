@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 import bart.comparison.ComparisonConfiguration;
 import bart.comparison.ComparisonStats;
 import bart.comparison.InstanceMatchTask;
+import bart.comparison.operators.ComputeInstanceSimilarityBlock;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForceCompatibility;
-import bart.comparison.operators.CompareInstancesHashing;
+import bart.comparison.operators.ComputeInstanceSimilarityHashing;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForce;
 import bart.comparison.operators.IComputeInstanceSimilarity;
 import speedy.SpeedyConstants;
@@ -20,7 +21,8 @@ public class TSimilarityScalability extends TestCase {
 
     private IComputeInstanceSimilarity similarityCheckerBruteForce = new ComputeInstanceSimilarityBruteForce();
     private IComputeInstanceSimilarity similarityCheckerCompatibility = new ComputeInstanceSimilarityBruteForceCompatibility();
-    private IComputeInstanceSimilarity similarityCheckerHashing = new CompareInstancesHashing();
+    private IComputeInstanceSimilarity similarityCheckerHashing = new ComputeInstanceSimilarityHashing();
+    private IComputeInstanceSimilarity similarityCheckerBlock = new ComputeInstanceSimilarityBlock();
 
     public void testDoctors() {
         String baseFolder = "/Temp/comparison/doctors/";
@@ -28,15 +30,19 @@ public class TSimilarityScalability extends TestCase {
         ComparisonConfiguration.setConvertSkolemInHash(true);
         ComparisonConfiguration.setInjective(true);
         ComparisonConfiguration.setFunctional(true);
-        String[] sizes = new String[]{"10k", "100k", "500k", "1m"};
-//        String[] sizes = new String[]{"1m"};
+        ComparisonConfiguration.setForceExaustiveSearch(true);
+//        String[] sizes = new String[]{"10k", "100k", "500k", "1m"};
+//        String[] sizes = new String[]{"500k"};
+        String[] sizes = new String[]{"10k"};
         for (String size : sizes) {
             PrintUtility.printMessage("================ Size: " + size + " ================");
             IDatabase leftDb = ComparisonUtilityTest.loadDatabase(baseFolder + "Llunatic-" + size);
             IDatabase rightDb = ComparisonUtilityTest.loadDatabase(baseFolder + "RDFox-" + size);
-//            execute(leftDb, rightDb, similarityCheckerHashing);
-            execute(leftDb, rightDb, similarityCheckerCompatibility);
+            PrintUtility.printMessage(ComparisonStats.getInstance().toString());
+            execute(leftDb, rightDb, similarityCheckerHashing);
+//            execute(leftDb, rightDb, similarityCheckerCompatibility);
 //            execute(leftDb, rightDb, similarityCheckerBruteForce);
+//            execute(leftDb, rightDb, similarityCheckerBlock);
             PrintUtility.printMessage("===============================================");
         }
     }

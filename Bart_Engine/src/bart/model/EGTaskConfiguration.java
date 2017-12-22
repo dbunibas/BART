@@ -23,6 +23,9 @@ public class EGTaskConfiguration {
     private boolean exportCellChanges = false;
     private boolean exportCellChangesFull = false;
     private String exportCellChangesPath = null;
+    private boolean exportCleanDB = false;
+    private String exportCleanDBType = BartConstants.CSV;
+    private String exportCleanDBPath = null;
     private boolean exportDirtyDB = false;
     private String exportDirtyDBType = BartConstants.CSV;
     private String exportDirtyDBPath = null;
@@ -161,6 +164,30 @@ public class EGTaskConfiguration {
 
     public void setExportCellChangesPath(String exportCellChangesPath) {
         this.exportCellChangesPath = exportCellChangesPath;
+    }
+
+    public boolean isExportCleanDB() {
+        return exportCleanDB;
+    }
+
+    public void setExportCleanDB(boolean exportCleanDB) {
+        this.exportCleanDB = exportCleanDB;
+    }
+
+    public String getExportCleanDBType() {
+        return exportCleanDBType;
+    }
+
+    public void setExportCleanDBType(String exportCleanDBType) {
+        this.exportCleanDBType = exportCleanDBType;
+    }
+
+    public String getExportCleanDBPath() {
+        return exportCleanDBPath;
+    }
+
+    public void setExportCleanDBPath(String exportCleanDBPath) {
+        this.exportCleanDBPath = exportCleanDBPath;
     }
 
     public boolean isExportDirtyDB() {
@@ -397,6 +424,7 @@ public class EGTaskConfiguration {
                 + "\n\t useDeltaDBForChanges=" + useDeltaDBForChanges
                 + "\n\t applyCellChanges=" + applyCellChanges
                 + "\n\t cloneTargetSchema=" + cloneTargetSchema
+                + "\n\t estimateRepairability=" + estimateRepairability
                 + "\n\t generateAllChanges=" + generateAllChanges
                 + "\n\t avoidInteractions=" + avoidInteractions
                 + "\n\t checkCleanInstance=" + checkCleanInstance
@@ -405,7 +433,6 @@ public class EGTaskConfiguration {
                 + "\n\t sampleStrategyForStandardQueries=" + sampleStrategyForStandardQueries
                 + "\n\t sampleStrategyForSymmetricQueries=" + sampleStrategyForSymmetricQueries
                 + "\n\t sampleStrategyForInequalityQueries=" + sampleStrategyForInequalityQueries
-                //                + "\n\t maxNumberOfInequalitiesInSymmetricQueries=" + maxNumberOfInequalitiesInSymmetricQueries
                 + "\n\t detectEntireEquivalenceClasses=" + detectEntireEquivalenceClasses
                 + "\n\t defaultDirtyStrategy " + defaultDirtyStrategy
                 + printDetailedDirtyAttributeStrategy()

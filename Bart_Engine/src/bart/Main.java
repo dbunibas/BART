@@ -54,6 +54,7 @@ public class Main {
             }
             String fileTask = taskFile.getAbsolutePath();
             EGTaskConfiguration conf = daoTaskConfiguration.loadConfiguration(fileTask);
+            if (conf.isDebug()) PrintUtility.printMessage(conf.toString());
             if (conf.isRecreateDBOnStart()) {
                 removeExistingDB(fileTask);
             }

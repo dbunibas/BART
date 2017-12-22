@@ -21,7 +21,8 @@ public class ComparisonConfiguration implements Cloneable {
     private boolean functional = true;
     private boolean stopIfNonMatchingTuples = false;
     private double K = 0.5;
-    private double bestScoreThreshold = 0.99;
+//    private double bestScoreThreshold = 0.99;
+    private double bestScoreThreshold = 99;
     private boolean convertSkolemInHash = false;
     private boolean forceExaustiveSearch = false;
 
@@ -103,6 +104,7 @@ public class ComparisonConfiguration implements Cloneable {
         sb.append(" K            :").append(K).append("\n");
         sb.append(" nullPrefixes :").append(Arrays.asList(SpeedyConstants.getStringSkolemPrefixes())).append("\n");
         sb.append("-----------------------\n");
+        sb.append(" forceExaustiveSearch:").append(forceExaustiveSearch).append("\n");
         sb.append(" twoWayValueMapping:").append(twoWayValueMapping).append("\n");
         sb.append(" stopIfNonMatchingTuples:").append(stopIfNonMatchingTuples).append("\n");
         sb.append(" convertSkolemInHash:").append(convertSkolemInHash).append("\n");

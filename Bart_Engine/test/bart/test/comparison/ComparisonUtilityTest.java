@@ -28,4 +28,8 @@ public class ComparisonUtilityTest {
         ComparisonStats.getInstance().addStat(ComparisonStats.LOAD_INSTANCE_TIME, System.currentTimeMillis() - start);
         return database;
     }
+
+    public static boolean isDifferent(Double d0, Double d1) {
+        return Math.abs(d0 - d1) > 0.0001;
+    }
 }

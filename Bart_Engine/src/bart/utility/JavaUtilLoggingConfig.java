@@ -31,5 +31,6 @@ public class JavaUtilLoggingConfig {
         Logger.getLogger("org.apache.jcs").setLevel(Level.SEVERE);
         Logger.getLogger("com.mchange").setLevel(Level.SEVERE);
         Logger.getLogger("com.sun").setLevel(Level.SEVERE);
+        Logger.getLogger("org.postgresql").setLevel(Level.OFF);
     }
 }

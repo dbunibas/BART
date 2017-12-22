@@ -29,9 +29,9 @@ import speedy.model.database.Tuple;
 import speedy.model.database.TupleWithTable;
 import speedy.utility.SpeedyUtility;
 
-public class CompareInstancesHashing implements IComputeInstanceSimilarity {
+public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilarity {
 
-    private final static Logger logger = LoggerFactory.getLogger(CompareInstancesHashing.class);
+    private final static Logger logger = LoggerFactory.getLogger(ComputeInstanceSimilarityHashing.class);
     private final SignatureMapCollectionGenerator signatureGenerator = new SignatureMapCollectionGenerator();
     private final CheckTupleMatch tupleMatcher = new CheckTupleMatch();
     private final CheckTupleMatchCompatibility compatibilityChecker = new CheckTupleMatchCompatibility();
@@ -39,8 +39,9 @@ public class CompareInstancesHashing implements IComputeInstanceSimilarity {
     private final ComputeScore scoreCalculator = new ComputeScore();
 //    private final FindNonMatchingTuples nonMatchingTuplesFinder = new FindNonMatchingTuples();
 
+    @Override
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
-        InstanceMatchTask instanceMatch = new InstanceMatchTask(leftDb, rightDb);
+        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
         long start = System.currentTimeMillis();
         List<TupleWithTable> leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
         List<TupleWithTable> rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb);
@@ -69,7 +70,7 @@ public class CompareInstancesHashing implements IComputeInstanceSimilarity {
             if (logger.isDebugEnabled()) logger.debug("Finding a tuple that can be mapped in " + destTuple);
             List<SignatureAttributes> signatureAttributesForTable = srcSignatureMap.getRankedAttributesForTable(destTuple.getTable());
             if (logger.isDebugEnabled()) logger.debug("Signature for table " + destTuple.getTable() + ": " + signatureAttributesForTable);
-            List<TupleMatch> matchingTuples = findMatchingTuples(destTuple, signatureAttributesForTable, srcSignatureMap, tupleMapping);
+            List<TupleMatch> matchingTuples = findSignatureBasedMatches(destTuple, signatureAttributesForTable, srcSignatureMap, tupleMapping);
             if (logger.isDebugEnabled()) logger.debug("Possible matching tuples: " + matchingTuples);
             if (matchingTuples.isEmpty()) {
                 if (logger.isDebugEnabled()) logger.debug("Extra tuple in dest instance: " + destTuple);
@@ -87,13 +88,13 @@ public class CompareInstancesHashing implements IComputeInstanceSimilarity {
         if (logger.isInfoEnabled()) logger.info("Finding mapping time:" + (end - start) + " ms");
     }
 
-    private List<TupleMatch> findMatchingTuples(TupleWithTable destinationTuple, List<SignatureAttributes> signatureAttributesForTable,
+    private List<TupleMatch> findSignatureBasedMatches(TupleWithTable destinationTuple, List<SignatureAttributes> signatureAttributesForTable,
             SignatureMapCollection leftSignatureMaps, TupleMapping tupleMapping) {
         List<TupleMatch> matchingTuples = new ArrayList<TupleMatch>();
         Set<AttributeRef> attributesWithGroundValues = ComparisonUtility.findAttributesWithGroundValue(destinationTuple.getTuple());
         for (SignatureAttributes signatureAttribute : signatureAttributesForTable) {
             if (logger.isTraceEnabled()) logger.trace("Checking signature attribute " + signatureAttribute);
-            if (!isCompatible(attributesWithGroundValues, signatureAttribute.getAttributes())) {
+            if (!ComparisonUtility.isCompatible(attributesWithGroundValues, signatureAttribute.getAttributes())) {
                 if (logger.isTraceEnabled()) logger.trace("Skipping not compatible signature attribute " + signatureAttribute);
                 continue;
             }
@@ -124,10 +125,6 @@ public class CompareInstancesHashing implements IComputeInstanceSimilarity {
             }
         }
         return matchingTuples;
-    }
-
-    private boolean isCompatible(Set<AttributeRef> attributesWithGroundValues, List<AttributeRef> attributes) {
-        return attributesWithGroundValues.containsAll(attributes);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////

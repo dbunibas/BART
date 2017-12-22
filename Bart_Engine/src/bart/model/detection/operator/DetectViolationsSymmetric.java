@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import speedy.model.algebra.operators.ITupleIterator;
 
 public class DetectViolationsSymmetric implements IDetectViolations, IInitializableOperator {
 
@@ -39,10 +40,28 @@ public class DetectViolationsSymmetric implements IDetectViolations, IInitializa
     private GenerateTupleFromTuplePair tupleMerger = new GenerateTupleFromTuplePair();
     private IRunQuery queryRunner;
 
+    @Override
     public boolean check(Dependency dependency, IDatabase source, IDatabase target, EGTask task) {
-        throw new UnsupportedOperationException("Not supported.");
+        intitializeOperators(task);
+        if (!dependency.isSymmetric()) {
+            throw new IllegalArgumentException("Dependency is not symmetric.\n" + dependency);
+        }
+        if (!dependency.getPremise().hasEqualityAdornments()) {
+            throw new IllegalArgumentException("Dependency with no equalities is not supported.\n" + dependency);
+        }
+        FormulaWithAdornments formulaWithAdornments = dependency.getPremise().getFormulaWithAdornments();
+        symmetricQueryBuilder.initializeQuery(formulaWithAdornments, task);
+        List<EquivalenceClassQuery> equivalenceClassQueries = formulaWithAdornments.getEquivalenceClassQueries();
+        for (EquivalenceClassQuery subQuery : equivalenceClassQueries) {
+            ITupleIterator it = queryRunner.run(subQuery.getQuery(), source, target);
+            if (it.hasNext()) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    @Override
     public void detect(Dependency dependency, Violations violations, IDatabase source, IDatabase target, EGTask task) {
         intitializeOperators(task);
         if (!dependency.isSymmetric()) {
@@ -134,6 +153,7 @@ public class DetectViolationsSymmetric implements IDetectViolations, IInitializa
     }
 
     ///////////////////////////////////////
+    @Override
     public void intitializeOperators(EGTask task) {
         queryRunner = OperatorFactory.getInstance().getQueryRunner(task);
     }

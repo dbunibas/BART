@@ -66,6 +66,7 @@ public class DetectViolationStandard implements IDetectViolations, IInitializabl
         return false;
     }
 
+    @Override
     public void intitializeOperators(EGTask task) {
         queryRunner = OperatorFactory.getInstance().getQueryRunner(task);
     }

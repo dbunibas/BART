@@ -2,7 +2,7 @@ package bart.test.comparison;
 
 import junit.framework.TestCase;
 import bart.comparison.InstanceMatchTask;
-import bart.comparison.operators.CompareInstancesHashing;
+import bart.comparison.operators.ComputeInstanceSimilarityHashing;
 import speedy.model.database.IDatabase;
 import speedy.model.database.dbms.DBMSDB;
 import speedy.model.database.dbms.InitDBConfiguration;
@@ -12,7 +12,7 @@ import speedy.utility.test.UtilityForTests;
 
 public class TestCompareGroundInstances extends TestCase {
 
-    private CompareInstancesHashing instanceComparator = new CompareInstancesHashing();
+    private ComputeInstanceSimilarityHashing instanceComparator = new ComputeInstanceSimilarityHashing();
     private static String BASE_FOLDER = "/resources/comparison/";
 
     public void testInstance1() {

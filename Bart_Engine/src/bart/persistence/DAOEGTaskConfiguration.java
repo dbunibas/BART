@@ -98,14 +98,32 @@ public class DAOEGTaskConfiguration {
                 if (logger.isDebugEnabled()) logger.debug("* exportCellChangesPath " + conf.getExportCellChangesPath());
             }
         }
+        Element exportCleanDBElement = configurationElement.getChild("exportCleanDB");
+        if (exportCleanDBElement != null) {
+            conf.setExportCleanDB(Boolean.parseBoolean(exportCleanDBElement.getText()));
+            if (logger.isDebugEnabled()) logger.debug("* exportCleanDB " + conf.isExportCleanDB());
+            if (conf.isExportCleanDB()) {
+                Element exportCleanDBPathElement = configurationElement.getChild("exportCleanDBPath");
+                if (exportCleanDBPathElement == null) {
+                    throw new DAOException("exportCleanDB requires the exportCleanDBPath option");
+                }
+                conf.setExportCleanDBPath(exportCleanDBPathElement.getText());
+                if (logger.isDebugEnabled()) logger.debug("* exportCleanDBPath " + conf.getExportCleanDBPath());
+                Element exportCleanDBTypeElement = configurationElement.getChild("exportCleanDBType");
+                if (exportCleanDBTypeElement != null) {
+                    conf.setExportCleanDBType(exportCleanDBTypeElement.getText());
+                    if (logger.isDebugEnabled()) logger.debug("* exportCleanDBType " + conf.getExportCleanDBPath());
+                }
+            }
+        }
         Element exportDirtyDBElement = configurationElement.getChild("exportDirtyDB");
         if (exportDirtyDBElement != null) {
             conf.setExportDirtyDB(Boolean.parseBoolean(exportDirtyDBElement.getText()));
-            if (logger.isDebugEnabled()) logger.debug("* exportDiryDB " + conf.isExportDirtyDB());
+            if (logger.isDebugEnabled()) logger.debug("* exportDirtyDB " + conf.isExportDirtyDB());
             if (conf.isExportDirtyDB()) {
                 Element exportDirtyDBPathElement = configurationElement.getChild("exportDirtyDBPath");
                 if (exportDirtyDBPathElement == null) {
-                    throw new DAOException("exportDiryDB requires the exportDirtyDBPath option");
+                    throw new DAOException("exportDirtyDB requires the exportDirtyDBPath option");
                 }
                 conf.setExportDirtyDBPath(exportDirtyDBPathElement.getText());
                 if (logger.isDebugEnabled()) logger.debug("* exportDirtyDBPath " + conf.getExportDirtyDBPath());

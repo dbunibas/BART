@@ -21,7 +21,7 @@
         <!--<appender-ref ref="file"/>-->
     </root>
     <!--     TEST     -->
-    <logger name="bart.test" level="DEBUG"/>
+    <!--<logger name="bart.test" level="TRACE"/>-->
     <!--     OPERATOR     -->
     <!--<logger name="bart.model.errorgenerator.operator.APrioriGenerator" level="INFO"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.SelectQueryExecutor" level="INFO"/>-->
@@ -53,6 +53,7 @@
     <!--<logger name="bart.model.errorgenerator.operator.TableSizeSampleStrategy" level="DEBUG"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.ExecutePartialOrderErrors" level="TRACE"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.valueselectors.PartialOrderValueSelector" level="TRACE"/>-->
+    <!--<logger name="bart.model.detection.operator.DetectViolations" level="DEBUG"/>-->
     <!--<logger name="bart.model.detection.operator.DetectViolationsSymmetric" level="DEBUG"/>-->
     <!--<logger name="bart.model.detection.operator.EstimateRepairability" level="DEBUG"/>-->
     <!--<logger name="bart.model.dependency.analysis.FindFormulaWithAdornments" level="DEBUG"/>-->
@@ -70,11 +71,15 @@
     <!--<logger name="bart.utility.DBMSUtility" level="DEBUG"/>-->
     <!--     COMPARISON     -->
     <!--<logger name="bart.comparison.operators.CompareInstancesHashing" level="DEBUG"/>-->
+    <!--<logger name="bart.comparison.operators.ComputeInstanceSimilarityBruteForceCompatibility" level="DEBUG"/>-->
+    <!--<logger name="bart.comparison.operators.CheckTupleMatch" level="TRACE"/>-->
     <!--<logger name="bart.comparison.operators.CheckTupleMatchCompatibility" level="DEBUG"/>-->
+    <!--<logger name="bart.comparison.operators.ComputeInstanceSimilarityBlock" level="DEBUG"/>-->
+    <!--<logger name="bart.comparison.ComparisonUtility" level="TRACE"/>-->
     <!--     SPEEDY     -->
     <!--<logger name="speedy.utility.DBMSUtility" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.relational.QueryStatManager" level="DEBUG"/>-->
-    <!--<logger name="speedy.persistence.relational.QueryManager" level="TRACE"/>-->
+    <!--<logger name="speedy.persistence.relational.QueryManager" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.file.operators.ImportCSVFileWithCopy" level="DEBUG"/>-->
     <!--<logger name="speedy.persistence.file.operators.ImportXMLFile" level="DEBUG"/>-->
     <!--<logger name="speedy.model.algebra.operators.sql.SQLBatchInsert" level="DEBUG"/>-->

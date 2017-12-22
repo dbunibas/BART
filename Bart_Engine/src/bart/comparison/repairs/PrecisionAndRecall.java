@@ -1,5 +1,7 @@
 package bart.comparison.repairs;
 
+import java.text.DecimalFormat;
+
 public class PrecisionAndRecall implements Comparable<PrecisionAndRecall> {
 
     private double precision;
@@ -45,6 +47,11 @@ public class PrecisionAndRecall implements Comparable<PrecisionAndRecall> {
     @Override
     public String toString() {
         return precision + "\t" + recall + "\t" + fMeasure;
+    }
+
+    public String toFormattedString() {
+        DecimalFormat df = new DecimalFormat("0.###");
+        return df.format(precision) + "\t" + df.format(recall) + "\t" + df.format(fMeasure);
     }
 
     public int compareTo(PrecisionAndRecall o) {

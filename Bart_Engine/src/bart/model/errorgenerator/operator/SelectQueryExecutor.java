@@ -9,11 +9,9 @@ import bart.model.detection.operator.DetectViolationStandard;
 import bart.model.detection.operator.DetectViolationsSymmetric;
 import bart.model.detection.operator.IDetectViolations;
 import bart.model.errorgenerator.VioGenQuery;
-import bart.utility.BartUtility;
 import bart.utility.DependencyUtility;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

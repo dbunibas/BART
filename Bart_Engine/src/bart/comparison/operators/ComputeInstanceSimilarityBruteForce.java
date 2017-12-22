@@ -22,7 +22,7 @@ public class ComputeInstanceSimilarityBruteForce implements IComputeInstanceSimi
     
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
         long start = System.currentTimeMillis();
-        InstanceMatchTask instanceMatch = new InstanceMatchTask(leftDb, rightDb);
+        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
         List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb);
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);

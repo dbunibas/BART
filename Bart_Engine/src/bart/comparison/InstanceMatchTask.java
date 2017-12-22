@@ -4,14 +4,20 @@ import speedy.model.database.IDatabase;
 
 public class InstanceMatchTask {
 
+    private final String strategy;
     private final IDatabase sourceDb;
     private final IDatabase targetDb;
     private TupleMapping tupleMapping = new TupleMapping();
     private Boolean isomorphism;
 
-    public InstanceMatchTask(IDatabase sourceDb, IDatabase targetDb) {
+    public InstanceMatchTask(String strategy, IDatabase sourceDb, IDatabase targetDb) {
+        this.strategy = strategy;
         this.sourceDb = sourceDb;
         this.targetDb = targetDb;
+    }
+
+    public String getStrategy() {
+        return strategy;
     }
 
     public IDatabase getSourceDb() {
@@ -44,7 +50,7 @@ public class InstanceMatchTask {
 
     @Override
     public String toString() {
-        return (isomorphism != null && isomorphism ? "(isomorphism) \n" : "")
+        return strategy + " - " + (isomorphism != null && isomorphism ? "(isomorphism) \n" : "")
                 + tupleMapping + "\n";
     }
 

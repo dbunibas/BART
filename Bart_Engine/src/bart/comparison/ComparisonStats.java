@@ -24,6 +24,7 @@ public class ComparisonStats {
     public static final String FIND_TUPLE_MATCHES = "Find Tuple Matches Time";
     public static final String FIND_BEST_TUPLE_MAPPING_TIME = "Find Best Tuple Mapping Time";
     public static final String FIND_COMPATIBLE_TUPLES_TIMES = "Find Compatible Tuple Time";
+    public static final String BUILD_INSTANCES_GRAPH = "Build Instances Graph";
     /////
     public static final String TEMP_1 = "TEMP_1";
     public static final String TEMP_2 = "TEMP_2";

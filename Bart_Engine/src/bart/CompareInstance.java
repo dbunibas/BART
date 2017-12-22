@@ -3,7 +3,7 @@ package bart;
 import bart.comparison.ComparisonConfiguration;
 import bart.comparison.ComparisonStats;
 import bart.comparison.InstanceMatchTask;
-import bart.comparison.operators.CompareInstancesHashing;
+import bart.comparison.operators.ComputeInstanceSimilarityHashing;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForceCompatibility;
 import bart.comparison.operators.IComputeInstanceSimilarity;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import speedy.utility.PrintUtility;
 public class CompareInstance {
 
     private final static IComputeInstanceSimilarity similarityCheckerBruteforce = new ComputeInstanceSimilarityBruteForceCompatibility();
-    private final static IComputeInstanceSimilarity similarityCheckerHashing = new CompareInstancesHashing();
+    private final static IComputeInstanceSimilarity similarityCheckerHashing = new ComputeInstanceSimilarityHashing();
     private final static DAOMainMemoryDatabase daoDatabase = new DAOMainMemoryDatabase();
 
     public static void main(String args[]) {

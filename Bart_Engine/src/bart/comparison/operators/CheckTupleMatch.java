@@ -16,8 +16,10 @@ public class CheckTupleMatch {
 
     private final static Logger logger = LoggerFactory.getLogger(CheckTupleMatch.class);
     private final CheckTupleMatchCompatibility compatibilityChecker = new CheckTupleMatchCompatibility();
+    private boolean debug = false;
 
     public TupleMatch checkMatch(TupleWithTable leftTuple, TupleWithTable rightTuple) {
+        this.debug = checkDebug(leftTuple, rightTuple);
         long start = System.currentTimeMillis();
         TupleMatch result = check(leftTuple, rightTuple);
         long end = System.currentTimeMillis();
@@ -26,6 +28,7 @@ public class CheckTupleMatch {
     }
 
     private TupleMatch check(TupleWithTable leftTuple, TupleWithTable rightTuple) {
+        if (debug) if (logger.isWarnEnabled()) logger.warn("Comparing tuple: " + leftTuple + " to tuple " + rightTuple);
         if (logger.isDebugEnabled()) logger.debug("Comparing tuple: " + leftTuple + " to tuple " + rightTuple);
         if (!leftTuple.getTable().equals(rightTuple.getTable())) {
             return null;
@@ -44,12 +47,15 @@ public class CheckTupleMatch {
                 if (logger.isTraceEnabled()) logger.trace("Values not match...");
                 return null;
             }
-            boolean consistent = updateValueMappings(valueMappings, leftValue, rightValue, matchResult);
+            ValueMappings valueMappingForAttribute = generateValueMappingForAttribute(leftValue, rightValue, matchResult);
+            double matchScore = scoreEstimate(matchResult);
+            TupleMatch tupleMatch = new TupleMatch(leftTuple, rightTuple, valueMappingForAttribute, scoreEstimate);
+            boolean consistent = compatibilityChecker.checkCompatibilityAndMerge(valueMappings, tupleMatch);
+//            boolean consistent = updateValueMappings(valueMappings, leftValue, rightValue, matchResult);
             if (!consistent) {
-                if (logger.isTraceEnabled()) logger.trace("Conflicting mapping for values...");
+                if (logger.isTraceEnabled()) logger.trace("Conflicting mapping for values: '" + leftValue + "', '" + rightValue + "'. Current value mapping: " + valueMappings);
                 return null;
             }
-            double matchScore = scoreEstimate(matchResult);
             if (logger.isTraceEnabled()) logger.trace("Match score " + matchScore);
             scoreEstimate += matchScore;
         }
@@ -63,6 +69,17 @@ public class CheckTupleMatch {
         tupleMatch.setValueMappings(compatibleMapping);
         if (logger.isDebugEnabled()) logger.debug("** Corrected tuple match: " + tupleMatch);
         return tupleMatch;
+    }
+
+    private ValueMappings generateValueMappingForAttribute(IValue leftValue, IValue rightValue, SpeedyConstants.ValueMatchResult matchResult) {
+        ValueMappings valueMappingForAttribute = new ValueMappings();
+        if (matchResult == SpeedyConstants.ValueMatchResult.BOTH_PLACEHOLDER || matchResult == SpeedyConstants.ValueMatchResult.PLACEHOLDER_TO_CONSTANT) {
+            valueMappingForAttribute.getLeftToRightValueMapping().putValueMapping(leftValue, rightValue);
+        }
+        if (matchResult == SpeedyConstants.ValueMatchResult.CONSTANT_TO_PLACEHOLDER) {
+            valueMappingForAttribute.getRightToLeftValueMapping().putValueMapping(rightValue, leftValue);
+        }
+        return valueMappingForAttribute;
     }
 
     public SpeedyConstants.ValueMatchResult match(IValue sourceValue, IValue destinationValue) {
@@ -99,21 +116,12 @@ public class CheckTupleMatch {
         return 0;
     }
 
-    private boolean updateValueMappings(ValueMappings valueMappings, IValue leftValue, IValue rightValue, SpeedyConstants.ValueMatchResult matchResult) {
-        if (matchResult == SpeedyConstants.ValueMatchResult.BOTH_PLACEHOLDER || matchResult == SpeedyConstants.ValueMatchResult.PLACEHOLDER_TO_CONSTANT) {
-            IValue valueForSourceValue = valueMappings.getLeftToRightValueMapping().getValueMapping(leftValue);
-            if (valueForSourceValue != null && !valueForSourceValue.equals(rightValue)) {
-                return false;
-            }
-            valueMappings.getLeftToRightValueMapping().putValueMapping(leftValue, rightValue);
-        }
-        if (matchResult == SpeedyConstants.ValueMatchResult.CONSTANT_TO_PLACEHOLDER) {
-            IValue valueForDestinationValue = valueMappings.getRightToLeftValueMapping().getValueMapping(rightValue);
-            if (valueForDestinationValue != null && !valueForDestinationValue.equals(leftValue)) {
-                return false;
-            }
-            valueMappings.getRightToLeftValueMapping().putValueMapping(rightValue, leftValue);
-        }
-        return true;
+    private boolean checkDebug(TupleWithTable leftTuple, TupleWithTable rightTuple) {
+//        if (rightTuple.getTuple().getOid().toString().equals("11")
+//                && leftTuple.getTuple().getOid().toString().equals("18")) {
+//            return true;
+//        }
+        return false;
     }
+
 }

@@ -9,7 +9,7 @@ import bart.comparison.InstanceMatchTask;
 import bart.comparison.generator.ComparisonScenarioGenerator;
 import bart.comparison.generator.InstancePair;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForceCompatibility;
-import bart.comparison.operators.CompareInstancesHashing;
+import bart.comparison.operators.ComputeInstanceSimilarityHashing;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForce;
 import bart.comparison.operators.IComputeInstanceSimilarity;
 import bart.test.comparison.ComparisonUtilityTest;
@@ -24,7 +24,7 @@ public class TestComparisonScenarioGenerator extends TestCase {
     private final ComparisonScenarioGenerator generator = new ComparisonScenarioGenerator();
     private final IComputeInstanceSimilarity similarityCheckerBruteForce = new ComputeInstanceSimilarityBruteForce();
     private final IComputeInstanceSimilarity similarityCheckerCompatibility = new ComputeInstanceSimilarityBruteForceCompatibility();
-    private final IComputeInstanceSimilarity similarityCheckerHashing = new CompareInstancesHashing();
+    private final IComputeInstanceSimilarity similarityCheckerHashing = new ComputeInstanceSimilarityHashing();
     
     public void test() {
 //        execute("conference");

@@ -50,6 +50,11 @@ public class APrioriGenerator implements IInitializableOperator {
         if (configuration.isCheckCleanInstance()) {
             cleanInstanceChecker.check(task.getDCs(), task.getSource(), task.getTarget(), task);
         }
+        if (configuration.isExportCleanDB()) {
+            String path = configuration.getExportCleanDBPath();
+            if (configuration.isPrintLog()) System.out.println("Exporting clean db to path " + path);
+            databaseExporter.export(task.getTarget(), "clean", path, task.getAbsolutePath());
+        }
         generateVioGenQueries(task);
         long startChanges = new Date().getTime();
         CellChanges cellChanges = vioGenQueriesExecutor.executeVioGenQueries(task);
@@ -85,8 +90,8 @@ public class APrioriGenerator implements IInitializableOperator {
         }
         if (configuration.isExportDirtyDB()) {
             String path = configuration.getExportDirtyDBPath();
-            if (configuration.isPrintLog()) System.out.println("Exporting dirtydb to path " + path);
-            databaseExporter.export(task.getDirtyTarget(), cellChanges, path, task.getAbsolutePath());
+            if (configuration.isPrintLog()) System.out.println("Exporting dirty db to path " + path);
+            databaseExporter.export(task.getDirtyTarget(), "dirty", cellChanges, path, task.getAbsolutePath());
         }
         long end = new Date().getTime();
         ErrorGeneratorStats.getInstance().addStat(ErrorGeneratorStats.TOTAL_TIME, end - start);
@@ -169,6 +174,7 @@ public class APrioriGenerator implements IInitializableOperator {
         }
     }
 
+    @Override
     public void intitializeOperators(EGTask task) {
         this.changeApplier = OperatorFactory.getInstance().getChangeApplier(task);
         this.databaseExporter = OperatorFactory.getInstance().getDatabaseExporter(task);

@@ -65,16 +65,24 @@ public class CheckTupleMatchCompatibility {
             IValue toValue = nextCorrespondence.toValue;
             boolean leftToRight = nextCorrespondence.leftToRight;
             IValue existingToValue = getValueMapping(valueMappings, leftToRight).getValueMapping(fromValue);
+            if (logger.isDebugEnabled()) logger.debug("Existing toValue for value " + fromValue + ": " + existingToValue);
             if (existingToValue == null) {
                 if (SpeedyUtility.isConstant(toValue)) {
+                    if (logger.isDebugEnabled()) logger.debug("To value " + toValue + " is a constant");
                     applyCorrespondence(valueMappings, leftToRight, fromValue, toValue, existingToValue, changes);
                     generateChangesForRenaming(fromValue, toValue, leftToRight, valueMappings, valueCorrespondences);
-                } else //To Value is Placeholder
-                if (noInverseMapping(fromValue, leftToRight, valueMappings)) {
-                    applyCorrespondence(valueMappings, leftToRight, fromValue, toValue, existingToValue, changes);
-                } else {
-                    ValueCorrespondenceCommand newValueCorrespondence = new ValueCorrespondenceCommand(toValue, fromValue, !leftToRight);
-                    valueCorrespondences.add(newValueCorrespondence);
+                } else { //To Value is Placeholder
+                    IValue existingMappingForToValue = getValueMapping(valueMappings, !leftToRight).getValueMapping(toValue);
+                    if (logger.isDebugEnabled()) logger.debug("Existing mapping for toValue: " + existingMappingForToValue);
+                    if (existingMappingForToValue != null) {
+                        ValueCorrespondenceCommand newValueCorrespondence = new ValueCorrespondenceCommand(fromValue, existingMappingForToValue, existingToValue, leftToRight);
+                        valueCorrespondences.add(newValueCorrespondence);
+                    } else if (noInverseMapping(fromValue, leftToRight, valueMappings)) {
+                        applyCorrespondence(valueMappings, leftToRight, fromValue, toValue, existingToValue, changes);
+                    } else {
+                        ValueCorrespondenceCommand newValueCorrespondence = new ValueCorrespondenceCommand(toValue, fromValue, !leftToRight);
+                        valueCorrespondences.add(newValueCorrespondence);
+                    }
                 }
             } else {// Existing != null
                 if (toValue.equals(existingToValue)) {
@@ -209,17 +217,18 @@ public class CheckTupleMatchCompatibility {
     }
 
     private boolean checkDebug(ValueMappings valueMappings, TupleMatch tupleMatch) {
-        return false;
 //        if (tupleMatch.getLeftTuple().getTuple().getOid().toString().equals("11")
 //                && tupleMatch.getRightTuple().getTuple().getOid().toString().equals("26")
 //                && valueMappings.getLeftToRightValueMapping().size() == 3) {
 //            return true;
 //        }
+//        if (logger.isWarnEnabled()) logger.warn(tupleMatch.getRightTuple().getTuple().getOid().toString() + " <-> " + tupleMatch.getLeftTuple().getTuple().getOid().toString());
 //        if (tupleMatch.getRightTuple().getTuple().getOid().toString().equals("11")
-//                && tupleMatch.getLeftTuple().getTuple().getOid().toString().equals("26")) {
+//                && tupleMatch.getLeftTuple().getTuple().getOid().toString().equals("26")
+//                && valueMappings.getLeftToRightValueMapping().size() == 1) {
 //            return true;
 //        }
-//        return false;
+        return false;
     }
 
     private class ValueCorrespondenceCommand {
