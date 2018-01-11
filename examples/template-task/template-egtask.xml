@@ -73,7 +73,7 @@ person(ssn: $ssn2, name: $n2, surname: $s2, city: $c2, zip: $z2),
         <exportCellChanges>true</exportCellChanges>
         <exportCellChangesPath>/Temp/bart/example/changes.csv</exportCellChangesPath>
 
-        <!-- To compute an estimate of the reparability (default = true) -->
+        <!-- To compute an estimate of the reparability (default = false) -->
         <estimateRepairability>true</estimateRepairability>
 
         <!-- To generate all possible changes (default = false - slow, only for toy examples)-->

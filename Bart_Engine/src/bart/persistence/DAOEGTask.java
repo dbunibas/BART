@@ -156,6 +156,11 @@ public class DAOEGTask {
                             boolean hasHeader = Boolean.parseBoolean(inputFileElement.getAttribute("hasHeader").getValue());
                             csvFile.setHasHeader(hasHeader);
                         }
+                        if (inputFileElement.getAttribute("random") != null) {
+                            boolean random = Boolean.parseBoolean(inputFileElement.getAttribute("random").getValue());
+                            csvFile.setRandomizeInput(random);
+                            database.getInitDBConfiguration().setUseCopyStatement(false);
+                        }
                         if (inputFileElement.getAttribute("recordsToImport") != null) {
                             String recordsToImportString = inputFileElement.getAttribute("recordsToImport").getValue();
                             try {
