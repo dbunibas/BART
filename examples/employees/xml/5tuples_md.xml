@@ -3,7 +3,7 @@
 <md><md>
 <name>Tizio</name>
 <dept>DD04207</dept>
-<salary type="double">2905</salary>
+<salary type="real">2905</salary>
 <manager>Laura</manager>
 </md>
 </md>
