@@ -165,7 +165,11 @@ public class ErrorGeneratorStats {
             sb.append("------ ERROR FOR DEPENDENCIES ------").append("\n");
             totalNumberOfChanges = 0;
             for (Dependency d : sortDependencies(dependenciesErrors.keySet())) {
-                totalNumberOfChanges += dependenciesErrors.get(d);
+                Long errors = dependenciesErrors.get(d);
+                if(errors == null){
+                    continue;
+                }
+                totalNumberOfChanges += errors;
                 sb.append(d.getId()).append(": \t").append(dependenciesErrors.get(d)).append(" changes").append("\n");
             }
             sb.append("-------------------------").append("\n");

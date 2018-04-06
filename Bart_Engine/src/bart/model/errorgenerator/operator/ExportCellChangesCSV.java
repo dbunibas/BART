@@ -13,6 +13,7 @@ import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.exceptions.DAOException;
+import speedy.model.database.IValue;
 import speedy.persistence.xml.operators.TransformFilePaths;
 
 public class ExportCellChangesCSV {
@@ -20,6 +21,7 @@ public class ExportCellChangesCSV {
     private static Logger logger = LoggerFactory.getLogger(ExportCellChangesCSV.class);
     private TransformFilePaths filePathTransformator = new TransformFilePaths();
     private static String SEPARATOR = ",";
+    private static String QUOTE_CHAR = "\"";
 
     public void export(CellChanges cellChanges, String path, String taskPath, boolean full) {
         path = expandPath(taskPath, path);
@@ -55,14 +57,25 @@ public class ExportCellChangesCSV {
         Cell originalCell = change.getCell();
         sb.append(originalCell.getTupleOID()).append(".").append(originalCell.getAttribute());
         sb.append(SEPARATOR);
-        sb.append(change.getNewValue());
+        sb.append(writeValue(change.getNewValue()));
         sb.append(SEPARATOR);
-        sb.append(originalCell.getValue());
+        sb.append(writeValue(originalCell.getValue()));
         if (full) {
             sb.append(SEPARATOR);
             sb.append(change.getViolatedDependencies());
         }
         return sb.toString();
+    }
+
+    private String writeValue(IValue value) {
+        if (value == null) {
+            return "";
+        }
+        String s = value.toString();
+        if (s.contains(SEPARATOR)) {
+            s = QUOTE_CHAR + s + QUOTE_CHAR;
+        }
+        return s;
     }
 
     private String expandPath(String taskPath, String path) {

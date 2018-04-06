@@ -22,6 +22,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.exceptions.DAOException;
+import speedy.persistence.Types;
 import speedy.persistence.xml.operators.TransformFilePaths;
 
 public class ExportDatabaseCSV implements IExportDatabase {
@@ -29,6 +30,7 @@ public class ExportDatabaseCSV implements IExportDatabase {
     private static Logger logger = LoggerFactory.getLogger(ExportDatabaseCSV.class);
     private TransformFilePaths filePathTransformator = new TransformFilePaths();
     private static String SEPARATOR = ",";
+    private static String QUOTE_CHAR = "\"";
     private static String NEW_LINE = "\n";
 
     @Override
@@ -76,6 +78,9 @@ public class ExportDatabaseCSV implements IExportDatabase {
         StringBuilder sb = new StringBuilder();
         for (Attribute attribute : getAttributes(table)) {
             sb.append(attribute.getName());
+            if (!Types.STRING.equalsIgnoreCase(attribute.getType())) {
+                sb.append("(").append(attribute.getType()).append(")");
+            }
             sb.append(SEPARATOR);
         }
         BartUtility.removeChars(SEPARATOR.length(), sb);
@@ -107,8 +112,9 @@ public class ExportDatabaseCSV implements IExportDatabase {
         }
         String s = value.toString();
         if (s.contains(SEPARATOR)) {
-            logger.warn("Removing csv separator value " + SEPARATOR + " from " + s);
-            s = s.replaceAll(SEPARATOR, "");
+            s = QUOTE_CHAR + s + QUOTE_CHAR;
+//            logger.warn("Removing csv separator value " + SEPARATOR + " from " + s);
+//            s = s.replaceAll(SEPARATOR, "");
         }
         return s;
     }

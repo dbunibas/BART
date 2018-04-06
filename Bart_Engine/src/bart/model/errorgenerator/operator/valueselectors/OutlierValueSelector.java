@@ -21,6 +21,7 @@ public class OutlierValueSelector implements INewValueSelectorStrategy {
     private static Logger logger = LoggerFactory.getLogger(OutlierValueSelector.class);
     private IntersectValueConstraints valueIntersector = new IntersectValueConstraints();
 
+    @Override
     public IValue generateNewValuesForContext(Cell originalCell, ICellChange change, EGTask task) {
         if (logger.isDebugEnabled()) logger.debug("Generating new value for cell " + originalCell.toString());
         ValueConstraint whiteValueConstraint = valueIntersector.intersect(change.getWhiteList());

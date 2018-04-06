@@ -21,6 +21,7 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
 //    private double doubleErrorRange = 99999;
     private int doubleErrorRange = 100;
 
+    @Override
     public IValue generateNewValuesForContext(Cell originalCell, ICellChange change, EGTask task) {
         if (logger.isDebugEnabled()) logger.debug("Generating new value for cell " + originalCell.toString());
         ValueConstraint whiteValueConstraint = valueIntersector.intersect(change.getWhiteList());
@@ -65,6 +66,9 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
         if (valueConstraint.getType().equals(Types.INTEGER)) {
             return new ConstantValue((int) newValue);
         }
+        if (valueConstraint.getType().equals(Types.LONG)) {
+            return new ConstantValue((long) newValue);
+        }
         return new ConstantValue(newValue);
     }
 
@@ -82,6 +86,12 @@ public class BasicValueSelector implements INewValueSelectorStrategy {
                 return new ConstantValue(newValue);
             }
             newValue = newValue + step;
+        }
+        if (interval.getType().equals(Types.INTEGER)) {
+            return new ConstantValue((int) newValue);
+        }
+        if (interval.getType().equals(Types.LONG)) {
+            return new ConstantValue((long) newValue);
         }
         return new ConstantValue(newValue);
     }

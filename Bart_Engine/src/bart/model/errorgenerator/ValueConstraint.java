@@ -2,7 +2,6 @@ package bart.model.errorgenerator;
 
 import bart.BartConstants;
 import speedy.model.database.IValue;
-import bart.utility.BartUtility;
 import speedy.utility.SpeedyUtility;
 
 public class ValueConstraint {

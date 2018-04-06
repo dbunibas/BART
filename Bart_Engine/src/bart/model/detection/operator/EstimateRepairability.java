@@ -2,6 +2,7 @@ package bart.model.detection.operator;
 
 import bart.exceptions.ErrorGeneratorException;
 import bart.model.EGTask;
+import bart.model.dependency.ComparisonAtom;
 import speedy.model.database.AttributeRef;
 import speedy.model.database.Cell;
 import speedy.model.database.IValue;
@@ -125,6 +126,9 @@ public class EstimateRepairability {
 
     private double computeRepairability(VioGenQueryCellChange cellChange) {
         if (logger.isDebugEnabled()) logger.debug("Computing reparability for change " + cellChange);
+        if (isConstantViolation(cellChange)) {
+            return 1.0;
+        }
         List<ViolationContext> violationContexts = cellChange.getViolationContexts();
         if (violationContexts.isEmpty()) {
             if (logger.isInfoEnabled()) logger.info("Non detectable change " + cellChange);
@@ -148,6 +152,15 @@ public class EstimateRepairability {
         }
         if (logger.isDebugEnabled()) logger.debug("Repairability: " + maxRepairability);
         return maxRepairability;
+    }
+
+    private boolean isConstantViolation(VioGenQueryCellChange cellChange) {
+        ComparisonAtom comparisonAtom = cellChange.getVioGenQuery().getVioGenComparison();
+        if (!comparisonAtom.isEqualityComparison() || comparisonAtom.isVariableComparison()) {
+            return false;
+        }
+        if (logger.isDebugEnabled()) logger.debug("Constant violation: " + cellChange + " - " + cellChange.getVioGenQuery());
+        return true;
     }
 
     private boolean hasSourceCellsWithValue(ViolationContext violationContext, IValue value) {

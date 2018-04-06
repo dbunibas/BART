@@ -59,6 +59,7 @@ public class DetectViolationStandard implements IDetectViolations, IInitializabl
         if (logger.isDebugEnabled()) logger.debug("Operator\n" + treeRoot.toString());
         ITupleIterator it = queryRunner.run(treeRoot, source, target);
         if (it.hasNext()) {
+            if (logger.isWarnEnabled()) logger.warn("Violation for dependency " + dependency.getId() + ": " + it.next().toString());
             it.close();
             return true;
         }

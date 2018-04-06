@@ -55,8 +55,11 @@ public class DetectViolationsSymmetric implements IDetectViolations, IInitializa
         for (EquivalenceClassQuery subQuery : equivalenceClassQueries) {
             ITupleIterator it = queryRunner.run(subQuery.getQuery(), source, target);
             if (it.hasNext()) {
+                if (logger.isWarnEnabled()) logger.warn("Violation for dependency " + dependency.getId() + ": " + it.next().toString());
+                it.close();
                 return true;
             }
+            it.close();
         }
         return false;
     }
