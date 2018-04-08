@@ -55,7 +55,6 @@ public class ComputeQualityOfRepairs {
     private List<PrecisionAndRecall> checkExpectedAndCalculatedForCellRepairsMultiple(String expectectedAbsolutePath, String calculatedAbsolutePath) {
         List<Map<String, Repair>> calculatedRepairs = new DAOCSVRepair().loadMultipleRepair(calculatedAbsolutePath);
         Map<String, Repair> expectedRepair = new DAOCSVRepair().loadRepairMap(expectectedAbsolutePath);
-
         List<PrecisionAndRecall> result = new ArrayList<PrecisionAndRecall>();
         for (Map<String, Repair> calculatedRepair : calculatedRepairs) {
             PrecisionAndRecall precisionAndRecall = calculateOnCell(expectedRepair, calculatedRepair);
@@ -67,7 +66,6 @@ public class ComputeQualityOfRepairs {
     private List<PrecisionAndRecall> checkExpectedAndCalculatedRepairsMultiple(String expectectedAbsolutePath, String calculatedAbsolutePath, double precisionForVariable, String[] variablePrefixes) {
         List<Map<String, Repair>> calculatedRepairs = new DAOCSVRepair().loadMultipleRepair(calculatedAbsolutePath);
         Map<String, Repair> expectedRepair = new DAOCSVRepair().loadRepairMap(expectectedAbsolutePath);
-
         List<PrecisionAndRecall> result = new ArrayList<PrecisionAndRecall>();
         int solutionNumber = 1;
         for (Map<String, Repair> calculatedRepair : calculatedRepairs) {

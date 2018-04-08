@@ -1,5 +1,9 @@
 package bart.comparison.repairs;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +20,8 @@ public class DAOCSVRepair {
 
     private static Logger logger = LoggerFactory.getLogger(DAOCSVRepair.class);
 
-    private static String SEPARATOR = ",";
+    private static final char CSV_CHAR_SEP = ',';
+    private static final char CSV_CHAR_QUOTE_SEPARATOR = '"';
     private DAOUtility utility = new DAOUtility();
 
     public Collection<Repair> loadRepair(String fileName) throws DAOException {
@@ -27,12 +32,12 @@ public class DAOCSVRepair {
         Map<String, Repair> result = new HashMap<String, Repair>();
         try {
             BufferedReader reader = utility.getBufferedReader(fileName);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("+++++++++++++++") || line.trim().isEmpty()) {
+            MappingIterator<String[]> it = getMappingIterator(reader);
+            while (it.hasNext()) {
+                String[] tokens = it.next();
+                if (tokens.length == 0 || tokens[0].startsWith("+++++++++++++++")) {
                     continue;
                 }
-                String[] tokens = line.split(SEPARATOR, -1);
                 String tid = tokens[0];
                 String oldValue;
                 String newValue;
@@ -62,7 +67,8 @@ public class DAOCSVRepair {
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 Map<String, Repair> repairs = new HashMap<String, Repair>();
                 while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                    String[] tokens = line.split(SEPARATOR, -1);
+                    String[] tokens = getMappingIterator(line).next();
+//                    String[] tokens = line.split(SEPARATOR, -1);
                     Repair repair = new Repair(tokens[0], tokens[1], tokens[2]);
                     repairs.put(repair.getCellId(), repair);
                 }
@@ -75,5 +81,19 @@ public class DAOCSVRepair {
             throw new DAOException("Unable to load file: " + fileName + "\n" + exception);
         }
         return result;
+    }
+
+    private MappingIterator<String[]> getMappingIterator(BufferedReader br) throws IOException {
+        CsvMapper mapper = new CsvMapper();
+        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        CsvSchema schema = CsvSchema.emptySchema().withColumnSeparator(CSV_CHAR_SEP).withQuoteChar(CSV_CHAR_QUOTE_SEPARATOR);
+        return mapper.readerFor(String[].class).with(schema).readValues(br);
+    }
+
+    private MappingIterator<String[]> getMappingIterator(String line) throws IOException {
+        CsvMapper mapper = new CsvMapper();
+        mapper.enable(CsvParser.Feature.WRAP_AS_ARRAY);
+        CsvSchema schema = CsvSchema.emptySchema().withColumnSeparator(CSV_CHAR_SEP).withQuoteChar(CSV_CHAR_QUOTE_SEPARATOR);
+        return mapper.readerFor(String[].class).with(schema).readValues(line);
     }
 }

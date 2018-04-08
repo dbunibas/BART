@@ -269,6 +269,7 @@
     *************************************************** -->
     
     <target name="run" depends="compile" description="Run the application">
+        <echo>Executing BART with ${run.maxmemory} RAM</echo>
         <java classname="${main.class}" fork="yes"  maxmemory="${run.maxmemory}">
             <jvmarg value="-Djava.util.logging.config.class=bart.utility.JavaUtilLoggingConfig"/>
             <classpath refid="compile.classpath" />
