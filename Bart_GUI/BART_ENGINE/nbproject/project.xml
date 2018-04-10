@@ -17,6 +17,10 @@
             </module-dependencies>
             <public-packages>
                 <package>bart</package>
+                <package>bart.comparison</package>
+                <package>bart.comparison.generator</package>
+                <package>bart.comparison.operators</package>
+                <package>bart.comparison.repairs</package>
                 <package>bart.exceptions</package>
                 <package>bart.model</package>
                 <package>bart.model.algebra.operators</package>
@@ -37,7 +41,6 @@
                 <package>bart.persistence.parser.output</package>
                 <package>bart.utility</package>
                 <package>bart.utility.comparator</package>
-                <package>it.unibas.bart</package>
             </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/bart-engine.jar</runtime-relative-path>

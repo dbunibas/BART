@@ -1,12 +1,13 @@
 package it.unibas.bartgui.view.panel;
 
+import bart.comparison.repairs.ComputeQualityOfRepairs;
+import bart.comparison.repairs.PrecisionAndRecall;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import speedy.comparison.repairs.*;
 import org.openide.windows.WindowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

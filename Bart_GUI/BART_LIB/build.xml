@@ -152,7 +152,7 @@
           
         <copy tofile="./release/modules/ext/postgresql-jdbc.jar">
             <fileset dir="${bartLib.dir}">
-                <include name="postgresql*.jdbc*.jar" />
+                <include name="postgresql*.jar" />
             </fileset>
         </copy>
         
