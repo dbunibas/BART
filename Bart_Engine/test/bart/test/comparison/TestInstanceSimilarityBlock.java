@@ -271,7 +271,8 @@ public class TestInstanceSimilarityBlock extends TestCase {
         IDatabase rightDb = ComparisonUtilityTest.loadDatabase("18/right", BASE_FOLDER);
         InstanceMatchTask result = similarityChecker.compare(leftDb, rightDb);
         logger.info(result.toString());
-        assertNotNull(result.getTupleMapping());
+        assertNotNull("No mapping", result.getTupleMapping());
+        assertNotNull("No score", result.getTupleMapping().getScore());
         assertEquals(0, result.getTupleMapping().getLeftNonMatchingTuples().size());
         assertEquals(0, result.getTupleMapping().getRightNonMatchingTuples().size());
         assertEquals(0.666, result.getTupleMapping().getScore(), 0.01);

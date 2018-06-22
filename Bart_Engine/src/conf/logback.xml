@@ -21,7 +21,7 @@
         <!--<appender-ref ref="file"/>-->
     </root>
     <!--     TEST     -->
-    <!--<logger name="bart.test" level="TRACE"/>-->
+    <logger name="bart.test" level="INFO"/>
     <!--     OPERATOR     -->
     <!--<logger name="bart.model.errorgenerator.operator.APrioriGenerator" level="INFO"/>-->
     <!--<logger name="bart.model.errorgenerator.operator.SelectQueryExecutor" level="INFO"/>-->
