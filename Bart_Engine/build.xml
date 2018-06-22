@@ -397,6 +397,106 @@
     <!-- ***************************************************
              Target particolari
     *************************************************** -->
+    
+    <target name="test-bruteforce" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/TestInstanceSimilarityBruteForce.class" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
+    </target>  
+    
+    <target name="test-bruteforce-compatibility" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/TestInstanceSimilarityBruteForceCompatibility.class" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
+    </target>  
+    
+    <target name="test-hashing" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/TestInstanceSimilarityHashing.class" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
+    </target>  
+    
+    <target name="test-block" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/TestInstanceSimilarityBlock.class" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
+    </target>  
+    
+    <!-- ***************************************************
+             Target particolari
+    *************************************************** -->
 
     <target name="all" depends="deploy">
     </target>
