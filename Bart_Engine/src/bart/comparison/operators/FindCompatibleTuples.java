@@ -30,6 +30,7 @@ public class FindCompatibleTuples {
         AttributeValueMap firstDBValueMap = buildAttributeValueMap(firstDB);
         CompatibilityMap compatibilityMap = new CompatibilityMap();
         CompatibilityCache compatibilityCache = new CompatibilityCache();
+        //TODO: Thread
         for (TupleWithTable secondTuple : secondDB) {
             Set<TupleWithTable> compatibilesSourceTuples = findCompatibleTuples(secondTuple, firstDBValueMap, allFirstDBTuples, compatibilityCache);
             if (logger.isDebugEnabled()) logger.debug("Tuples compatible with " + secondTuple + ":\n" + SpeedyUtility.printCollection(compatibilesSourceTuples, "\t"));

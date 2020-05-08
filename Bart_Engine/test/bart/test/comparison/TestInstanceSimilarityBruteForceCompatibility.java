@@ -278,6 +278,20 @@ public class TestInstanceSimilarityBruteForceCompatibility extends TestCase {
         assertEquals(0, result.getTupleMapping().getRightNonMatchingTuples().size());
         assertEquals(0.666, result.getTupleMapping().getScore(), 0.01);
     }
+
+    public void test19() {
+        ComparisonConfiguration.setFunctional(true);
+        ComparisonConfiguration.setInjective(true);
+        ComparisonConfiguration.setForceExaustiveSearch(false);
+        IDatabase leftDb = ComparisonUtilityTest.loadDatabase("19/left", BASE_FOLDER);
+        IDatabase rightDb = ComparisonUtilityTest.loadDatabase("19/right", BASE_FOLDER);
+        InstanceMatchTask result = similarityChecker.compare(leftDb, rightDb);
+        logger.info(result.toString());
+        assertNotNull(result.getTupleMapping());
+        assertEquals(1, result.getTupleMapping().getLeftNonMatchingTuples().size());
+        assertEquals(1, result.getTupleMapping().getRightNonMatchingTuples().size());
+        assertEquals(0.555, result.getTupleMapping().getScore(), 0.01);
+    }
 //    public void testGenerated() {
 ////        ComparisonConfiguration.setInjective(true);
 ////        ComparisonConfiguration.setFunctional(false);

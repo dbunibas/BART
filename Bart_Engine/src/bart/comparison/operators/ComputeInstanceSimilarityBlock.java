@@ -14,8 +14,13 @@ import bart.comparison.TupleSignature;
 import bart.comparison.ValueMappings;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.ext.JGraphXAdapter;
@@ -42,9 +47,9 @@ import speedy.utility.SpeedyUtility;
 public class ComputeInstanceSimilarityBlock implements IComputeInstanceSimilarity {
 
     private final static Logger logger = LoggerFactory.getLogger(ComputeInstanceSimilarityBlock.class);
-//    private final SignatureMapCollectionGenerator signatureGenerator = new SignatureMapCollectionGenerator();
-//    private final CheckTupleMatch tupleMatcher = new CheckTupleMatch();
-//    private final CheckTupleMatchCompatibility compatibilityChecker = new CheckTupleMatchCompatibility();
+    private final SignatureMapCollectionGenerator signatureGenerator = new SignatureMapCollectionGenerator();
+    private final CheckTupleMatch tupleMatcher = new CheckTupleMatch();
+    private final CheckTupleMatchCompatibility compatibilityChecker = new CheckTupleMatchCompatibility();
     private final FindCompatibleTuples compatibleTupleFinder = new FindCompatibleTuples();
 
     @Override
@@ -67,9 +72,9 @@ public class ComputeInstanceSimilarityBlock implements IComputeInstanceSimilarit
         start = System.currentTimeMillis();
         addTupleMatches(tupleMatches, instancesGraph);
         ComparisonStats.getInstance().addStat(ComparisonStats.BUILD_INSTANCES_GRAPH, System.currentTimeMillis() - start);
-//        findCompatibileTuples(sourceTuples, destinationTuples, instancesGraph);
-//        findCompatibileTuples(destinationTuples, sourceTuples, instancesGraph);
-//        saveGraph(instancesGraph);
+        findCompatibileTuples(sourceTuples, destinationTuples, instancesGraph);
+        findCompatibileTuples(destinationTuples, sourceTuples, instancesGraph);
+        saveGraph(instancesGraph);
 //        TupleMatches tupleMatches = findTupleMatches(sourceTuples, destinationTuples);
 //        ComparisonUtility.sortTupleMatches(tupleMatches);
 //        if (logger.isTraceEnabled()) logger.trace(tupleMatches.toString());
@@ -98,48 +103,48 @@ public class ComputeInstanceSimilarityBlock implements IComputeInstanceSimilarit
         }
     }
 
-//    private void findCompatibileTuples(List<TupleWithTable> srcTuples, List<TupleWithTable> destTuples, UndirectedGraph<TupleWithTable, DefaultEdge> instancesGraph) {
-//        SignatureMapCollection srcSignatureMap = signatureGenerator.generateIndexForTuples(srcTuples);
-//        for (TupleWithTable destTuple : destTuples) {
-//            if (logger.isDebugEnabled()) logger.debug("Finding a tuple that can be mapped in " + destTuple);
-//            List<SignatureAttributes> signatureAttributesForTable = srcSignatureMap.getRankedAttributesForTable(destTuple.getTable());
-//            if (logger.isDebugEnabled()) logger.debug("Signature for table " + destTuple.getTable() + ": " + signatureAttributesForTable);
-//            List<TupleMatch> matchingTuples = findMatchingTuples(destTuple, signatureAttributesForTable, srcSignatureMap);
-//            if (logger.isDebugEnabled()) logger.debug("Possible matching tuples: " + matchingTuples);
-//            addEdgesBtwCompatibileTuples(matchingTuples, instancesGraph);
-//        }
-//    }
-//    private List<TupleMatch> findMatchingTuples(TupleWithTable destinationTuple, List<SignatureAttributes> signatureAttributesForTable, SignatureMapCollection leftSignatureMaps) {
-//        List<TupleMatch> matchingTuples = new ArrayList<TupleMatch>();
-//        Set<AttributeRef> attributesWithGroundValues = ComparisonUtility.findAttributesWithGroundValue(destinationTuple.getTuple());
-//        for (SignatureAttributes signatureAttribute : signatureAttributesForTable) {
-//            if (logger.isTraceEnabled()) logger.trace("Checking signature attribute " + signatureAttribute);
-//            if (!ComparisonUtility.isCompatible(attributesWithGroundValues, signatureAttribute.getAttributes())) {
-//                if (logger.isTraceEnabled()) logger.trace("Skipping not compatible signature attribute " + signatureAttribute);
-//                continue;
-//            }
-//            SignatureMap signatureMap = leftSignatureMaps.getSignatureForAttributes(signatureAttribute);
-//            TupleSignature rightTupleSignature = signatureGenerator.generateSignature(destinationTuple, signatureAttribute.getAttributes());
-//            List<Tuple> tuplesWithSameSignature = signatureMap.getTuplesForSignature(rightTupleSignature.getSignature());
-//            if (tuplesWithSameSignature == null || tuplesWithSameSignature.isEmpty()) {
-//                continue;
-//            }
-//            for (Iterator<Tuple> it = tuplesWithSameSignature.iterator(); it.hasNext();) {
-//                Tuple srcTuple = it.next();
-//                TupleWithTable srcTupleWithTable = new TupleWithTable(destinationTuple.getTable(), srcTuple);
-//                TupleMatch tupleMatch = tupleMatcher.checkMatch(srcTupleWithTable, destinationTuple);
-//                if (tupleMatch == null) {
-//                    continue;
-//                }
-//                boolean compatible = compatibilityChecker.checkCompatibilityAndMerge(new ValueMappings(), tupleMatch);
-//                if (!compatible) {
-//                    continue;
-//                }
-//                matchingTuples.add(tupleMatch);
-//            }
-//        }
-//        return matchingTuples;
-//    }
+    private void findCompatibileTuples(List<TupleWithTable> srcTuples, List<TupleWithTable> destTuples, UndirectedGraph<TupleWithTable, DefaultEdge> instancesGraph) {
+        SignatureMapCollection srcSignatureMap = signatureGenerator.generateIndexForTuples(srcTuples);
+        for (TupleWithTable destTuple : destTuples) {
+            if (logger.isDebugEnabled()) logger.debug("Finding a tuple that can be mapped in " + destTuple);
+            List<SignatureAttributes> signatureAttributesForTable = srcSignatureMap.getRankedAttributesForTable(destTuple.getTable());
+            if (logger.isDebugEnabled()) logger.debug("Signature for table " + destTuple.getTable() + ": " + signatureAttributesForTable);
+            List<TupleMatch> matchingTuples = findMatchingTuples(destTuple, signatureAttributesForTable, srcSignatureMap);
+            if (logger.isDebugEnabled()) logger.debug("Possible matching tuples: " + matchingTuples);
+            addEdgesBtwMatchingTuples(matchingTuples, instancesGraph);
+        }
+    }
+    private List<TupleMatch> findMatchingTuples(TupleWithTable destinationTuple, List<SignatureAttributes> signatureAttributesForTable, SignatureMapCollection leftSignatureMaps) {
+        List<TupleMatch> matchingTuples = new ArrayList<TupleMatch>();
+        Set<AttributeRef> attributesWithGroundValues = ComparisonUtility.findAttributesWithGroundValue(destinationTuple.getTuple());
+        for (SignatureAttributes signatureAttribute : signatureAttributesForTable) {
+            if (logger.isTraceEnabled()) logger.trace("Checking signature attribute " + signatureAttribute);
+            if (!ComparisonUtility.isCompatible(attributesWithGroundValues, signatureAttribute.getAttributes())) {
+                if (logger.isTraceEnabled()) logger.trace("Skipping not compatible signature attribute " + signatureAttribute);
+                continue;
+            }
+            SignatureMap signatureMap = leftSignatureMaps.getSignatureForAttributes(signatureAttribute);
+            TupleSignature rightTupleSignature = signatureGenerator.generateSignature(destinationTuple, signatureAttribute.getAttributes());
+            List<Tuple> tuplesWithSameSignature = signatureMap.getTuplesForSignature(rightTupleSignature.getSignature());
+            if (tuplesWithSameSignature == null || tuplesWithSameSignature.isEmpty()) {
+                continue;
+            }
+            for (Iterator<Tuple> it = tuplesWithSameSignature.iterator(); it.hasNext();) {
+                Tuple srcTuple = it.next();
+                TupleWithTable srcTupleWithTable = new TupleWithTable(destinationTuple.getTable(), srcTuple);
+                TupleMatch tupleMatch = tupleMatcher.checkMatch(srcTupleWithTable, destinationTuple);
+                if (tupleMatch == null) {
+                    continue;
+                }
+                boolean compatible = compatibilityChecker.checkCompatibilityAndMerge(new ValueMappings(), tupleMatch);
+                if (!compatible) {
+                    continue;
+                }
+                matchingTuples.add(tupleMatch);
+            }
+        }
+        return matchingTuples;
+    }
     private void addPlaceholders(TupleWithTable tuple, Map<IValue, Set<TupleWithTable>> placeholdersInverseMap) {
         for (Cell cell : tuple.getTuple().getCells()) {
             if (cell.isOID()) {
@@ -196,20 +201,22 @@ public class ComputeInstanceSimilarityBlock implements IComputeInstanceSimilarit
         frame.setTitle("Graph");
         frame.pack();
         frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        try {
-            while (true) {
-                Thread.sleep(500);
-            }
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(ComputeInstanceSimilarityBlock.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        frame.setVisible(true);
 //        try {
-//            BufferedImage image = mxCellRenderer.createBufferedImage(jgxAdapterContext, null, 1, Color.WHITE, true, null);
-//            ImageIO.write(image, "PNG", new File("/Temp/bart/similarity/instances-graph.png"));
-//        } catch (IOException ex) {
-//            logger.error("Unable to save graph image: " + ex.getLocalizedMessage());
+//            while (true) {
+//                Thread.sleep(500);
+//            }
+//        } catch (InterruptedException ex) {
+//            java.util.logging.Logger.getLogger(ComputeInstanceSimilarityBlock.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+        try {
+            BufferedImage image = mxCellRenderer.createBufferedImage(jgxAdapterContext, null, 1, Color.WHITE, true, null);
+            File file = new File("/Users/Shared/Temp/bart/similarity/instances-graph.png");
+            file.getParentFile().mkdirs();
+            ImageIO.write(image, "PNG", file);
+        } catch (IOException ex) {
+            logger.error("Unable to save graph image: " + ex.getLocalizedMessage());
+        }
     }
 
 }

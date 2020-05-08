@@ -60,7 +60,8 @@ public class TestInstanceSimilarityHashing extends TestCase {
         logger.info(result.toString());
         assertEquals(1, result.getTupleMapping().getLeftNonMatchingTuples().size());
 //        assertEquals(0.71, result.getTupleMapping().getScore(), 0.01);
-        assertTrue(0.71 > result.getTupleMapping().getScore()); //Greedy
+        //Greedy - due to non injectivity
+        assertTrue(0.71 > result.getTupleMapping().getScore()); 
     }
 
     public void test3() {
@@ -122,7 +123,8 @@ public class TestInstanceSimilarityHashing extends TestCase {
 //        assertEquals("1", result.getTupleMapping().getRightToLeftMappingForValue(new NullValue("_N2")).toString());
 //        assertEquals("3", result.getTupleMapping().getLeftToRightMappingForValue(new NullValue("_N5")).toString());
         assertEquals(2, result.getTupleMapping().getLeftNonMatchingTuples().size());
-        assertTrue(0.33 > result.getTupleMapping().getScore());
+        //Greedy - Due to penality for non-injectivity. The best choice is to map a tuple with two N1. The greedy variant will choose a tuple with two different variable N2, N3.
+        assertTrue(0.33 > result.getTupleMapping().getScore()); 
     }
 
     public void test7() {
@@ -199,6 +201,7 @@ public class TestInstanceSimilarityHashing extends TestCase {
         assertEquals(0, result.getTupleMapping().getLeftNonMatchingTuples().size());
         assertEquals(0, result.getTupleMapping().getRightNonMatchingTuples().size());
 //        assertEquals(0.8333, result.getTupleMapping().getScore(), 0.01);
+        //Greedy - Due to penality for non-injectivity. The best score will keep a tuple unmapped
         assertTrue(0.8333 > result.getTupleMapping().getScore());
     }
 
@@ -277,10 +280,25 @@ public class TestInstanceSimilarityHashing extends TestCase {
         assertNotNull(result.getTupleMapping());
         assertEquals(1, result.getTupleMapping().getLeftNonMatchingTuples().size());
         assertEquals(1, result.getTupleMapping().getRightNonMatchingTuples().size());
-        assertTrue(0.666 > result.getTupleMapping().getScore());
+//        Greedy - The greedy algorithm will choose a map for N1 that will block the second mapping
+        assertTrue(0.666 > result.getTupleMapping().getScore()); 
     }
-    
-    
+
+    public void test19() {
+        ComparisonConfiguration.setFunctional(true);
+        ComparisonConfiguration.setInjective(true);
+        ComparisonConfiguration.setForceExaustiveSearch(false);
+        IDatabase leftDb = ComparisonUtilityTest.loadDatabase("19/left", BASE_FOLDER);
+        IDatabase rightDb = ComparisonUtilityTest.loadDatabase("19/right", BASE_FOLDER);
+        InstanceMatchTask result = similarityChecker.compare(leftDb, rightDb);
+        logger.info(result.toString());
+        assertNotNull(result.getTupleMapping());
+        assertEquals(1, result.getTupleMapping().getLeftNonMatchingTuples().size());
+        assertEquals(1, result.getTupleMapping().getRightNonMatchingTuples().size());
+        //Greedy - The greedy algorithm will choose a map for N1 that will block other mappings
+        assertTrue(0.555 > result.getTupleMapping().getScore()); //Greedy
+    }
+
 //    public void testGenerated() {
 //        ComparisonConfiguration.setFunctional(true);
 //        ComparisonConfiguration.setInjective(true);
@@ -292,7 +310,6 @@ public class TestInstanceSimilarityHashing extends TestCase {
 //        assertNotNull(result.getTupleMapping());
 ////        assertEquals(0.6, result.getTupleMapping().getScore(), 0.01);
 //    }
-
     @Override
     public void tearDown() {
         ComparisonConfiguration.reset();
