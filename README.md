@@ -23,14 +23,15 @@ Execute script `./run <egtask.xml>`, for example `./run.sh misc/resources/employ
 ### How to configure an EGTask
 An EGTask is specified in an .xml file ([here a template](https://github.com/dbunibas/BART/blob/master/examples/template-task/template-egtask.xml)), with the following sections:
 
-#####**1. Database configuration** #####
+**1. Database configuration**
 Is used to specify the JDBC parameters to access the DBMS.
-[PostgreSQL](http://www.postgresql.org/) and [H2](http://www.h2database.com) DBMS are supported.
-    Data can be automatically loaded into the database from XML and CSV files.
+[PostgreSQL](http://www.postgresql.org/) and [H2](http://www.h2database.com) DBMS are supported. **Important:** Starting from version 12, PostgreSQL removed support for OID generator. Therefore the last supported version of PostgreSQL is the 11.
 
-#####**2. Dependencies specification** #####
+Data can be automatically loaded into the database from XML and CSV files.
 
-#####**3. Task configuration** #####
+**2. Dependencies specification**
+
+**3. Task configuration**
 * **printLog**: (default = false)
 * **recreateDBOnStart**: (default = false) To load DB every time on start
 * **applyCellChanges**: (default = false) To apply cell changes
@@ -43,6 +44,8 @@ Is used to specify the JDBC parameters to access the DBMS.
 
 ---
 ### Wiki ####
+[Basic Example](https://github.com/dbunibas/BART/wiki/Basic-Example)
+
 [How to evaluate a data-cleaning tool](https://github.com/dbunibas/BART/wiki/How-to-evaluate-a-data-cleaning-tool)
 
 
