@@ -16,6 +16,7 @@ public class ComparisonConfiguration implements Cloneable {
         singleton = defaultSingleton.clone();
     }
 
+    private String scenario;
     private boolean twoWayValueMapping = true;
     private boolean injective = false;
     private boolean functional = true;
@@ -32,6 +33,14 @@ public class ComparisonConfiguration implements Cloneable {
 
     public static void setTwoWayValueMapping(boolean twoWayValueMapping) {
         getInstance().twoWayValueMapping = twoWayValueMapping;
+    }
+
+    public static String setScenario(String scenario) {
+        return getInstance().scenario = scenario;
+    }
+
+    public static String getScenario() {
+        return getInstance().scenario;
     }
 
     public static boolean isInjective() {
@@ -98,16 +107,18 @@ public class ComparisonConfiguration implements Cloneable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("---- CONFIGURATION ----\n");
-        sb.append(" funcional    :").append(functional).append("\n");
-        sb.append(" injective    :").append(injective).append("\n");
-        sb.append(" K            :").append(K).append("\n");
-        sb.append(" nullPrefixes :").append(Arrays.asList(SpeedyConstants.getStringSkolemPrefixes())).append("\n");
-        sb.append("-----------------------\n");
-        sb.append(" forceExaustiveSearch:").append(forceExaustiveSearch).append("\n");
-        sb.append(" twoWayValueMapping:").append(twoWayValueMapping).append("\n");
-        sb.append(" stopIfNonMatchingTuples:").append(stopIfNonMatchingTuples).append("\n");
-        sb.append(" convertSkolemInHash:").append(convertSkolemInHash).append("\n");
+        sb.append("------ CONFIGURATION ------\n");
+        sb.append(" scenario     : ").append(scenario).append("\n");
+        sb.append(" funcional    : ").append(functional).append("\n");
+        sb.append(" injective    : ").append(injective).append("\n");
+        sb.append(" K            : ").append(K).append("\n");
+        sb.append(" nullPrefixes : ").append(Arrays.asList(SpeedyConstants.getStringSkolemPrefixes())).append("\n");
+        sb.append("---------------------------\n");
+        sb.append(" forceExaustiveSearch    : ").append(forceExaustiveSearch).append("\n");
+        sb.append(" twoWayValueMapping      : ").append(twoWayValueMapping).append("\n");
+        sb.append(" stopIfNonMatchingTuples : ").append(stopIfNonMatchingTuples).append("\n");
+        sb.append(" convertSkolemInHash     : ").append(convertSkolemInHash).append("\n");
+        sb.append("---------------------------\n");
         return sb.toString();
     }
 

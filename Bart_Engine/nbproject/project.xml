@@ -143,14 +143,14 @@
                 <project>.</project>
             </subprojects>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/4">
             <compilation-unit>
                 <package-root>${src.dir}</package-root>
                 <classpath mode="compile">${compile.classpath}</classpath>
                 <classpath mode="execute">${run.classpath}</classpath>
                 <built-to>${build.dir}</built-to>
                 <javadoc-built-to>${javadoc.dir}</javadoc-built-to>
-                <source-level>1.7</source-level>
+                <source-level>1.8</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>${test.src.dir}</package-root>
@@ -158,7 +158,7 @@
                 <classpath mode="compile">${test.classpath}</classpath>
                 <classpath mode="execute">${test.classpath}</classpath>
                 <built-to>${test.build.dir}</built-to>
-                <source-level>1.7</source-level>
+                <source-level>1.8</source-level>
             </compilation-unit>
         </java-data>
     </configuration>
