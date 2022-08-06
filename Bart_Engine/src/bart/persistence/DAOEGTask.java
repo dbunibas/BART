@@ -161,10 +161,10 @@ public class DAOEGTask {
                             csvFile.setRandomizeInput(random);
                             database.getInitDBConfiguration().setUseCopyStatement(false);
                         }
-                        if (inputFileElement.getAttribute("forceUseStream") != null) {
-                            boolean forceUseStream = Boolean.parseBoolean(inputFileElement.getAttribute("forceUseStream").getValue());
-                            csvFile.setForceUseStream(forceUseStream);
-                        }
+//                        if (inputFileElement.getAttribute("forceUseStream") != null) {
+//                            boolean forceUseStream = Boolean.parseBoolean(inputFileElement.getAttribute("forceUseStream").getValue());
+//                            csvFile.setForceUseStream(forceUseStream);
+//                        }
                         if (inputFileElement.getAttribute("recordsToImport") != null) {
                             String recordsToImportString = inputFileElement.getAttribute("recordsToImport").getValue();
                             try {

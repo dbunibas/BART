@@ -12,4 +12,4 @@ fi
 echo "Executing task "$TASK_FILE 
 BASEDIR=$(dirname $0)
 BUILDSCRIPT=$BASEDIR/build.xml
-ant -e -f $BUILDSCRIPT  compareInstances -Darg0=$TASK_FILE
+ant -e -f $BUILDSCRIPT  compareInstances -Darg0="$TASK_FILE"
