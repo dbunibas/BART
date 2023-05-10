@@ -11,8 +11,9 @@ BART (Benchmarking Algorithms for data Repairing and Translation) is an error-ge
 
 ---
 
-### BART GUI Screenshot ###
+### BART GUI Screenshot
 ![image](http://db.unibas.it/projects/bart/images/bart-screenshot.png)
+An installer of the GUI (for Windows, OSX and Linus) is available under [release section](https://github.com/dbunibas/BART/releases/). After install, please check updates by selecting Help menu -> updates.
 ---
 
 ### How to run an EGTask on the console
@@ -53,3 +54,7 @@ Data can be automatically loaded into the database from XML and CSV files.
 ### How to import BART_Engine source project in NetBeans ####
 1. In NetBeans, File -> Open projects... and select the project folder `Bart_Engine`
 2. Execute ant target task `gfp`, either using command-line `ant gfp`, or using NetBeans (in the projects windows, right click on build.xml -> Run Target -> Other Targets -> gfp)
+
+### Note
+The available examples are configured to connect to PostgreSQL with the username is “pguser”, with password “pguser”. 
+If you don’t want to create this user, please change these two values.
