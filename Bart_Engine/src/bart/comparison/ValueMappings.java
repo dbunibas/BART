@@ -45,8 +45,7 @@ public class ValueMappings implements Cloneable {
     public void setRightToLeftValueMapping(ValueMapping rightToLeftValueMapping) {
         this.rightToLeftValueMapping = rightToLeftValueMapping;
     }
-    
-    
+      
 
 //    public ValueMappings clone() {
 //        try {

@@ -61,6 +61,11 @@ public class FindBestTupleMapping {
                 return bestTupleMapping;
             }
         }
+        if (bestTupleMapping == null) {
+            bestTupleMapping = new TupleMapping();
+            bestTupleMapping.setLeftNonMatchingTuples(sourceTuples);
+            bestTupleMapping.setRightNonMatchingTuples(destinationTuples);
+        }
         return bestTupleMapping;
     }
 

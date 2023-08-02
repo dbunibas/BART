@@ -99,6 +99,7 @@ public class ComputeScore {
 
     private double computeScoreForMapping(TupleWithTable srcTuple, TupleWithTable mappedTuple, Map<IValue, Integer> leftCoveredByMap, Map<IValue, Integer> rightCoveredByMap, ValueMapping valueMapping) {
         double score = 0.0;
+        logger.debug("Compute score for source {} mapped with {}. Value Mapping: {}", srcTuple, mappedTuple, valueMapping);
         for (int i = 0; i < srcTuple.getTuple().getCells().size(); i++) {
             if (srcTuple.getTuple().getCells().get(i).getAttribute().equals(SpeedyConstants.OID)) {
                 continue;

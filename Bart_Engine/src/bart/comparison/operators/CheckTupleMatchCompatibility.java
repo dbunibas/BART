@@ -58,6 +58,7 @@ public class CheckTupleMatchCompatibility {
     }
 
     private boolean addValueMappings(Set<ValueCorrespondenceCommand> valueCorrespondences, ValueMappings valueMappings, Stack<ValueCorrespondenceCommand> changes) {
+        Set<ValueCorrespondenceCommand> generatedNewCommands = new HashSet<>();
         while (!valueCorrespondences.isEmpty()) {
             ValueCorrespondenceCommand nextCorrespondence = getAndRemoveNextCorrespondence(valueCorrespondences);
             if (logger.isDebugEnabled()) logger.debug("Handling correspondence " + nextCorrespondence);
@@ -76,7 +77,10 @@ public class CheckTupleMatchCompatibility {
                     if (logger.isDebugEnabled()) logger.debug("Existing mapping for toValue: " + existingMappingForToValue);
                     if (existingMappingForToValue != null) {
                         ValueCorrespondenceCommand newValueCorrespondence = new ValueCorrespondenceCommand(fromValue, existingMappingForToValue, existingToValue, leftToRight);
-                        valueCorrespondences.add(newValueCorrespondence);
+                        if (!generatedNewCommands.contains(newValueCorrespondence)) {
+                            valueCorrespondences.add(newValueCorrespondence);
+                            generatedNewCommands.add(newValueCorrespondence);
+                        }
                     } else if (noInverseMapping(fromValue, leftToRight, valueMappings)) {
                         applyCorrespondence(valueMappings, leftToRight, fromValue, toValue, existingToValue, changes);
                     } else {

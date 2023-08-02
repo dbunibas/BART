@@ -33,3 +33,4 @@ nbproject/private
 nbproject.properties
 dist
 /Bart_GUI/BART_Branding/nbproject/private/
+junit*.properties
