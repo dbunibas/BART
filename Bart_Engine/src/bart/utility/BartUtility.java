@@ -20,6 +20,8 @@ import speedy.model.database.mainmemory.datasource.nodes.SequenceNode;
 import speedy.model.database.mainmemory.datasource.nodes.SetNode;
 import speedy.model.database.mainmemory.datasource.nodes.TupleNode;
 import bart.BartConstants;
+import bart.comparison.ComparisonConfiguration;
+import bart.comparison.ComparisonStats;
 import bart.model.EGTask;
 import bart.model.errorgenerator.CellChanges;
 import bart.model.errorgenerator.ICellChange;
@@ -29,7 +31,6 @@ import speedy.model.database.IDatabase;
 import speedy.model.database.ITable;
 import speedy.model.database.TableAlias;
 import bart.model.errorgenerator.VioGenQueryCellChange;
-import bart.persistence.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,9 +41,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import speedy.model.database.mainmemory.MainMemoryDB;
+import speedy.persistence.DAOMainMemoryDatabase;
 import speedy.utility.comparator.StringComparator;
 
 public class BartUtility {
+    
+    private final static Logger logger = LoggerFactory.getLogger(BartUtility.class);
 
     /////////////////////////////////////   COLLECTIONS METHODS   /////////////////////////////////////
     @SuppressWarnings("unchecked")
@@ -368,5 +375,15 @@ public class BartUtility {
         for (ICellChange change : changes) {
             cellChanges.addChange(change);
         }
+    }
+    
+    public static IDatabase loadMainMemoryDatabase(String absoluteFolder) {
+        DAOMainMemoryDatabase dao = new DAOMainMemoryDatabase();
+        long start = System.currentTimeMillis();
+        boolean convertSkolemInHash = ComparisonConfiguration.isConvertSkolemInHash();
+        MainMemoryDB database = dao.loadCSVDatabase(absoluteFolder, ',', null, convertSkolemInHash, true);
+        if (logger.isDebugEnabled()) logger.debug(database.printInstances(true));
+        ComparisonStats.getInstance().addStat(ComparisonStats.LOAD_INSTANCE_TIME, System.currentTimeMillis() - start);
+        return database;
     }
 }

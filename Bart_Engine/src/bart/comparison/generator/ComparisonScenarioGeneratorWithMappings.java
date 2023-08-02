@@ -5,6 +5,7 @@ import bart.comparison.TupleMapping;
 import bart.comparison.TupleMatch;
 import bart.comparison.ValueMapping;
 import bart.comparison.operators.CheckTupleMatch;
+import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +57,48 @@ public class ComparisonScenarioGeneratorWithMappings {
         this.cellsToChangePerc = cellsToChangePerc;
         this.random = new Random(seed);
     }
-
+    
+    public InstancePair generateWithMappings(String originalDBPath, boolean changeSource, boolean changeTarget) {
+        IDatabase originalDB = BartUtility.loadMainMemoryDatabase(originalDBPath);
+        long start = System.currentTimeMillis();
+        initOperators(originalDB);
+        oidGenerator.initializeOIDs(originalDB);
+        IDatabase leftDB = dbManager.cloneTarget(BartUtility.loadMainMemoryDatabase(originalDBPath), "_left");
+        List<TupleWithTable> leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDB);
+        IDatabase rightDB = dbManager.cloneTarget(BartUtility.loadMainMemoryDatabase(originalDBPath), "_right");
+        changeOid(rightDB); // TODO: fix not working
+        List<TupleWithTable> rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDB);
+        TupleMapping tupleMapping = initMappings(leftTuples, rightTuples);
+        if (changeSource) {
+            logger.info("Change Source");
+            modifyCells(leftTuples, rightTuples, tupleMapping, leftDB, true);
+            if (!ComparisonConfiguration.isFunctional()) {
+                addRandomTuples(leftDB, rightDB, tupleMapping, true);
+                addRedundantTuples(leftDB, rightDB, tupleMapping, true);
+            } else {
+                // TODO: remove tuples
+            }
+        }
+        leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDB);
+        rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDB);
+        if (changeTarget) {
+            logger.info("Change Target");
+            modifyCells(rightTuples, leftTuples, tupleMapping, rightDB, false);
+            if (!ComparisonConfiguration.isInjective()) {
+                addRandomTuples(rightDB, leftDB, tupleMapping, false);
+                addRedundantTuples(rightDB, leftDB, tupleMapping, false);
+            } else {
+                //TODO: remove tuples
+            }
+        }
+//        tupleMapping.updateValueMappings(); // clean and replace value mappings
+        InstancePair instancePair = new InstancePair(rightDB, leftDB);
+        instancePair.setTupleMapping(tupleMapping);
+        long end = System.currentTimeMillis();
+        this.timeGeneration = (end - start);
+        return instancePair;
+    }
+    
     public InstancePair generateWithMappings(IDatabase originalDB, boolean changeSource, boolean changeTarget) {
         long start = System.currentTimeMillis();
         initOperators(originalDB);
