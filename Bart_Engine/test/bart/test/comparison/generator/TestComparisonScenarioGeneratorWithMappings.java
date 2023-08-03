@@ -33,26 +33,50 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
 
     private final static Logger logger = LoggerFactory.getLogger(TestComparisonScenarioGeneratorWithMappings.class);
 
-    private int newReduntandTuples = 99;
-    private int newRandomTuples = 99; // max 75 after happens weird things
-    private int cellsToChange = 50;
+    private int newReduntandTuples = 1;
+    private int newRandomTuples = 0; // max 75 after happens weird things
+    private int cellsToChange = 82;
     private List<String> results = new ArrayList<>();
+    private boolean printInfo = false;
 
-    public void testExecution() {
+    public void xtestExecutionSmall() {
+        String dataset = "doctors-100";
+        for (int nre = 0; nre <= 99; nre+=10) {
+            for (int nra = 0; nra <= 99; nra+=10) {
+                for (int cc = 0; cc <= 99; cc+=10) {
+                    this.newReduntandTuples = nre;
+                    this.newRandomTuples = nra;
+                    this.cellsToChange = cc;
+                    modifyCellsInSource(dataset, null, true, null);
+                    modifyCellsInTarget(dataset, null, true, null);
+                    modifyCellsInSourceAndTarget(dataset, null, true, null);
+                    addRedundantRowsInSource(dataset, null, true, null);
+                    addRedundantRowsInTarget(dataset, null, true, null);
+                    addRedundantRowsInSourceAndTarget(dataset, null, true, null);
+                    addRandomRowsInSource(dataset, null, true, null);
+                    addRandomRowsInTarget(dataset, null, true, null);
+                    addRandomRowsInSourceAndTarget(dataset, null, true, null);
+                    addRandomAndRedundantRowsInSourceAndTarget(dataset, null, true, null);
+                }
+            }
+        }
+    }
+
+    public void xtestExecution() {
         //"conference", "doctors-100", ,
         String[] datasets = {"conference"};
         for (String dataset : datasets) {
             System.out.println(dataset);
-//            modifyCellsInSource(dataset, null, true, null);
+            modifyCellsInSource(dataset, null, true, null);
             modifyCellsInTarget(dataset, null, true, null);
-//            modifyCellsInSourceAndTarget(dataset, null, true, null);
-//            addRedundantRowsInSource(dataset, null, true, null);
-//            addRedundantRowsInTarget(dataset, null, true, null);
-//            addRedundantRowsInSourceAndTarget(dataset, null, true, null);
-//            addRandomRowsInSource(dataset, null, true, null);
-//            addRandomRowsInTarget(dataset, null, true, null);
-//            addRandomRowsInSourceAndTarget(dataset, null, true, null);
-//            addRandomAndRedundantRowsInSourceAndTarget(dataset, null, true, null);
+            modifyCellsInSourceAndTarget(dataset, null, true, null);
+            addRedundantRowsInSource(dataset, null, true, null);
+            addRedundantRowsInTarget(dataset, null, true, null);
+            addRedundantRowsInSourceAndTarget(dataset, null, true, null);
+            addRandomRowsInSource(dataset, null, true, null);
+            addRandomRowsInTarget(dataset, null, true, null);
+            addRandomRowsInSourceAndTarget(dataset, null, true, null);
+            addRandomAndRedundantRowsInSourceAndTarget(dataset, null, true, null);
             System.out.print(".\n");
         }
     }
@@ -125,9 +149,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         String sourceFile = scenarioName + "/initial/";
         setInjectiveFunctionalMapping();
         ComparisonConfiguration.setTwoWayValueMapping(true);
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, false);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -144,13 +168,12 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
-            logger.error("**** BRUTE-FORCE");
             ComparisonConfiguration.setTwoWayValueMapping(true);
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -162,7 +185,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("modifyCellsInSource", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -176,9 +200,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setInjectiveFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, false, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -197,11 +221,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -213,7 +237,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("modifyCellsInTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -228,9 +253,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setInjectiveFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -249,11 +274,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -265,7 +290,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + score + " Greedy: " + scoreSimilarity, scoreSimilarity == score);
             generateOutput("modifyCellsInSourceAndTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -279,9 +305,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(newReduntandTuples, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, false);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -300,11 +326,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -316,7 +342,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRedundantRowsInSource", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -331,9 +358,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(newReduntandTuples, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, false, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -352,11 +379,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -368,7 +395,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRedundantRowsInTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -383,9 +411,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(newReduntandTuples, 0, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -404,11 +432,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -420,7 +448,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRedundantRowsInSourceAndTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -435,9 +464,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, newRandomTuples, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, false);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -456,13 +485,24 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
+            }
+            if (score != scoreSimilarity) {
+                System.out.println(instancePair);
+                System.out.println("Score Generated:" + score);
+                System.out.println("Source to Target");
+                System.out.println(result.toString());
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
+                MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRandomRowsInSource", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -477,9 +517,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, newRandomTuples, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, false, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -498,13 +538,24 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
+            }
+            if (score != scoreSimilarity) {
+                System.out.println(instancePair);
+                System.out.println("Score Generated:" + score);
+                System.out.println("Source to Target");
+                System.out.println(result.toString());
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
+                MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRandomRowsInTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -519,9 +570,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(0, newRandomTuples, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -541,11 +592,11 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
 //            ComparisonConfiguration.setForceExaustiveSearch(false);
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
             }
@@ -557,7 +608,8 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
                 Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
                 MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
-                System.out.println(difference);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + score + " Greedy: " + scoreSimilarity, scoreSimilarity == score);
             generateOutput("addRandomRowsInSourceAndTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -572,9 +624,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String sourceFile = scenarioName + "/initial/";
         setNonInjectiveNonFunctionalMapping();
-        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
+//        IDatabase originalDB = ComparisonUtilityTest.loadDatabase(sourceFile, "/resources/redundancy/");
         ComparisonScenarioGeneratorWithMappings generator = new ComparisonScenarioGeneratorWithMappings(newReduntandTuples, newRandomTuples, cellsToChange, 1234);
-        InstancePair instancePair = generator.generateWithMappings(originalDB, true, true);
+        InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
         if (expPath != null) {
@@ -593,13 +645,24 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             long start = System.currentTimeMillis();
             InstanceMatchTask result = similarityChecker.compare(sourceDB, targetDB);
             long end = System.currentTimeMillis();
-            System.out.println("Time (ms):" + (end - start));
+            if (printInfo) System.out.println("Time (ms):" + (end - start));
             logger.info("Source to Target");
             logger.info(result.toString());
             Double scoreSimilarity = result.getTupleMapping().getScore();
-            System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
+            if (printInfo) System.out.println("BruteForce Score: " + score + " - ComputedScore: " + scoreSimilarity);
             if (scoreSimilarity == null) {
                 scoreSimilarity = 0.0;
+            }
+            if (score != scoreSimilarity) {
+                System.out.println(instancePair);
+                System.out.println("Score Generated:" + score);
+                System.out.println("Source to Target");
+                System.out.println(result.toString());
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingsGenerated = instancePair.getTupleMapping().getTupleMapping();
+                Map<TupleWithTable, Set<TupleWithTable>> tupleMappingBruteForce = result.getTupleMapping().getTupleMapping();
+                MapDifference<TupleWithTable, Set<TupleWithTable>> difference = Maps.difference(tupleMappingsGenerated, tupleMappingBruteForce);
+                print(difference);
+                System.out.println("Error config:\n" + this.newReduntandTuples + " - " + this.newRandomTuples + " - " + this.cellsToChange);
             }
             assertTrue("Same score with Brute Force" + scenarioName + " - scoreBruteForce: " + scoreSimilarity + " Greedy: " + score, scoreSimilarity == score);
             generateOutput("addRandomAndRedundantRowsInSourceAndTarget", instancePair, score, scoreSimilarity, generator.getTimeGeneration(), (end - start), "NA");
@@ -674,6 +737,22 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
         String dbStats = dbSize + " | " + consts + " | " + vars;
         return dbStats;
+    }
+
+    private void print(MapDifference<TupleWithTable, Set<TupleWithTable>> difference) {
+        Map<TupleWithTable, Set<TupleWithTable>> onlyOnGenerated = difference.entriesOnlyOnLeft();
+        String onlyOnGeneratedString = "Only on Generated:\n" + SpeedyUtility.printMapCompact(onlyOnGenerated);
+        Map<TupleWithTable, Set<TupleWithTable>> onlyOnAlgorithm = difference.entriesOnlyOnRight();
+        String onlyOnAlgorithmString = "Only on Algorithm:\n" + SpeedyUtility.printMapCompact(onlyOnAlgorithm);
+        Map<TupleWithTable, MapDifference.ValueDifference<Set<TupleWithTable>>> entriesDiffering = difference.entriesDiffering();
+        String differencesInMapString = "Differences in common:\n" + SpeedyUtility.printMapCompact(entriesDiffering);
+        String toPrint = "-----------------------------\n"
+                + onlyOnGeneratedString
+                + "-----------------------------\n"
+                + onlyOnAlgorithmString
+                + "-----------------------------\n"
+                + differencesInMapString;
+        System.out.println(toPrint);
     }
 
 }

@@ -57,7 +57,7 @@ public class ComparisonScenarioGeneratorWithMappings {
         this.cellsToChangePerc = cellsToChangePerc;
         this.random = new Random(seed);
     }
-    
+
     public InstancePair generateWithMappings(String originalDBPath, boolean changeSource, boolean changeTarget) {
         IDatabase originalDB = BartUtility.loadMainMemoryDatabase(originalDBPath);
         long start = System.currentTimeMillis();
@@ -92,46 +92,8 @@ public class ComparisonScenarioGeneratorWithMappings {
             }
         }
 //        tupleMapping.updateValueMappings(); // clean and replace value mappings
-        InstancePair instancePair = new InstancePair(rightDB, leftDB);
-        instancePair.setTupleMapping(tupleMapping);
-        long end = System.currentTimeMillis();
-        this.timeGeneration = (end - start);
-        return instancePair;
-    }
-    
-    public InstancePair generateWithMappings(IDatabase originalDB, boolean changeSource, boolean changeTarget) {
-        long start = System.currentTimeMillis();
-        initOperators(originalDB);
-        oidGenerator.initializeOIDs(originalDB);
-        IDatabase leftDB = dbManager.cloneTarget(originalDB, "_left");
-        List<TupleWithTable> leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDB);
-        IDatabase rightDB = dbManager.cloneTarget(originalDB, "_right");
-        changeOid(rightDB); // TODO: fix not working
-        List<TupleWithTable> rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDB);
-        TupleMapping tupleMapping = initMappings(leftTuples, rightTuples);
-        if (changeSource) {
-            logger.info("Change Source");
-            modifyCells(leftTuples, rightTuples, tupleMapping, leftDB, true);
-            if (!ComparisonConfiguration.isFunctional()) {
-                addRandomTuples(leftDB, rightDB, tupleMapping, true);
-                addRedundantTuples(leftDB, rightDB, tupleMapping, true);
-            } else {
-                // TODO: remove tuples
-            }
-        }
-        leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDB);
-        rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDB);
-        if (changeTarget) {
-            logger.info("Change Target");
-            modifyCells(rightTuples, leftTuples, tupleMapping, rightDB, false);
-            if (!ComparisonConfiguration.isInjective()) {
-                addRandomTuples(rightDB, leftDB, tupleMapping, false);
-                addRedundantTuples(rightDB, leftDB, tupleMapping, false);
-            } else {
-                //TODO: remove tuples
-            }
-        }
-//        tupleMapping.updateValueMappings(); // clean and replace value mappings
+        tupleMapping.updateValueMappings();
+        // TODO: check non matching tuples but it should be not necessary
         InstancePair instancePair = new InstancePair(rightDB, leftDB);
         instancePair.setTupleMapping(tupleMapping);
         long end = System.currentTimeMillis();
@@ -176,6 +138,12 @@ public class ComparisonScenarioGeneratorWithMappings {
             TupleWithTable originalTuple = sourceTuples.get(pos);
             TupleWithTable targetTuple = targetTuples.get(pos);
             TupleWithTable modifiedTuple = modifyTuple(db, originalTuple);
+            originalTuple.setIsForGeneration(true);
+            targetTuple.setIsForGeneration(true);
+            modifiedTuple.setIsForGeneration(true);
+            if (modifiedTuple.equals(originalTuple)) {
+                continue;
+            }
             logger.debug("*** Modify cell");
             logger.debug("OriginalTuple tuple: {}", originalTuple);
             logger.debug("Modified tuple: {}", modifiedTuple);
@@ -188,17 +156,19 @@ public class ComparisonScenarioGeneratorWithMappings {
                 List<TupleMatch> previousMatches = verifyMatches(originalTuple, targetTuples);
                 if (!previousMatches.isEmpty()) {
                     for (TupleMatch match : previousMatches) {
-                        TupleWithTable originalMatch = match.getLeftTuple();
-                        TupleWithTable otherMatch = match.getRightTuple();
-                        if (!isLeft) {
-                            originalMatch = match.getRightTuple();
-                            otherMatch = match.getLeftTuple();
+                        TupleWithTable leftTuple = match.getLeftTuple();
+                        TupleWithTable rightTuple = match.getRightTuple();
+                        if (isLeft) {
+                            tupleMapping.removeKeyTupleMapping(leftTuple);
+                        } else {
+                            leftTuple = match.getRightTuple();
+                            rightTuple = match.getLeftTuple();
+                            tupleMapping.removeFromTupleSetTupleMapping(leftTuple, rightTuple);
                         }
-                        tupleMapping.removeTupleMapping(originalMatch, otherMatch);
-                        tupleMapping.removeValueMapping(originalMatch, otherMatch, isLeft);
-                        nonMatchingTuples.remove(originalMatch);
-                        if (!nonMatchingTuplesComparisons.contains(otherMatch)) {
-                            nonMatchingTuplesComparisons.add(otherMatch);
+                        tupleMapping.removeValueMapping(leftTuple, rightTuple, isLeft);
+                        nonMatchingTuples.remove(leftTuple);
+                        if (!nonMatchingTuplesComparisons.contains(rightTuple)) {
+                            nonMatchingTuplesComparisons.add(rightTuple);
                         }
                     }
                     nonMatchingTuples.add(modifiedTuple);
@@ -207,19 +177,38 @@ public class ComparisonScenarioGeneratorWithMappings {
             } else {
                 if (matches.size() == 1) {
                     logger.debug("Is a match");
-                    tupleMapping.removeValueMapping(originalTuple, targetTuple, isLeft);
+                    boolean canUpdate = false;
                     for (TupleMatch match : matches) {
                         TupleWithTable leftTuple = match.getLeftTuple(); //modified
                         TupleWithTable rightTuple = match.getRightTuple(); // other
-                        if (!isLeft) {
-                            leftTuple = match.getLeftTuple(); // modified
-                            rightTuple = match.getRightTuple(); // other
+                        if (isLeft) {
+                            canUpdate = checkValueMapping(leftTuple, rightTuple, tupleMapping);
+                            if (!canUpdate) {
+                                continue;
+                            }
+                            logger.debug("Update mapping: {} to {}", leftTuple, rightTuple);
+                            tupleMapping.updateKeyTupleMapping(originalTuple, leftTuple);
+                            tupleMapping.putTupleMapping(leftTuple, rightTuple);
+                        } else {
+                            leftTuple = match.getRightTuple(); // modified
+                            rightTuple = match.getLeftTuple(); // other
+                            canUpdate = checkValueMapping(leftTuple, rightTuple, tupleMapping);
+                            if (!canUpdate) {
+                                continue;
+                            }
+                            logger.debug("Update TupleSet with key {}. Change {} to {}", leftTuple, originalTuple, rightTuple);
+                            tupleMapping.updateTupleSetTupleMapping(leftTuple, originalTuple, rightTuple);
                         }
-                        logger.debug("Update mapping: {} to {}", leftTuple, rightTuple);
-                        tupleMapping.updateTupleMapping(originalTuple, leftTuple, rightTuple);
+                        tupleMapping.removeMappingForKey(originalTuple, isLeft);
+                        tupleMapping.removeValueMapping(originalTuple, targetTuple, isLeft);
                         tupleMapping.addValueMapping(leftTuple, rightTuple, isLeft);
                     }
-                    updateTuple(originalTuple, modifiedTuple, db);
+                    if (canUpdate) {
+                        updateTuple(originalTuple, modifiedTuple, db);
+                        if (nonMatchingTuples.contains(originalTuple)) {
+                            nonMatchingTuples.remove(originalTuple);
+                        }
+                    }
                 } else {
                     // ignore update, non functional and non injective are managed with random and redundant tuples
                 }
@@ -471,6 +460,26 @@ public class ComparisonScenarioGeneratorWithMappings {
             tuple.getTuple().setOid(tupleOID);
             updateCellOperator.execute(new CellRef(oldTupleOId, new AttributeRef(tuple.getTable(), SpeedyConstants.OID)), new ConstantValue(tupleOID.getNumericalValue()), db);
         }
+    }
+
+    private boolean checkValueMapping(TupleWithTable leftTuple, TupleWithTable rightTuple, TupleMapping tupleMapping) {
+        for (int i = 0; i < leftTuple.getTuple().getCells().size(); i++) {
+            IValue leftValue = leftTuple.getTuple().getCells().get(i).getValue();
+            IValue rightValue = leftTuple.getTuple().getCells().get(i).getValue();
+            if (leftValue instanceof NullValue) {
+                IValue allowedValue = tupleMapping.getValueMappings().getLeftToRightMappingForValue(leftValue);
+                if (allowedValue != null && !allowedValue.equals(rightValue)) {
+                    return false;
+                }
+            }
+            if (rightValue instanceof NullValue) {
+                IValue allowedValue = tupleMapping.getValueMappings().getRightToLeftMappingForValue(rightValue);
+                if (allowedValue != null && !allowedValue.equals(leftValue)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

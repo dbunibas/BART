@@ -28,130 +28,75 @@ public class TupleMapping {
     private final static Logger logger = LoggerFactory.getLogger(TupleMapping.class);
 
     public void putTupleMapping(TupleWithTable tuple, TupleWithTable destinationTuple) {
-        logger.debug("Call put Tuple mapping for: {} target {}", tuple, destinationTuple);
-        logger.debug("Tuple Mapping\n: {}", SpeedyUtility.printMapCompact(this.tupleMapping));
         Set<TupleWithTable> tupleSet = this.tupleMapping.get(tuple);
-        logger.debug("TupleSet: {}", tupleSet);
         if (tupleSet == null) {
             tupleSet = new HashSet<TupleWithTable>();
-            logger.debug("Add {}", tuple);
             this.tupleMapping.put(tuple, tupleSet);
         }
         tupleSet.add(destinationTuple);
-//        if (enableReverse) {
-//            for (TupleWithTable keyForReverse : tupleSet) {
-//                Set<TupleWithTable> reverseSet = this.reverseTupleMapping.get(keyForReverse);
-//                if (reverseSet == null) {
-//                    reverseSet = new HashSet<TupleWithTable>();
-//                    this.reverseTupleMapping.put(keyForReverse, reverseSet);
-//                }
-//                reverseSet.add(tuple);
-//            }
-//        }
-        logger.debug("Tuple Mapping\n: {}", SpeedyUtility.printMapCompact(this.tupleMapping));
-//        logger.debug("Reverse Tuple Mapping\n: {}", SpeedyUtility.printMapCompact(this.reverseTupleMapping));
     }
 
-//    public void putInTupleSet(TupleWithTable originalTuple, TupleWithTable redundantTuple) {
-//        Set<TupleWithTable> keysForTupleMapping = this.reverseTupleMapping.get(originalTuple);
-//        if (keysForTupleMapping != null) {
-//            for (TupleWithTable tupleWithTable : keysForTupleMapping) {
-//                this.putTupleMapping(tupleWithTable, redundantTuple);
-//            }
-//        }
-//    }
-//    public void replaceInTupleSet(TupleWithTable originalTuple, TupleWithTable newTuple) {
-//        logger.info("ReplateInTupleSet: {} with {}", originalTuple, newTuple);
-//        Set<TupleWithTable> keysForTupleMapping = this.reverseTupleMapping.get(originalTuple);
-//        logger.info("Keys: ", keysForTupleMapping);
-//        if (keysForTupleMapping != null) {
-//            this.reverseTupleMapping.remove(originalTuple);
-//            this.reverseTupleMapping.put(newTuple, keysForTupleMapping);
-//            logger.info("Keys: {}", keysForTupleMapping);
-//            for (TupleWithTable tupleWithTable : keysForTupleMapping) {
-//                Set<TupleWithTable> tupleMappingSet = this.tupleMapping.get(tupleWithTable);
-//                tupleMappingSet.remove(originalTuple);
-//                tupleMappingSet.add(newTuple);
-//            }
-//        }
-//    }
-//    public void cloneTupleMapping(TupleWithTable oldTuple, TupleWithTable newTuple) {
-//        Set<TupleWithTable> tupleSet = this.tupleMapping.get(oldTuple);
-//        for (TupleWithTable tupleWithTable : tupleSet) {
-//            putTupleMapping(newTuple, tupleWithTable);
-//        }
-//    }
-    public void removeTupleMapping(TupleWithTable source, TupleWithTable target) {
-        logger.debug("Call Remove Tuple mapping with key: {} and value {}", source, target);
+    public void removeKeyTupleMapping(TupleWithTable source) {
+        logger.debug("Call Remove Tuple mapping with key: {}", source);
         this.tupleMapping.remove(source);
-//        Set<TupleWithTable> possibleMatches = this.tupleMapping.get(target);
-//        if (possibleMatches != null && possibleMatches.contains(source)) {
-//            possibleMatches.remove(source);
-//        }
-//        if (possibleMatches != null && possibleMatches.isEmpty()) {
-//            this.tupleMapping.remove(target);
-//        }
-////        logger.debug("Tuples to remove from reversing mapping: {}", setForReverse);
-////        for (TupleWithTable tupleReverse : setForReverse) {
-////            logger.debug("Remove from reverseTupleMapping {}", tupleReverse);
-////            this.reverseTupleMapping.remove(tupleReverse);
-////        }
-////        logger.debug("Tuple Mapping\n: {}", SpeedyUtility.printMapCompact(tupleMapping));
-////        logger.debug("Reverse Tuple Mapping\n: {}", SpeedyUtility.printMapCompact(reverseTupleMapping));
     }
 
-//    public void removeTupleMappingInTarget(TupleWithTable tuple) {
-//        Set<TupleWithTable> tupleSetLeft = this.reverseTupleMapping.get(tuple);
-//        if (tupleSetLeft != null) {
-//            for (TupleWithTable tupleWithTable : tupleSetLeft) {
-//                removeTupleMapping(tupleWithTable);
-//            }
-//        }
-//        this.tupleMapping.remove(tuple);
-//    }
-    public void updateTupleMapping(TupleWithTable oldKey, TupleWithTable newKey, TupleWithTable newValue) {
-        logger.debug("OLD Key: {}", oldKey);
-        logger.debug("New Key: {}", newKey);
-        logger.debug("New value: {}", newValue);
-        Set<TupleWithTable> tupleSet = this.tupleMapping.get(oldKey);
-        logger.debug("TupleSet for oldKey: {}", tupleSet);
-        if (tupleSet != null) {
-            tupleSet.add(newValue);
-            logger.debug("Remove old key: {}", oldKey);
-            this.tupleMapping.remove(oldKey);
-            logger.debug("Add the mapping to {} with {}", newKey, tupleSet);
-            this.tupleMapping.put(newKey, tupleSet);
-            logger.debug("Check: key {}, value {}", newKey, this.tupleMapping.get(newKey));
+    public void removeMappingForKey(TupleWithTable tuple, boolean isLeft) {
+        if (isLeft) {
+            this.tupleMapping.remove(tuple);
         } else {
-            logger.debug("TupleSet is null, add new key {} to {}", newKey, newValue);
-            this.putTupleMapping(newKey, newValue);
+            Set<TupleWithTable> keysToDrop = new HashSet<>();
+            for (TupleWithTable key : this.tupleMapping.keySet()) {
+                Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
+                if (tupleSet.contains(tuple)) {
+                    tupleSet.remove(tuple);
+                }
+                if (tupleSet.isEmpty()) {
+                    keysToDrop.add(key);
+                }
+            }
+            for (TupleWithTable key : keysToDrop) {
+                this.tupleMapping.remove(key);
+            }
         }
-        //check if old key was in the tupleSet
-        logger.debug("TupleMapping before check in tupleSet: {}", this.tupleMapping);
-        Set<TupleWithTable> tupleSetMatchesWithOldKey = this.tupleMapping.get(newValue);
-        logger.debug("Keys with value {}: {}", newValue, tupleSetMatchesWithOldKey);
-        if (tupleSetMatchesWithOldKey != null && tupleSetMatchesWithOldKey.contains(oldKey)) {
-            logger.debug("Remove also match {} with {}", oldKey, newValue);
-            tupleSetMatchesWithOldKey.remove(oldKey);
-            tupleSetMatchesWithOldKey.add(newKey);
-            logger.debug("After update: {}", tupleSetMatchesWithOldKey);
+    }
+
+    public void removeFromTupleSetTupleMapping(TupleWithTable key, TupleWithTable target) {
+        logger.debug("Call Remove Value {} with key {}", target, key);
+        Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
+        if (tupleSet != null && !tupleSet.isEmpty()) {
+            tupleSet.remove(target);
         }
-        logger.debug("TupleMapping after update: {}", this.tupleMapping);
-//       
-//        this.tupleMapping.remove(oldKey);
-//        logger.debug("TupleSet: {}", tupleSet);
-//        if (tupleSet != null) {
-//            tupleSet.remove(newValue); // remove old version of the tuple
-//            //this.tupleMapping.remove(oldTuple);
-//            //this.tupleMapping.put(newTuple, tupleSet);
-////            removeTupleMapping(oldKey);
-//            for (TupleWithTable tupleWithTable : tupleSet) {
-//                putTupleMapping(newKey, tupleWithTable);
-//            }
-//            putTupleMapping(newKey, newValue);
-//        } else {
-//            putTupleMapping(newKey, newValue);
-//        }
+        if (tupleSet != null && tupleSet.isEmpty()) {
+            this.tupleMapping.remove(key);
+        }
+    }
+
+    public void updateKeyTupleMapping(TupleWithTable oldKey, TupleWithTable newKey) {
+        logger.debug("Replace Old Key {} with new key {}", oldKey, newKey);
+        Set<TupleWithTable> tupleSet = this.tupleMapping.get(oldKey);
+        if (tupleSet != null) {
+            logger.debug("TupleSet for oldKey: {}", tupleSet);
+            this.tupleMapping.put(newKey, tupleSet);
+            this.tupleMapping.remove(oldKey);
+        }
+    }
+
+    public void updateTupleSetTupleMapping(TupleWithTable key, TupleWithTable oldTarget, TupleWithTable newTarget) {
+        logger.debug("Replace mapping in target. Key: {}", key);
+        logger.debug("Change target {} to new target {}", oldTarget, newTarget);
+        Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
+        if (tupleSet != null) {
+            logger.debug("Replace old target {} with the new {}", oldTarget, newTarget);
+            logger.debug("TupleSet Before: {}", tupleSet);
+            logger.debug("Old Target {}", oldTarget.isIsForGeneration());
+            logger.debug("New Target {}", newTarget.isIsForGeneration());
+            tupleSet.remove(oldTarget);
+            tupleSet.add(newTarget);
+            logger.debug("TupleSet After: {}", tupleSet);
+        } else {
+            putTupleMapping(key, newTarget);
+        }
     }
 
     public void removeValueMapping(TupleWithTable key, TupleWithTable target, boolean isLeft) {
@@ -196,22 +141,11 @@ public class TupleMapping {
         for (int i = 0; i < sourceTuple.getTuple().getCells().size(); i++) {
             IValue sourceValue = sourceTuple.getTuple().getCells().get(i).getValue();
             IValue targetValue = targetTuple.getTuple().getCells().get(i).getValue();
-            if (!targetValue.equals(sourceValue)) {
-                if (sourceValue instanceof NullValue && targetValue instanceof ConstantValue) {
-                    IValue toValuePrev = this.valueMappings.getLeftToRightValueMapping().getValueMapping(sourceValue);
-                    this.valueMappings.getLeftToRightValueMapping().removeValueMapping(sourceValue, toValuePrev);
-                }
-                if (sourceValue instanceof NullValue && targetValue instanceof NullValue) {
-                    IValue toValuePrevSource = this.valueMappings.getLeftToRightValueMapping().getValueMapping(sourceValue);
-                    IValue toValuePrevTarget = this.valueMappings.getLeftToRightValueMapping().getValueMapping(targetValue);
-                    this.valueMappings.getLeftToRightValueMapping().removeValueMapping(sourceValue, toValuePrevSource);
-                    this.valueMappings.getRightToLeftValueMapping().removeValueMapping(targetValue, toValuePrevTarget);
-                    this.valueMappings.getLeftToRightValueMapping().putValueMapping(sourceValue, targetValue);
-                    this.valueMappings.getRightToLeftValueMapping().putValueMapping(targetValue, sourceValue);
-                }
-                if (sourceValue instanceof ConstantValue && targetValue instanceof NullValue) {
-                    this.valueMappings.getRightToLeftValueMapping().putValueMapping(targetValue, sourceValue);
-                }
+            if (sourceValue instanceof NullValue) {
+                this.valueMappings.getLeftToRightValueMapping().putValueMapping(sourceValue, targetValue);
+            }
+            if (targetValue instanceof NullValue) {
+                this.valueMappings.getRightToLeftValueMapping().putValueMapping(targetValue, sourceValue);
             }
         }
 
@@ -334,8 +268,8 @@ public class TupleMapping {
         }
         return "----------------- Tuple Mapping ------------------\n"
                 + SpeedyUtility.printMapCompact(tupleMapping) + "\n"
-                + "----------------- Reverse Tuple Mapping ------------------\n"
-                + SpeedyUtility.printMapCompact(reverseTupleMapping) + "\n"
+                //                + "----------------- Reverse Tuple Mapping ------------------\n"
+                //                + SpeedyUtility.printMapCompact(reverseTupleMapping) + "\n"
                 + (this.valueMappings.getLeftToRightValueMapping().isEmpty() ? "" : "\nValue mapping: " + this.valueMappings.getLeftToRightValueMapping())
                 + (this.valueMappings.getRightToLeftValueMapping().isEmpty() ? "" : "\nRight to left value mapping: " + this.valueMappings.getRightToLeftValueMapping())
                 + (score != null ? "\nScore: " + score + "\n" : "")

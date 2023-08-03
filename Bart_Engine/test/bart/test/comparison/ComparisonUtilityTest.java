@@ -14,10 +14,14 @@ public class ComparisonUtilityTest {
 
     private final static Logger logger = LoggerFactory.getLogger(ComparisonUtilityTest.class);
     private final static DAOMainMemoryDatabase dao = new DAOMainMemoryDatabase();
+    
+    public static String getFolder(String folderName, String baseFolder) {
+        String folder = UtilityForTests.getAbsoluteFileName(baseFolder + File.separator + folderName);
+        return folder;
+    }
 
     public static IDatabase loadDatabase(String folderName, String baseFolder) {
-        String folder = UtilityForTests.getAbsoluteFileName(baseFolder + File.separator + folderName);
-        return loadDatabase(folder);
+        return loadDatabase(getFolder(folderName, baseFolder));
     }
 
     public static IDatabase loadDatabase(String absoluteFolder) {
