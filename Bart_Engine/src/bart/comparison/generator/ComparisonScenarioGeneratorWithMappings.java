@@ -9,9 +9,11 @@ import bart.utility.BartUtility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.OperatorFactory;
@@ -149,11 +151,14 @@ public class ComparisonScenarioGeneratorWithMappings {
             logger.debug("Modified tuple: {}", modifiedTuple);
             logger.debug("Target tuple: {}", targetTuple);
             logger.debug("Is left: {}", isLeft);
-            List<TupleMatch> matches = verifyMatches(modifiedTuple, targetTuples);
+//            List<TupleMatch> matches = verifyMatches(modifiedTuple, targetTuples);
+            List<TupleMatch> matches = verifyMatchesWithTimer(modifiedTuple, targetTuples, 2);
             if (matches.isEmpty()) {
                 logger.debug("Is a non-match");
                 // check if there were previous matches
-                List<TupleMatch> previousMatches = verifyMatches(originalTuple, targetTuples);
+//                List<TupleMatch> previousMatches = verifyMatches(originalTuple, targetTuples);
+                List<TupleMatch> previousMatches = verifyMatchesParallel(originalTuple, targetTuples);
+//                List<TupleMatch> previousMatches = getPreviousMatches(originalTuple, tupleMapping);
                 if (!previousMatches.isEmpty()) {
                     for (TupleMatch match : previousMatches) {
                         TupleWithTable leftTuple = match.getLeftTuple();
@@ -290,7 +295,8 @@ public class ComparisonScenarioGeneratorWithMappings {
             TupleWithTable redundantTuple = redundantTuples.get(i);
             logger.debug("Original Tuple: {}", originalTuple);
             logger.debug("Reduntant Tuple: {}", redundantTuple);
-            List<TupleMatch> verifyMatches = verifyMatches(redundantTuple, otherTuples);
+//            List<TupleMatch> verifyMatches = verifyMatches(redundantTuple, otherTuples);
+            List<TupleMatch> verifyMatches = verifyMatchesRedundant(redundantTuple, originalTuple, tupleMapping, isLeft);
             if (!verifyMatches.isEmpty()) {
                 logger.debug("There are matches");
                 for (TupleMatch match : verifyMatches) {
@@ -348,17 +354,25 @@ public class ComparisonScenarioGeneratorWithMappings {
                 newTuple.setOidNested(newOID);
                 TupleWithTable newTupleWithTable = new TupleWithTable(tableName, newTuple);
                 logger.debug("Generated Random Tuple: {}", newTupleWithTable);
-                List<TupleWithTable> tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
                 List<TupleWithTable> tuplesInOtherDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(otherDB);
-                if (verifyMatches(newTupleWithTable, tuplesInOtherDB).isEmpty()) {
-                    if (verifyMatches(newTupleWithTable, tuplesInDB).isEmpty()) {
-                        logger.debug("Add Random Tuple to DB: {}", newTuple);
-                        nonMatchingTuples.add(newTupleWithTable);
-                        insertTupleOperator.execute(table, newTuple, null, thisDB);
-                        logger.debug("Tuple Mappings: \n{}", tupleMapping);
-                        logger.debug("Database: {}", thisDB);
-                    }
+                List<TupleWithTable> tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
+                if (verifyMatchesWithTimer(newTupleWithTable, tuplesInOtherDB, 1).isEmpty()
+                        && verifyMatchesWithTimer(newTupleWithTable, tuplesInDB, 1).isEmpty()) {
+                    logger.debug("Add Random Tuple to DB: {}", newTuple);
+                    nonMatchingTuples.add(newTupleWithTable);
+                    insertTupleOperator.execute(table, newTuple, null, thisDB);
+                    logger.debug("Tuple Mappings: \n{}", tupleMapping);
+                    logger.debug("Database: {}", thisDB);
                 }
+//                if (verifyMatches(newTupleWithTable, tuplesInOtherDB).isEmpty()) {
+//                    if (verifyMatches(newTupleWithTable, tuplesInDB).isEmpty()) {
+//                        logger.debug("Add Random Tuple to DB: {}", newTuple);
+//                        nonMatchingTuples.add(newTupleWithTable);
+//                        insertTupleOperator.execute(table, newTuple, null, thisDB);
+//                        logger.debug("Tuple Mappings: \n{}", tupleMapping);
+//                        logger.debug("Database: {}", thisDB);
+//                    }
+//                }
             }
         }
     }
@@ -480,6 +494,98 @@ public class ComparisonScenarioGeneratorWithMappings {
             }
         }
         return true;
+    }
+
+    private List<TupleMatch> getPreviousMatches(TupleWithTable originalTuple, TupleMapping tupleMapping) {
+        long start = System.currentTimeMillis();
+        List<TupleMatch> tupleMatches = new ArrayList<>();
+        Set<TupleWithTable> tupleSet = tupleMapping.getTupleMapping().get(originalTuple);
+        if (tupleSet != null && !tupleSet.isEmpty()) {
+            for (TupleWithTable otherTuple : tupleSet) {
+                TupleMatch match = new TupleMatch(originalTuple, otherTuple, null); // we don't need valueMapping
+                tupleMatches.add(match);
+            }
+        }
+        long end = System.currentTimeMillis();
+        logger.debug("getPreviousMatches: {}", (end - start));
+        return tupleMatches;
+    }
+
+    private List<TupleMatch> verifyMatchesParallel(TupleWithTable tuple, List<TupleWithTable> otherTuples) {
+        List<TupleMatch> matches = Collections.synchronizedList(new ArrayList<TupleMatch>());
+        long start = System.currentTimeMillis();
+        CheckTupleMatch tupleMatch = new CheckTupleMatch();
+        otherTuples.stream().parallel().forEach(otherTuple -> {
+            TupleMatch checkMatch = tupleMatch.checkMatch(tuple, otherTuple);
+            if (checkMatch != null) {
+                checkMatch.getLeftTuple().setIsForGeneration(true);
+                checkMatch.getRightTuple().setIsForGeneration(true);
+                matches.add(checkMatch);
+            }
+        });
+        long end = System.currentTimeMillis();
+//        logger.info("Time Matches in parallel: {}", (end - start));
+        return matches;
+    }
+
+    private List<TupleMatch> verifyMatchesWithTimer(TupleWithTable tuple, List<TupleWithTable> otherTuples, Integer limit) {
+        long start = System.currentTimeMillis();
+        long desiredEnd = start + 1000;
+        CheckTupleMatch tupleMatch = new CheckTupleMatch();
+        List<TupleMatch> matches = new ArrayList<>();
+        for (TupleWithTable nonMatchingTuple : otherTuples) {
+            if (System.currentTimeMillis() >= desiredEnd) {
+                matches = null;
+                break;
+            }
+            TupleMatch checkMatch = tupleMatch.checkMatch(tuple, nonMatchingTuple);
+            if (checkMatch != null) {
+                checkMatch.getLeftTuple().setIsForGeneration(true);
+                checkMatch.getRightTuple().setIsForGeneration(true);
+                matches.add(checkMatch);
+                if (limit != null && matches.size() >= limit) {
+                    long end = System.currentTimeMillis();
+//                    logger.debug("Time verifyMatchesWithTimer (return): {}", (end - start));
+                    return matches; // we don't need all the matches, but we need only to know if there are more than one
+                }
+            }
+        }
+        if (matches == null) {
+            return verifyMatchesParallel(tuple, otherTuples);
+        }
+        long end = System.currentTimeMillis();
+//        logger.debug("Time verifyMatchesWithTimert: {}", (end - start));
+        return matches;
+    }
+
+    private List<TupleMatch> verifyMatchesRedundant(TupleWithTable redundantTuple, TupleWithTable originalTuple, TupleMapping tupleMapping, boolean isLeft) {
+        long start = System.currentTimeMillis();
+        List<TupleMatch> tupleMatches = new ArrayList<>();
+        if (isLeft) {
+            Set<TupleWithTable> tupleSet = tupleMapping.getTupleMapping().get(originalTuple);
+            if (tupleSet != null && !tupleSet.isEmpty()) {
+                for (TupleWithTable otherTuple : tupleSet) {
+                    TupleMatch match = new TupleMatch(redundantTuple, otherTuple, null); // we don't need valueMapping
+                    tupleMatches.add(match);
+                }
+            }
+        } else {
+            Set<TupleWithTable> leftTuplesInMatch = tupleMapping.getTupleMapping().keySet();
+            Set<TupleWithTable> newKeys = new HashSet<>();
+            for (TupleWithTable key : leftTuplesInMatch) {
+                Set<TupleWithTable> tupleSet = tupleMapping.getTupleMapping().get(key);
+                if (tupleSet.contains(originalTuple)) {
+                    newKeys.add(key);
+                }
+            }
+            for (TupleWithTable newKey : newKeys) {
+                TupleMatch match = new TupleMatch(redundantTuple, newKey, null); // we don't need valueMapping
+                tupleMatches.add(match);
+            }
+        }
+        long end = System.currentTimeMillis();
+        logger.debug("Time verifyMatchesRedundant (ms): {}", (end - start));
+        return tupleMatches;
     }
 
 }

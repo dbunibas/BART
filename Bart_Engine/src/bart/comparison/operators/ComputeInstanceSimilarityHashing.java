@@ -37,14 +37,23 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
     private final CheckTupleMatchCompatibility compatibilityChecker = new CheckTupleMatchCompatibility();
     private final FindCompatibleTuples compatibleTupleFinder = new FindCompatibleTuples();
     private final ComputeScore scoreCalculator = new ComputeScore();
+    private boolean isForGeneration = false;
 //    private final FindNonMatchingTuples nonMatchingTuplesFinder = new FindNonMatchingTuples();
 
     @Override
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
         InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
         long start = System.currentTimeMillis();
-        List<TupleWithTable> leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
-        List<TupleWithTable> rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb);
+        List<TupleWithTable> leftTuples;
+        List<TupleWithTable> rightTuples;
+        if (isForGeneration) {
+            leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDb);
+            rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDb);
+        } else {
+            leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
+            rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb); 
+        }
+        
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);
         SignatureMapCollection leftSignatureMapCollection = signatureGenerator.generateIndexForTuples(leftTuples);
         if (logger.isDebugEnabled()) logger.debug("Left Signature Map Collection:\n" + leftSignatureMapCollection);
@@ -63,6 +72,10 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
         return instanceMatch;
     }
 
+    public void setIsForGeneration(boolean isForGeneration) {
+        this.isForGeneration = isForGeneration;
+    }
+    
     private void findMapping(TupleMapping tupleMapping, SignatureMapCollection srcSignatureMap, List<TupleWithTable> destTuples,
             List<TupleWithTable> extraDestTuples, List<TupleWithTable> extraSrcTuples, boolean maintainSrcTuples) {
         long start = System.currentTimeMillis();

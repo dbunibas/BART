@@ -445,6 +445,30 @@
         <fail if="test.failed">
             Test failed!
         </fail>
+    </target>
+    
+    <target name="test-generation" depends="-prepare-test, build" description="run tests">
+        <junit haltonfailure="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="true"
+               showoutput="true"
+               maxmemory="${junit.maxmemory}">
+            <assertions>
+                <enable/>
+            </assertions>
+            <classpath refid="test.classpath" />
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.build.dir}">
+                    <include name="**/TestComparisonScenarioGeneratorBigInstances.class" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+        </junit>
+        <fail if="test.failed">
+            Test failed!
+        </fail>
     </target>  
     
     <target name="test-hashing" depends="-prepare-test, build" description="run tests">

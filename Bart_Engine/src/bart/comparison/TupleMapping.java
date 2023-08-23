@@ -34,29 +34,67 @@ public class TupleMapping {
             this.tupleMapping.put(tuple, tupleSet);
         }
         tupleSet.add(destinationTuple);
+        if (enableReverse) {
+            Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(destinationTuple);
+            if (tupleSetReverse == null) {
+                tupleSetReverse = new HashSet<TupleWithTable>();
+                this.reverseTupleMapping.put(destinationTuple, tupleSetReverse);
+            }
+            tupleSetReverse.add(tuple);
+        }
     }
 
     public void removeKeyTupleMapping(TupleWithTable source) {
+        if (enableReverse) {
+            Set<TupleWithTable> keysForReverse = this.tupleMapping.get(source);
+            if (keysForReverse != null) {
+                for (TupleWithTable keyReverse : keysForReverse) {
+                    Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(keyReverse);
+                    if (tupleSetReverse != null) {
+                        tupleSetReverse.remove(source);
+                        if (tupleSetReverse.isEmpty()) {
+                            this.reverseTupleMapping.remove(keyReverse);
+                        }
+                    }
+                }
+            }
+        }
         logger.debug("Call Remove Tuple mapping with key: {}", source);
         this.tupleMapping.remove(source);
     }
 
     public void removeMappingForKey(TupleWithTable tuple, boolean isLeft) {
         if (isLeft) {
-            this.tupleMapping.remove(tuple);
+//            this.tupleMapping.remove(tuple);
+            this.removeKeyTupleMapping(tuple);
         } else {
-            Set<TupleWithTable> keysToDrop = new HashSet<>();
-            for (TupleWithTable key : this.tupleMapping.keySet()) {
-                Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
-                if (tupleSet.contains(tuple)) {
-                    tupleSet.remove(tuple);
+            if (!enableReverse) {
+                Set<TupleWithTable> keysToDrop = new HashSet<>();
+                for (TupleWithTable key : this.tupleMapping.keySet()) {
+                    Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
+                    if (tupleSet.contains(tuple)) {
+                        tupleSet.remove(tuple);
+                    }
+                    if (tupleSet.isEmpty()) {
+                        keysToDrop.add(key);
+                    }
                 }
-                if (tupleSet.isEmpty()) {
-                    keysToDrop.add(key);
+                for (TupleWithTable key : keysToDrop) {
+                    this.tupleMapping.remove(key);
                 }
-            }
-            for (TupleWithTable key : keysToDrop) {
-                this.tupleMapping.remove(key);
+            } else {
+                Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.remove(tuple);
+                if (tupleSetReverse != null) {
+                    for (TupleWithTable keyForMapping : tupleSetReverse) {
+                        Set<TupleWithTable> tupleSet = this.tupleMapping.get(keyForMapping);
+                        if (tupleSet != null) {
+                            tupleSet.remove(tuple);
+                            if (tupleSet.isEmpty()) {
+                                this.tupleMapping.remove(keyForMapping);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -70,11 +108,29 @@ public class TupleMapping {
         if (tupleSet != null && tupleSet.isEmpty()) {
             this.tupleMapping.remove(key);
         }
+        if (enableReverse) {
+            Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(target);
+            if (tupleSetReverse != null) {
+                tupleSetReverse.remove(key);
+                if (tupleSetReverse.isEmpty()) {
+                    this.reverseTupleMapping.remove(target);
+                }
+            }
+        }
     }
 
     public void updateKeyTupleMapping(TupleWithTable oldKey, TupleWithTable newKey) {
         logger.debug("Replace Old Key {} with new key {}", oldKey, newKey);
         Set<TupleWithTable> tupleSet = this.tupleMapping.get(oldKey);
+        if (enableReverse) {
+            if (tupleSet != null) {
+                for (TupleWithTable keyReverse : tupleSet) {
+                    Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(keyReverse);
+                    tupleSetReverse.remove(oldKey);
+                    tupleSetReverse.add(newKey);
+                }
+            }
+        }
         if (tupleSet != null) {
             logger.debug("TupleSet for oldKey: {}", tupleSet);
             this.tupleMapping.put(newKey, tupleSet);
@@ -83,8 +139,18 @@ public class TupleMapping {
     }
 
     public void updateTupleSetTupleMapping(TupleWithTable key, TupleWithTable oldTarget, TupleWithTable newTarget) {
+        // We assume that there is only one match for key
         logger.debug("Replace mapping in target. Key: {}", key);
         logger.debug("Change target {} to new target {}", oldTarget, newTarget);
+        if (enableReverse) {
+            this.reverseTupleMapping.remove(oldTarget);
+            Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(newTarget);
+            if (tupleSetReverse == null) {
+                tupleSetReverse = new HashSet<TupleWithTable>();
+                this.reverseTupleMapping.put(newTarget, tupleSetReverse);
+            }
+            tupleSetReverse.add(key);
+        }
         Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
         if (tupleSet != null) {
             logger.debug("Replace old target {} with the new {}", oldTarget, newTarget);
