@@ -21,6 +21,7 @@ import speedy.model.database.mainmemory.datasource.nodes.SetNode;
 import speedy.model.database.mainmemory.datasource.nodes.TupleNode;
 import bart.BartConstants;
 import bart.comparison.ComparisonConfiguration;
+import static bart.comparison.ComparisonConfiguration.getInstance;
 import bart.comparison.ComparisonStats;
 import bart.model.EGTask;
 import bart.model.errorgenerator.CellChanges;
@@ -44,11 +45,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import speedy.model.database.mainmemory.MainMemoryDB;
+import speedy.model.database.operators.dbms.IValueEncoder;
 import speedy.persistence.DAOMainMemoryDatabase;
+import speedy.persistence.encoding.DictionaryEncoder;
+import speedy.persistence.encoding.DummyEncoder;
 import speedy.utility.comparator.StringComparator;
 
 public class BartUtility {
-    
+
     private final static Logger logger = LoggerFactory.getLogger(BartUtility.class);
 
     /////////////////////////////////////   COLLECTIONS METHODS   /////////////////////////////////////
@@ -376,7 +380,7 @@ public class BartUtility {
             cellChanges.addChange(change);
         }
     }
-    
+
     public static IDatabase loadMainMemoryDatabase(String absoluteFolder) {
         DAOMainMemoryDatabase dao = new DAOMainMemoryDatabase();
         long start = System.currentTimeMillis();
@@ -385,5 +389,13 @@ public class BartUtility {
         if (logger.isDebugEnabled()) logger.debug(database.printInstances(true));
         ComparisonStats.getInstance().addStat(ComparisonStats.LOAD_INSTANCE_TIME, System.currentTimeMillis() - start);
         return database;
+    }
+
+    public static IValueEncoder getValueEncoder() {
+        ComparisonConfiguration configuration = getInstance();
+        if (!configuration.isUseDictionaryEncoding()) {
+            return new DummyEncoder();
+        }
+        return new DictionaryEncoder(configuration.getScenario());
     }
 }

@@ -22,6 +22,7 @@ import bart.comparison.TupleMatch;
 import bart.comparison.TupleMatches;
 import bart.comparison.TupleSignature;
 import bart.comparison.ValueMapping;
+import static bart.utility.BartUtility.getValueEncoder;
 import speedy.model.database.AttributeRef;
 import speedy.model.database.IDatabase;
 import speedy.model.database.IValue;
@@ -42,18 +43,18 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
 
     @Override
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
-        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
+        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb, getValueEncoder());
+        instanceMatch.getEncoder().prepareForEncoding();
         long start = System.currentTimeMillis();
         List<TupleWithTable> leftTuples;
         List<TupleWithTable> rightTuples;
         if (isForGeneration) {
-            leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDb);
-            rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDb);
+            leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDb, instanceMatch.getEncoder());
+            rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDb, instanceMatch.getEncoder());
         } else {
-            leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
-            rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb); 
+            leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb, instanceMatch.getEncoder());
+            rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb, instanceMatch.getEncoder()); 
         }
-        
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);
         SignatureMapCollection leftSignatureMapCollection = signatureGenerator.generateIndexForTuples(leftTuples);
         if (logger.isDebugEnabled()) logger.debug("Left Signature Map Collection:\n" + leftSignatureMapCollection);

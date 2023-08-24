@@ -12,6 +12,7 @@ import bart.comparison.TupleMatch;
 import bart.comparison.TupleMatches;
 import bart.comparison.TupleSignature;
 import bart.comparison.ValueMappings;
+import static bart.utility.BartUtility.getValueEncoder;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxCellRenderer;
@@ -58,9 +59,10 @@ public class ComputeInstanceSimilarityBlock implements IComputeInstanceSimilarit
             throw new IllegalArgumentException("Only fully-injective mappings are supported");
         }
         long start = System.currentTimeMillis();
-        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
-        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
-        List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb);
+        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb, getValueEncoder());
+        instanceMatch.getEncoder().prepareForEncoding();
+        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb, instanceMatch.getEncoder());
+        List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb, instanceMatch.getEncoder());
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);
         UndirectedGraph<TupleWithTable, DefaultEdge> instancesGraph = new SimpleGraph<TupleWithTable, DefaultEdge>(DefaultEdge.class);
         start = System.currentTimeMillis();

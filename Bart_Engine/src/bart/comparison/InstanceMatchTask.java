@@ -1,6 +1,7 @@
 package bart.comparison;
 
 import speedy.model.database.IDatabase;
+import speedy.model.database.operators.dbms.IValueEncoder;
 
 public class InstanceMatchTask {
 
@@ -9,11 +10,13 @@ public class InstanceMatchTask {
     private final IDatabase targetDb;
     private TupleMapping tupleMapping = new TupleMapping();
     private Boolean isomorphism;
+    private IValueEncoder encoder;
 
-    public InstanceMatchTask(String strategy, IDatabase sourceDb, IDatabase targetDb) {
+    public InstanceMatchTask(String strategy, IDatabase sourceDb, IDatabase targetDb, IValueEncoder encoder) {
         this.strategy = strategy;
         this.sourceDb = sourceDb;
         this.targetDb = targetDb;
+        this.encoder = encoder;
     }
 
     public String getStrategy() {
@@ -48,6 +51,14 @@ public class InstanceMatchTask {
         this.isomorphism = isomorphism;
     }
 
+    public IValueEncoder getEncoder() {
+        return encoder;
+    }
+
+    public void setEncoder(IValueEncoder encoder) {
+        this.encoder = encoder;
+    }
+    
     @Override
     public String toString() {
         return strategy + " - " + (isomorphism != null && isomorphism ? "(isomorphism) \n" : "")

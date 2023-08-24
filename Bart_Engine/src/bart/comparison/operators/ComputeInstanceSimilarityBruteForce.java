@@ -9,6 +9,7 @@ import bart.comparison.TupleMapping;
 import bart.comparison.InstanceMatchTask;
 import bart.comparison.TupleMatch;
 import bart.comparison.TupleMatches;
+import static bart.utility.BartUtility.getValueEncoder;
 import speedy.model.database.IDatabase;
 import speedy.model.database.TupleWithTable;
 import speedy.utility.SpeedyUtility;
@@ -22,9 +23,10 @@ public class ComputeInstanceSimilarityBruteForce implements IComputeInstanceSimi
     
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
         long start = System.currentTimeMillis();
-        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
-        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
-        List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb);
+        InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb, getValueEncoder());
+        instanceMatch.getEncoder().prepareForEncoding();
+        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb, instanceMatch.getEncoder());
+        List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb, instanceMatch.getEncoder());
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);
         TupleMatches tupleMatches = findTupleMatches(sourceTuples, destinationTuples);
         ComparisonUtility.sortTupleMatches(tupleMatches);
