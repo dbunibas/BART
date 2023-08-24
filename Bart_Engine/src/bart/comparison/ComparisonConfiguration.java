@@ -26,6 +26,7 @@ public class ComparisonConfiguration implements Cloneable {
     private double bestScoreThreshold = 99;
     private boolean convertSkolemInHash = false;
     private boolean forceExaustiveSearch = false;
+    private boolean useDictionaryEncoding = false;
 
     public static boolean isTwoWayValueMapping() {
         return getInstance().twoWayValueMapping;
@@ -95,6 +96,14 @@ public class ComparisonConfiguration implements Cloneable {
         return getInstance().forceExaustiveSearch;
     }
 
+    public static boolean isUseDictionaryEncoding() {
+        return getInstance().useDictionaryEncoding;
+    }
+
+    public static void setUseDictionaryEncoding(boolean useDictionaryEncoding) {
+        getInstance().useDictionaryEncoding = useDictionaryEncoding;
+    }
+
     public ComparisonConfiguration clone() {
         try {
             return (ComparisonConfiguration) super.clone();
@@ -118,6 +127,7 @@ public class ComparisonConfiguration implements Cloneable {
         sb.append(" twoWayValueMapping      : ").append(twoWayValueMapping).append("\n");
         sb.append(" stopIfNonMatchingTuples : ").append(stopIfNonMatchingTuples).append("\n");
         sb.append(" convertSkolemInHash     : ").append(convertSkolemInHash).append("\n");
+        sb.append(" useDictionaryEncoding     : ").append(useDictionaryEncoding).append("\n");
         sb.append("---------------------------\n");
         return sb.toString();
     }

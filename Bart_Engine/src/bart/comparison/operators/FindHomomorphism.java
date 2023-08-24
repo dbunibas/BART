@@ -16,6 +16,7 @@ import bart.comparison.InstanceMatchTask;
 import bart.comparison.TupleMatch;
 import bart.comparison.TupleMatches;
 import bart.comparison.ValueMapping;
+import static bart.utility.BartUtility.getValueEncoder;
 import speedy.model.database.ConstantValue;
 import speedy.model.database.IDatabase;
 import speedy.model.database.IValue;
@@ -29,7 +30,7 @@ public class FindHomomorphism {
     private final static Logger logger = LoggerFactory.getLogger(FindHomomorphism.class);
 
     public InstanceMatchTask findHomomorphism(IDatabase sourceDb, IDatabase destinationDb) {
-        InstanceMatchTask result = new InstanceMatchTask(this.getClass().getSimpleName(), sourceDb, destinationDb);
+        InstanceMatchTask result = new InstanceMatchTask(this.getClass().getSimpleName(), sourceDb, destinationDb, getValueEncoder());
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabase(sourceDb);
         List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(destinationDb);
         TupleMatches tupleMatches = findTupleMatches(sourceTuples, destinationTuples);

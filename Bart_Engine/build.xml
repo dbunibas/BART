@@ -448,6 +448,7 @@
     </target>
     
     <target name="test-generation" depends="-prepare-test, build" description="run tests">
+        <echo>Executing test with max-memory ${junit.maxmemory}</echo>
         <junit haltonfailure="false"
                errorProperty="test.failed"
                failureProperty="test.failed"
