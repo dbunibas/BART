@@ -143,13 +143,21 @@ public class TupleMapping {
         logger.debug("Replace mapping in target. Key: {}", key);
         logger.debug("Change target {} to new target {}", oldTarget, newTarget);
         if (enableReverse) {
-            this.reverseTupleMapping.remove(oldTarget);
+            Set<TupleWithTable> toRemoveFromMapping = this.reverseTupleMapping.remove(oldTarget);
+            logger.debug("Old references: {}", toRemoveFromMapping);
+            if (toRemoveFromMapping != null) {
+                for (TupleWithTable tupleWithTable : toRemoveFromMapping) {
+                    this.tupleMapping.remove(tupleWithTable);
+                }
+            }
             Set<TupleWithTable> tupleSetReverse = this.reverseTupleMapping.get(newTarget);
             if (tupleSetReverse == null) {
                 tupleSetReverse = new HashSet<TupleWithTable>();
                 this.reverseTupleMapping.put(newTarget, tupleSetReverse);
             }
             tupleSetReverse.add(key);
+        } else {
+            // TODO: search on tupleMapping and remove from tupleSet all the oldTarget references
         }
         Set<TupleWithTable> tupleSet = this.tupleMapping.get(key);
         if (tupleSet != null) {

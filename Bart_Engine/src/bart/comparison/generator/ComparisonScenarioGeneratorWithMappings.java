@@ -159,6 +159,7 @@ public class ComparisonScenarioGeneratorWithMappings {
 //                List<TupleMatch> previousMatches = verifyMatches(originalTuple, targetTuples);
                 List<TupleMatch> previousMatches = verifyMatchesParallel(originalTuple, targetTuples);
 //                List<TupleMatch> previousMatches = getPreviousMatches(originalTuple, tupleMapping);
+                logger.debug("Previous Matches: {}", previousMatches.size());
                 if (!previousMatches.isEmpty()) {
                     for (TupleMatch match : previousMatches) {
                         TupleWithTable leftTuple = match.getLeftTuple();
@@ -177,8 +178,12 @@ public class ComparisonScenarioGeneratorWithMappings {
                         }
                     }
                     nonMatchingTuples.add(modifiedTuple);
-                    updateTuple(originalTuple, modifiedTuple, db);
+                } else {
+                    nonMatchingTuples.remove(originalTuple);
+                    nonMatchingTuples.add(modifiedTuple);
                 }
+                logger.debug("Update orig: {} with modif: {}", originalTuple, modifiedTuple);
+                updateTuple(originalTuple, modifiedTuple, db);
             } else {
                 if (matches.size() == 1) {
                     logger.debug("Is a match");
@@ -213,8 +218,11 @@ public class ComparisonScenarioGeneratorWithMappings {
                         if (nonMatchingTuples.contains(originalTuple)) {
                             nonMatchingTuples.remove(originalTuple);
                         }
+                        logger.debug("Remove old refence for {} in left {}", originalTuple, isLeft);
+                        tupleMapping.removeMappingForKey(originalTuple, isLeft);
                     }
                 } else {
+                    logger.debug("Too many matches, ignore update");
                     // ignore update, non functional and non injective are managed with random and redundant tuples
                 }
             }
@@ -353,7 +361,7 @@ public class ComparisonScenarioGeneratorWithMappings {
                 }
                 newTuple.setOidNested(newOID);
                 TupleWithTable newTupleWithTable = new TupleWithTable(tableName, newTuple);
-                logger.debug("Generated Random Tuple: {}", newTupleWithTable);
+                logger.debug("Candidate Generated Random Tuple: {}", newTupleWithTable);
                 List<TupleWithTable> tuplesInOtherDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(otherDB);
                 List<TupleWithTable> tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
                 if (verifyMatchesWithTimer(newTupleWithTable, tuplesInOtherDB, 1).isEmpty()

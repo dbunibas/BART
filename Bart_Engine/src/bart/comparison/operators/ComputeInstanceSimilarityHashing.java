@@ -38,8 +38,16 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
     private final FindCompatibleTuples compatibleTupleFinder = new FindCompatibleTuples();
     private final ComputeScore scoreCalculator = new ComputeScore();
     private boolean isForGeneration = false;
+    private boolean useBruteForce = true;
 //    private final FindNonMatchingTuples nonMatchingTuplesFinder = new FindNonMatchingTuples();
 
+    public ComputeInstanceSimilarityHashing() {
+    }
+    
+    public ComputeInstanceSimilarityHashing(boolean useBruteForce) {
+        this.useBruteForce = useBruteForce;
+    }
+    
     @Override
     public InstanceMatchTask compare(IDatabase leftDb, IDatabase rightDb) {
         InstanceMatchTask instanceMatch = new InstanceMatchTask(this.getClass().getSimpleName(), leftDb, rightDb);
@@ -53,7 +61,7 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
             leftTuples = SpeedyUtility.extractAllTuplesFromDatabase(leftDb);
             rightTuples = SpeedyUtility.extractAllTuplesFromDatabase(rightDb); 
         }
-        
+
         ComparisonStats.getInstance().addStat(ComparisonStats.PROCESS_INSTANCE_TIME, System.currentTimeMillis() - start);
         SignatureMapCollection leftSignatureMapCollection = signatureGenerator.generateIndexForTuples(leftTuples);
         if (logger.isDebugEnabled()) logger.debug("Left Signature Map Collection:\n" + leftSignatureMapCollection);
@@ -74,6 +82,10 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
 
     public void setIsForGeneration(boolean isForGeneration) {
         this.isForGeneration = isForGeneration;
+    }
+
+    public void setUseBruteForce(boolean useBruteForce) {
+        this.useBruteForce = useBruteForce;
     }
     
     private void findMapping(TupleMapping tupleMapping, SignatureMapCollection srcSignatureMap, List<TupleWithTable> destTuples,
@@ -247,15 +259,17 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
             if (logger.isDebugEnabled()) logger.debug("Empty tuples: Left " + leftTuples.size() + " - Right " + rightTuples.size());
             return;
         }
-        long start = System.currentTimeMillis();
-        if (logger.isDebugEnabled()) logger.debug("Finding remaining matches\n* Left tuples: \n" + SpeedyUtility.printCollection(leftTuples, "\t") + "\n* Right tuples: \n" + SpeedyUtility.printCollection(rightTuples, "\t"));
-        if (logger.isDebugEnabled()) logger.debug("Current Mapping: \n" + ltrMapping);
-        CompatibilityMap compatibilityMap = compatibleTupleFinder.find(leftTuples, rightTuples);
-        if (logger.isDebugEnabled()) logger.debug("Compatibility map:\n" + compatibilityMap);
-        TupleMatches remainingTupleMatches = findTupleMatches(rightTuples, compatibilityMap);
-        if (logger.isDebugEnabled()) logger.debug("Matches btw Remaining Tuples:\n" + remainingTupleMatches);
-        addRemainingTupleMatches(rightTuples, remainingTupleMatches, ltrMapping);
-        ComparisonStats.getInstance().addStat(ComparisonStats.FIND_REMAINING_MATCHES_TIME, System.currentTimeMillis() - start);
+        if (useBruteForce) {
+            long start = System.currentTimeMillis();
+            if (logger.isDebugEnabled()) logger.debug("Finding remaining matches\n* Left tuples: \n" + SpeedyUtility.printCollection(leftTuples, "\t") + "\n* Right tuples: \n" + SpeedyUtility.printCollection(rightTuples, "\t"));
+            if (logger.isDebugEnabled()) logger.debug("Current Mapping: \n" + ltrMapping);
+            CompatibilityMap compatibilityMap = compatibleTupleFinder.find(leftTuples, rightTuples);
+            if (logger.isDebugEnabled()) logger.debug("Compatibility map:\n" + compatibilityMap);
+            TupleMatches remainingTupleMatches = findTupleMatches(rightTuples, compatibilityMap);
+            if (logger.isDebugEnabled()) logger.debug("Matches btw Remaining Tuples:\n" + remainingTupleMatches);
+            addRemainingTupleMatches(rightTuples, remainingTupleMatches, ltrMapping);
+            ComparisonStats.getInstance().addStat(ComparisonStats.FIND_REMAINING_MATCHES_TIME, System.currentTimeMillis() - start);
+        }
     }
 
     private TupleMatches findTupleMatches(List<TupleWithTable> rightDB, CompatibilityMap compatibilityMap) {

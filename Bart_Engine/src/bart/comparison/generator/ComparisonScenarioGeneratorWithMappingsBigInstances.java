@@ -122,7 +122,9 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
 //            logger.info(tuple.getTuple().toString());
 //        }
         tupleMapping.updateValueMappings();
-        checkAndCleanMatches(leftDB, rightDB, leftTuples, rightTuples, tupleMapping);
+        logger.info("Computing Greedy");
+        InstanceMatchTask greedyResult = similarityChecker.compare(leftDB, rightDB);
+        checkAndCleanMatches(leftDB, rightDB, leftTuples, rightTuples, tupleMapping, greedyResult);
 
         // TODO: check non matching tuples but it should be not necessary
         InstancePair instancePair = new InstancePair(rightDB, leftDB);
@@ -602,10 +604,9 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         return matches;
     }
 
-    private void checkAndCleanMatches(IDatabase leftDB, IDatabase rightDB, List<TupleWithTable> leftTuples, List<TupleWithTable> rightTuples, TupleMapping tupleMappingGenerated) {
+    private void checkAndCleanMatches(IDatabase leftDB, IDatabase rightDB, List<TupleWithTable> leftTuples, List<TupleWithTable> rightTuples, TupleMapping tupleMappingGenerated, InstanceMatchTask result) {
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(leftTuples, rightTuples, tupleMappingGenerated);
-        InstanceMatchTask result = similarityChecker.compare(leftDB, rightDB);
         Double scoreGreedy = result.getTupleMapping().getScore();
         if (scoreGreedy == null) {
             scoreGreedy = 0.0;
