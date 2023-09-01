@@ -37,6 +37,7 @@
             <pathelement location="${lib.dir}/jackson-databind-${jackson.ver}.jar" />
             <pathelement location="${lib.dir}/jackson-dataformat-csv-${jackson.ver}.jar" />
             <pathelement location="${lib.dir}/guava-${guava.ver}.jar" />
+            <pathelement location="${lib.dir}/caffeine-${caffeine.ver}.jar" />
             <!-- JDBC Drivers -->
             <pathelement location="${lib.dir}/postgresql-${postgresql-jdbc.ver}.jar" />
             <pathelement location="${lib.dir}/h2-1.4.182.jar" />
