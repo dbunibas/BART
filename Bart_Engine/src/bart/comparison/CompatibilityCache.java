@@ -1,5 +1,7 @@
 package bart.comparison;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

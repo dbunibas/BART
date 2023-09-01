@@ -20,8 +20,8 @@ public class TupleMapping {
     private final Map<TupleWithTable, Set<TupleWithTable>> reverseTupleMapping = new HashMap<TupleWithTable, Set<TupleWithTable>>();
 
     private ValueMappings valueMappings = new ValueMappings();
-    private List<TupleWithTable> leftNonMatchingTuples = new ArrayList<TupleWithTable>();
-    private List<TupleWithTable> rightNonMatchingTuples = new ArrayList<TupleWithTable>();
+    private Set<TupleWithTable> leftNonMatchingTuples = new HashSet<TupleWithTable>();
+    private Set<TupleWithTable> rightNonMatchingTuples = new HashSet<TupleWithTable>();
     private Double score;
     private boolean enableReverse = false;
 
@@ -283,19 +283,19 @@ public class TupleMapping {
         this.valueMappings.getRightToLeftValueMapping().putValueMapping(sourceValue, destinationValue);
     }
 
-    public List<TupleWithTable> getLeftNonMatchingTuples() {
+    public Set<TupleWithTable> getLeftNonMatchingTuples() {
         return leftNonMatchingTuples;
     }
 
-    public void setLeftNonMatchingTuples(List<TupleWithTable> leftNonMatchingTuples) {
+    public void setLeftNonMatchingTuples(Set<TupleWithTable> leftNonMatchingTuples) {
         this.leftNonMatchingTuples = leftNonMatchingTuples;
     }
 
-    public List<TupleWithTable> getRightNonMatchingTuples() {
+    public Set<TupleWithTable> getRightNonMatchingTuples() {
         return rightNonMatchingTuples;
     }
 
-    public void setRightNonMatchingTuples(List<TupleWithTable> rightNonMatchingTuples) {
+    public void setRightNonMatchingTuples(Set<TupleWithTable> rightNonMatchingTuples) {
         this.rightNonMatchingTuples = rightNonMatchingTuples;
     }
 

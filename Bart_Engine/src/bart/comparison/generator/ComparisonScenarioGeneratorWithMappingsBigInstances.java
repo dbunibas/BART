@@ -1,9 +1,9 @@
 package bart.comparison.generator;
 
+import bart.comparison.ComparisonConfiguration;
 import bart.comparison.InstanceMatchTask;
 import bart.comparison.TupleMapping;
 import bart.comparison.TupleMatch;
-import bart.comparison.ValueMapping;
 import bart.comparison.operators.CheckTupleMatch;
 import bart.comparison.operators.ComputeInstanceSimilarityHashing;
 import bart.comparison.operators.ComputeScore;
@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
     private int newRedundantTuplesPerc = 10;
     private int newRandomTuplesPerc = 5;
     private int cellsToChangePerc = 20;
-    private ComputeInstanceSimilarityHashing similarityChecker = new ComputeInstanceSimilarityHashing();
+    private ComputeInstanceSimilarityHashing similarityChecker = new ComputeInstanceSimilarityHashing(true);
 
     public ComparisonScenarioGeneratorWithMappingsBigInstances(int newRedundantTuplesPerc, int newRandomTuplesPerc, int cellsToChangePerc, long seed) {
         this.newRedundantTuplesPerc = newRedundantTuplesPerc;
@@ -82,7 +81,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         long start = System.currentTimeMillis();
         initOperators(originalDB);
         oidGenerator.initializeOIDs(originalDB);
-        List<TupleWithTable> originalTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(originalDB);
+//        List<TupleWithTable> originalTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(originalDB);
         logger.info("Load left DB");
         Integer leftCounter = IntegerOIDGenerator.getCounter();
         IDatabase leftDB = dbManager.cloneTarget(BartUtility.loadMainMemoryDatabase(originalDBPath), "_left");
@@ -96,36 +95,44 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         TupleMapping tupleMapping = initMappings(leftTuples, rightTuples);
         logger.info("Left tuples: {}, Right Tuples: {}", leftTuples.size(), rightTuples.size());
         // fist change the cells
-        boolean changedSource = false;
-        boolean changedTarget = false;
+        boolean changed = false;
         if (changeSource && changeTarget) {
             modifyCellsSourceAndTarget(leftTuples, rightTuples, leftDB, rightDB, tupleMapping);
+            changed = true;
         } else {
             if (changeSource) {
                 modifyCellsSource(leftTuples, rightTuples, leftDB, tupleMapping);
+                changed = true;
             }
             if (changeTarget) {
                 modifyCellsTarget(leftTuples, rightTuples, rightDB, tupleMapping);
+                changed = true;
             }
         }
         IntegerOIDGenerator.setCounter(leftCounter);
         leftDB = updateDBFromCSV(leftTuples, originalDBPath);
         IntegerOIDGenerator.setCounter(rightCounter);
         rightDB = updateDBFromCSV(rightTuples, originalDBPath);
-//        logger.info("Left Tuples:");
-//        for (TupleWithTable tuple : leftTuples) {
-//            logger.info(tuple.getTuple().toString());
-//        }
-
-//        logger.info("Right Tuples:");
-//        for (TupleWithTable tuple : rightTuples) {
-//            logger.info(tuple.getTuple().toString());
-//        }
         tupleMapping.updateValueMappings();
-        logger.info("Computing Greedy");
-        InstanceMatchTask greedyResult = similarityChecker.compare(leftDB, rightDB);
-        checkAndCleanMatches(leftDB, rightDB, leftTuples, rightTuples, tupleMapping, greedyResult);
-
+        if (changed) {
+            logger.info("Computing Greedy for cleaning");
+            InstanceMatchTask greedyResult = similarityChecker.compare(leftDB, rightDB);
+            checkAndCleanMatches(leftDB, rightDB, leftTuples, rightTuples, tupleMapping, greedyResult);
+        }
+        // add redundant or random tuples
+        if (changeSource) {
+            if (!ComparisonConfiguration.isFunctional()) {
+                addRandomTuples(leftDB, rightDB, tupleMapping, true);
+                addRedundantTuples(leftDB, rightDB, tupleMapping, true);
+            }
+        }
+        if (changeTarget) {
+            if (!ComparisonConfiguration.isInjective()) {
+                addRandomTuples(rightDB, leftDB, tupleMapping, false);
+                addRedundantTuples(rightDB, leftDB, tupleMapping, false);
+            }
+        }
+        tupleMapping.updateValueMappings();
         // TODO: check non matching tuples but it should be not necessary
         InstancePair instancePair = new InstancePair(rightDB, leftDB);
         instancePair.setTupleMapping(tupleMapping);
@@ -160,58 +167,6 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         return tupleMapping;
     }
 
-    private boolean modifyCells(List<TupleWithTable> sourceTuples, List<TupleWithTable> targetTuples, TupleMapping tupleMapping, IDatabase db, boolean isLeft) {
-        if (this.cellsToChangePerc == 0) {
-            return false;
-        }
-        boolean changed = false;
-        for (int pos = 0; pos < sourceTuples.size(); pos++) {
-            List<TupleWithTable> nonMatchingTuplesComparisons = tupleMapping.getRightNonMatchingTuples();
-            List<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
-            if (!isLeft) {
-                nonMatchingTuplesComparisons = tupleMapping.getLeftNonMatchingTuples();
-                nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
-            }
-            TupleWithTable originalTuple = sourceTuples.get(pos);
-            TupleWithTable targetTuple = targetTuples.get(pos);
-            TupleWithTable modifiedTuple = modifyTuple(db, originalTuple);
-            TupleWithTable keyTupleMapping = originalTuple;
-            if (!isLeft) {
-                keyTupleMapping = targetTuple;
-            }
-            originalTuple.setIsForGeneration(true);
-            targetTuple.setIsForGeneration(true);
-            modifiedTuple.setIsForGeneration(true);
-            if (modifiedTuple.equals(originalTuple)) {
-                continue;
-            }
-            logger.debug("*** Modify cell");
-            logger.debug("OriginalTuple tuple: {}", originalTuple);
-            logger.debug("Modified tuple: {}", modifiedTuple);
-            logger.debug("Target tuple: {}", targetTuple);
-            logger.debug("Is left: {}", isLeft);
-
-        }
-        return changed;
-    }
-
-    private void updateValueMappings(TupleWithTable modifiedTuple, TupleWithTable targetTuple, TupleMapping tupleMapping) {
-        Map<IValue, IValue> valueMappingLR = new HashMap<>();
-        Map<IValue, IValue> valueMappingRL = new HashMap<>();
-        for (int i = 0; i < modifiedTuple.getTuple().getCells().size(); i++) {
-            IValue valueInCloned = modifiedTuple.getTuple().getCells().get(i).getValue();
-            IValue valueInTarget = targetTuple.getTuple().getCells().get(i).getValue();
-            if (valueInCloned instanceof NullValue) {
-                valueMappingLR.put(valueInCloned, valueInTarget);
-            }
-            if (valueInTarget instanceof NullValue) {
-                valueMappingRL.put(valueInTarget, valueInCloned);
-            }
-        }
-        updateValueMappings(tupleMapping.getValueMappings().getLeftToRightValueMapping(), valueMappingLR);
-        updateValueMappings(tupleMapping.getValueMappings().getRightToLeftValueMapping(), valueMappingRL);
-    }
-
     private TupleWithTable modifyTuple(IDatabase db, TupleWithTable originalTuple) {
         ITable table = db.getTable(originalTuple.getTable());
         TupleWithTable clonedSource = originalTuple.clone();
@@ -233,6 +188,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         if (newRedundantTuplesPerc < 0 || newRedundantTuplesPerc > 100) {
             throw new IllegalArgumentException("Redundancy percentage must be >= 0 and <= 100");
         }
+        logger.info("Add Redundant Tuples");
         long start = System.currentTimeMillis();
         List<TupleWithTable> tuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
         long end = System.currentTimeMillis();
@@ -247,11 +203,11 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         double tuplesToAddD = tuples.size() * (newRedundantTuplesPerc / 100.0);
         int tuplesToAdd = (int) Math.ceil(tuplesToAddD);
         List<TupleWithTable> tuplesToDuplicate = tuples.subList(0, tuplesToAdd);
-        logger.debug("Tuples to duplicate: {}", tuplesToDuplicate.size());
+        logger.info("Tuples to duplicate: {}", tuplesToDuplicate.size());
         List<TupleWithTable> redundantTuples = cloneTuples(tuplesToDuplicate);
 //        List<TupleWithTable> otherTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(otherDB);
         for (int i = 0; i < tuplesToDuplicate.size(); i++) {
-            List<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
+            Set<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
             if (!isLeft) {
                 nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
             }
@@ -262,6 +218,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
             logger.debug("Reduntant Tuple: {}", redundantTuple);
 //            List<TupleMatch> verifyMatches = verifyMatches(redundantTuple, otherTuples); // exhaustive search
             List<TupleMatch> verifyMatches = verifyMatchesRedundant(redundantTuple, originalTuple, tupleMapping, isLeft);
+//            start = System.currentTimeMillis();
             if (!verifyMatches.isEmpty()) {
                 logger.debug("There are matches");
                 for (TupleMatch match : verifyMatches) {
@@ -283,10 +240,11 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
                 logger.debug("There are no matches, add to non matching tuples");
                 nonMatchingTuples.add(redundantTuple);
             }
-            start = System.currentTimeMillis();
+//            logger.info("Creating tupleMatches (ms) : {}", (System.currentTimeMillis() - start));
+//            start = System.currentTimeMillis();
             insertTupleOperator.execute(thisDB.getTable(redundantTuple.getTable()), redundantTuple.getTuple(), null, thisDB);
-            end = System.currentTimeMillis();
-            logger.debug("Insert Tuple operator (ms): {}", (end - start));
+//            end = System.currentTimeMillis();
+//            logger.info("Insert Tuple operator (ms): {}", (end - start));
 //            logger.debug("Tuple Mappings: \n{}", tupleMapping);
 //            logger.debug("Database: {}", thisDB);
         }
@@ -297,14 +255,16 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
             return;
         }
         List<TupleWithTable> tuplesInOtherDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(otherDB);
-        logger.debug("*** Add Random Tuple");
+        logger.info("*** Add Random Tuple");
         for (String tableName : thisDB.getTableNames()) {
-            List<TupleWithTable> tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
+//            List<TupleWithTable> tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
             ITable table = thisDB.getTable(tableName);
             double tuplesToAddD = table.getSize() * (newRandomTuplesPerc / 100.0);
             int tuplesToAdd = (int) Math.ceil(tuplesToAddD);
+            logger.info("*** Random tuples to add: {}", tuplesToAdd);
             for (int i = 0; i < tuplesToAdd; i++) {
-                List<TupleWithTable> nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
+                long tStart = System.currentTimeMillis();
+                Set<TupleWithTable> nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
                 if (isLeft) {
                     nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
                 }
@@ -333,7 +293,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
                     insertTupleOperator.execute(table, newTuple, null, thisDB);
                     logger.debug("Tuple Mappings: \n{}", tupleMapping);
                     logger.debug("Database: {}", thisDB);
-                    tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
+//                    tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
                 }
 //                if (verifyMatches(newTupleWithTable, tuplesInOtherDB).isEmpty()) {
 //                    if (verifyMatches(newTupleWithTable, tuplesInDB).isEmpty()) {
@@ -345,6 +305,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
 //                        tuplesInDB = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(thisDB);
 //                    }
 //                }
+//               logger.info("addRandomTuples - Tuple time {} (ms)", System.currentTimeMillis() - tStart);
             }
         }
     }
@@ -390,20 +351,6 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         return new NullValue(SpeedyConstants.getStringSkolemPrefixes()[0] + lastPlaceholderId);
     }
 
-    private List<TupleMatch> verifyMatches(TupleWithTable tuple, List<TupleWithTable> otherTuples) {
-        CheckTupleMatch tupleMatch = new CheckTupleMatch();
-        List<TupleMatch> matches = new ArrayList<>();
-        for (TupleWithTable nonMatchingTuple : otherTuples) {
-            TupleMatch checkMatch = tupleMatch.checkMatch(tuple, nonMatchingTuple);
-            if (checkMatch != null) {
-                checkMatch.getLeftTuple().setIsForGeneration(true);
-                checkMatch.getRightTuple().setIsForGeneration(true);
-                matches.add(checkMatch);
-            }
-        }
-        return matches;
-    }
-
     private TupleMatch verifyMatch(TupleWithTable source, TupleWithTable target) {
         CheckTupleMatch tupleMatch = new CheckTupleMatch();
         long start = System.currentTimeMillis();
@@ -411,25 +358,6 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         long end = System.currentTimeMillis();
         logger.debug("Time verifyMatch (ms) {}", (end - start));
         return checkMatch;
-    }
-
-    private void updateTuple(TupleWithTable oldTuple, TupleWithTable newTuple, IDatabase database) {
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < oldTuple.getTuple().getCells().size(); i++) {
-            Cell oldCell = oldTuple.getTuple().getCells().get(i);
-            Cell newCell = newTuple.getTuple().getCells().get(i);
-            updateCellOperator.execute(new CellRef(oldCell), newCell.getValue(), database);
-        }
-        long end = System.currentTimeMillis();
-        logger.debug("updateTuple (ms): {}", (end - start));
-
-    }
-
-    private void updateValueMappings(ValueMapping valueMappings, Map<IValue, IValue> valueMapping) {
-        for (IValue from : valueMapping.keySet()) {
-            IValue to = valueMapping.get(from);
-            valueMappings.putValueMapping(from, to);
-        }
     }
 
     private List<TupleWithTable> cloneTuples(List<TupleWithTable> tuplesToDuplicate) {
@@ -448,87 +376,8 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         return result;
     }
 
-    private void changeOid(IDatabase db) {
-        List<TupleWithTable> tuples = SpeedyUtility.extractAllTuplesFromDatabase(db);
-        for (TupleWithTable tuple : tuples) {
-            TupleOID oldTupleOId = tuple.getTuple().getOid();
-            TupleOID tupleOID = new TupleOID(oidGenerator.getNextOID(tuple.getTable()));
-            tuple.getTuple().setOid(tupleOID);
-            updateCellOperator.execute(new CellRef(oldTupleOId, new AttributeRef(tuple.getTable(), SpeedyConstants.OID)), new ConstantValue(tupleOID.getNumericalValue()), db);
-        }
-    }
-
-    private boolean checkValueMapping(TupleWithTable leftTuple, TupleWithTable rightTuple, TupleMapping tupleMapping) {
-        for (int i = 0; i < leftTuple.getTuple().getCells().size(); i++) {
-            IValue leftValue = leftTuple.getTuple().getCells().get(i).getValue();
-            IValue rightValue = leftTuple.getTuple().getCells().get(i).getValue();
-            if (leftValue instanceof NullValue) {
-                IValue allowedValue = tupleMapping.getValueMappings().getLeftToRightMappingForValue(leftValue);
-                if (allowedValue != null && !allowedValue.equals(rightValue)) {
-                    return false;
-                }
-            }
-            if (rightValue instanceof NullValue) {
-                IValue allowedValue = tupleMapping.getValueMappings().getRightToLeftMappingForValue(rightValue);
-                if (allowedValue != null && !allowedValue.equals(leftValue)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void cleanTupleMappingWithTuples(TupleMapping tupleMapping, IDatabase leftDB, IDatabase rightDB) {
-//        Map<TupleWithTable, Set<TupleWithTable>> mappings = tupleMapping.getTupleMapping();
-//        for (TupleWithTable leftTuple : mappings.keySet()) {
-//            ITable leftTable = leftDB.getTable(leftTuple.getTable());
-//            Set<TupleWithTable> rightTuples = mappings.get(leftTuple);
-//            for (TupleWithTable rightTuple : rightTuples) {
-//                
-//            }
-//        }
-    }
-
-    private List<TupleMatch> getPreviousMatches(TupleWithTable originalTuple, TupleMapping tupleMapping) {
-        long start = System.currentTimeMillis();
-        List<TupleMatch> tupleMatches = new ArrayList<>();
-        logger.trace("TupleMapping: {}", BartUtility.printMap(tupleMapping.getTupleMapping()));
-        Set<TupleWithTable> tupleSet = tupleMapping.getTupleMapping().get(originalTuple);
-        if (tupleSet != null && !tupleSet.isEmpty()) {
-            for (TupleWithTable otherTuple : tupleSet) {
-                TupleMatch match = new TupleMatch(originalTuple, otherTuple, null); // we don't need valueMapping
-                tupleMatches.add(match);
-            }
-        }
-        long end = System.currentTimeMillis();
-        logger.debug("getPreviousMatches: {}", (end - start));
-        return tupleMatches;
-    }
-
-    private List<TupleMatch> verifyMatchesWithLimit(TupleWithTable tuple, List<TupleWithTable> otherTuples, int limit) {
-        long start = System.currentTimeMillis();
-        CheckTupleMatch tupleMatch = new CheckTupleMatch();
-        List<TupleMatch> matches = new ArrayList<>();
-        for (TupleWithTable nonMatchingTuple : otherTuples) {
-            TupleMatch checkMatch = tupleMatch.checkMatch(tuple, nonMatchingTuple);
-            if (checkMatch != null) {
-                checkMatch.getLeftTuple().setIsForGeneration(true);
-                checkMatch.getRightTuple().setIsForGeneration(true);
-                matches.add(checkMatch);
-                if (matches.size() >= limit) {
-                    long end = System.currentTimeMillis();
-                    logger.debug("Time Matches with Limit (return): {}", (end - start));
-                    return matches; // we don't need all the matches, but we need only to know if there are more than one
-                }
-            }
-        }
-        long end = System.currentTimeMillis();
-        logger.debug("Time Matches with Limit: {}", (end - start));
-        return matches;
-    }
-
     private List<TupleMatch> verifyMatchesRedundant(TupleWithTable redundantTuple, TupleWithTable originalTuple, TupleMapping tupleMapping, boolean isLeft) {
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         List<TupleMatch> tupleMatches = new ArrayList<>();
         if (isLeft) {
             Set<TupleWithTable> tupleSet = tupleMapping.getTupleMapping().get(originalTuple);
@@ -539,6 +388,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
                 }
             }
         } else {
+            // TODO: this can be slow with big instances
             Set<TupleWithTable> leftTuplesInMatch = tupleMapping.getTupleMapping().keySet();
             Set<TupleWithTable> newKeys = new HashSet<>();
             for (TupleWithTable key : leftTuplesInMatch) {
@@ -552,8 +402,7 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
                 tupleMatches.add(match);
             }
         }
-        long end = System.currentTimeMillis();
-        logger.debug("Time verifyMatchesRedundant (ms): {}", (end - start));
+//        logger.info("Time verifyMatchesRedundant (ms): {}", (System.currentTimeMillis() - start));
         return tupleMatches;
     }
 
@@ -661,15 +510,16 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
             leftTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(leftDB);
             rightTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(rightDB);
             tupleMappingGenerated.updateValueMappings();
+
+            computeScore = new ComputeScore();
+            score = computeScore.computeScore(leftTuples, rightTuples, tupleMappingGenerated);
+            result = similarityChecker.compare(leftDB, rightDB);
+            scoreGreedy = result.getTupleMapping().getScore();
+            if (scoreGreedy == null) {
+                scoreGreedy = 0.0;
+            }
+            logger.info("New Score Greedy: {} - New Score Generated: {}", scoreGreedy, score);
         }
-        computeScore = new ComputeScore();
-        score = computeScore.computeScore(leftTuples, rightTuples, tupleMappingGenerated);
-        result = similarityChecker.compare(leftDB, rightDB);
-        scoreGreedy = result.getTupleMapping().getScore();
-        if (scoreGreedy == null) {
-            scoreGreedy = 0.0;
-        }
-        logger.info("Score Greedy: {} - Score Generated: {}", scoreGreedy, score);
     }
 
     private void modifyCellsSource(List<TupleWithTable> leftTuples, List<TupleWithTable> rightTuples, IDatabase leftDB, TupleMapping tupleMapping) {
@@ -839,8 +689,4 @@ public class ComparisonScenarioGeneratorWithMappingsBigInstances {
         return rows;
     }
 
-    private int getStartValue(List<TupleWithTable> tuples) {
-        Long lastOid = tuples.get(tuples.size() - 1).getTuple().getOid().getNumericalValue();
-        return lastOid.intValue();
-    }
 }

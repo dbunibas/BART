@@ -5,7 +5,6 @@ import bart.comparison.InstanceMatchTask;
 import bart.comparison.TupleMapping;
 import bart.comparison.ValueMapping;
 import bart.comparison.generator.ComparisonScenarioGeneratorWithMappings;
-import bart.comparison.generator.ComparisonScenarioGeneratorWithMappingsBigInstances;
 import bart.comparison.generator.InstancePair;
 import bart.comparison.operators.ComputeInstanceSimilarityBruteForce;
 import bart.comparison.operators.ComputeInstanceSimilarityHashing;
@@ -38,6 +37,7 @@ import speedy.model.database.IValue;
 import speedy.model.database.NullValue;
 import speedy.model.database.Tuple;
 import speedy.model.database.TupleWithTable;
+import speedy.model.database.mainmemory.datasource.IntegerOIDGenerator;
 import speedy.persistence.file.operators.ExportCSVFile;
 import speedy.utility.SpeedyUtility;
 
@@ -45,18 +45,20 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
 
     private final static Logger logger = LoggerFactory.getLogger(TestComparisonScenarioGeneratorWithMappings.class);
 
-    private int newReduntandTuples = 50;
-    private int newRandomTuples = 50;
-    private int cellsToChange = 10;
+    private int newReduntandTuples = 75;
+    private int newRandomTuples = 75;
+    private int cellsToChange = 75;
     private List<String> results = new ArrayList<>();
     private boolean printInfo = true;
     private boolean skipAssert = true;
+    private boolean useBruteForceInGreedy = true;
+    private boolean exportWithOid = true;
 
     public void xtestExecutionSmall() {
         String dataset = "doctors-100";
-        for (int nre = 0; nre <= 99; nre += 10) {
-            for (int nra = 0; nra <= 99; nra += 10) {
-                for (int cc = 0; cc <= 99; cc += 10) {
+        for (int nre = 0; nre <= 99; nre += 5) {
+            for (int nra = 0; nra <= 99; nra += 5) {
+                for (int cc = 0; cc <= 99; cc += 5) {
                     this.newReduntandTuples = nre;
                     this.newRandomTuples = nra;
                     this.cellsToChange = cc;
@@ -93,32 +95,37 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             addRandomAndRedundantRowsInSourceAndTarget(dataset, null, true, null);
             System.out.print(".\n");
         }
+        for (String result : this.results) {
+            System.out.println(result);
+        }
     }
 
     public void xtestExecutionGreedy() {
 //"doctors-100", "doctors-1k"
-        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
+//        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
+        String[] datasets = {"doctors-1k"};
+
         for (String dataset : datasets) {
             System.out.println(dataset);
-            modifyCellsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            modifyCellsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".");
-            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, null);
+            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, null);
             System.out.print(".\n");
         }
         for (String result : this.results) {
@@ -127,63 +134,74 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
     }
 
     public void xtestExport() {
+        System.out.println("");
         // "conference", "doctors-100",
-//        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
-        String[] datasets = {"bikeshare"};
+        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
+//        String[] datasets = {"bikeshare"};
 //        String[] datasets = {"conference"};
         String exportPath = "/Users/enzoveltri/Desktop/instance-comparisons/";
         for (String dataset : datasets) {
             System.out.println(dataset);
             modifyCellsInSource(dataset, null, false, exportPath);
             System.out.print(".");
-            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".");
-            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), false, exportPath);
+            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), false, exportPath);
             System.out.print(".\n");
         }
     }
 
     public void testExportAndExecuteGreedy() {
         // "conference", "doctors-100",
-//        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
-        String[] datasets = {"bikeshare"};
+        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
+//        String[] datasets = {"bikeshare"};
 //        String[] datasets = {"conference"};
         String exportPath = "/Users/enzoveltri/Desktop/instance-comparisons/";
         for (String dataset : datasets) {
             System.out.println(dataset);
-            modifyCellsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
+            modifyCellsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
             System.out.print(".");
-            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
+            modifyCellsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            modifyCellsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRedundantRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRandomRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRandomRowsInTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRandomRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+            IntegerOIDGenerator.setCounter(1);
             System.out.print(".");
-//            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(), true, exportPath);
+            addRandomAndRedundantRowsInSourceAndTarget(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
             System.out.print(".\n");
         }
         for (String result : this.results) {
@@ -202,18 +220,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
+        ComputeScore computeScore = new ComputeScore();
+        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
+        List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
+        double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
         if (expPath != null) {
             ExportCSVFile exporter = new ExportCSVFile();
             expPath += scenarioName + "/modifyCellsInSource";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
         }
         logger.info("InstancePair: {}", instancePair);
-        List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
-        List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
-        ComputeScore computeScore = new ComputeScore();
-        double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -258,18 +276,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/modifyCellsInTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/modifyCellsInTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -318,18 +336,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         System.out.println("Time Generation: " + generator.getTimeGeneration());
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/modifyCellsInSourceAndTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/modifyCellsInSourceAndTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -375,18 +393,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRedundantRowsInSource";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRedundantRowsInSource";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -433,18 +451,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRedundantRowsInTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRedundantRowsInTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -491,18 +509,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRedundantRowsInSourceAndTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRedundantRowsInSourceAndTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -549,18 +567,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, false);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRandomRowsInSource";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRandomRowsInSource";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -607,18 +625,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), false, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRandomRowsInTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRandomRowsInTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -666,18 +684,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRandomRowsInSourceAndTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRandomRowsInSourceAndTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -725,18 +743,18 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         InstancePair instancePair = generator.generateWithMappings(ComparisonUtilityTest.getFolder(sourceFile, "/resources/redundancy/"), true, true);
         IDatabase sourceDB = instancePair.getLeftDB();
         IDatabase targetDB = instancePair.getRightDB();
-        if (expPath != null) {
-            ExportCSVFile exporter = new ExportCSVFile();
-            expPath += scenarioName + "/addRandomAndRedundantRowsInSourceAndTarget";
-            exporter.exportDatabase(instancePair.getLeftDB(), true, false, expPath + "/left/");
-            exporter.exportDatabase(instancePair.getRightDB(), true, false, expPath + "/right/");
-            saveMappings(instancePair, expPath);
-        }
-        logger.info("InstancePair: {}", instancePair);
         List<TupleWithTable> sourceTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(sourceDB);
         List<TupleWithTable> targetTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(targetDB);
         ComputeScore computeScore = new ComputeScore();
         double score = computeScore.computeScore(sourceTuples, targetTuples, instancePair.getTupleMapping());
+        if (expPath != null) {
+            ExportCSVFile exporter = new ExportCSVFile();
+            expPath += scenarioName + "/addRandomAndRedundantRowsInSourceAndTarget";
+            exporter.exportDatabase(instancePair.getLeftDB(), true, exportWithOid, expPath + "/left/");
+            exporter.exportDatabase(instancePair.getRightDB(), true, exportWithOid, expPath + "/right/");
+            saveMappings(score, instancePair, expPath);
+        }
+        logger.info("InstancePair: {}", instancePair);
         logger.info("Score: {}", score);
         if (computeSimilarity) {
             long start = System.currentTimeMillis();
@@ -858,10 +876,10 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         System.out.println(toPrint);
     }
 
-    private void saveMappings(InstancePair instancePair, String expPath) {
+    private void saveMappings(double score, InstancePair instancePair, String expPath) {
         String fileName = expPath + "/mappings.json";
         TupleMapping tupleMapping = instancePair.getTupleMapping();
-        MappingExport exportObj = new MappingExport(tupleMapping.getTupleMapping(), tupleMapping.getLeftToRightValueMapping(), tupleMapping.getRightToLeftValueMapping());
+        MappingExport exportObj = new MappingExport(score, tupleMapping.getTupleMapping(), tupleMapping.getLeftToRightValueMapping(), tupleMapping.getRightToLeftValueMapping());
         ObjectMapper objectMapper = new ObjectMapper();
         PrintWriter out = null;
         try {
@@ -885,11 +903,13 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
     @JsonAutoDetect(fieldVisibility = Visibility.ANY)
     private class MappingExport implements Serializable {
 
+        private double score;
         private Map<String, Set<String>> tupleMapping;
         private Map<String, String> leftToRightValueMapping;
         private Map<String, String> rightToLeftValueMapping;
 
-        public MappingExport(Map<TupleWithTable, Set<TupleWithTable>> tupleMapping, ValueMapping leftToRightValueMapping, ValueMapping rightToLeftValueMapping) {
+        public MappingExport(double score, Map<TupleWithTable, Set<TupleWithTable>> tupleMapping, ValueMapping leftToRightValueMapping, ValueMapping rightToLeftValueMapping) {
+            this.score = score;
             this.tupleMapping = convertTupleMapping(tupleMapping);
             this.leftToRightValueMapping = convertMap(leftToRightValueMapping);
             this.rightToLeftValueMapping = convertMap(rightToLeftValueMapping);
@@ -899,6 +919,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
             Map<String, Set<String>> mapping = new HashMap<>();
             for (TupleWithTable key : tupleMapping.keySet()) {
                 String sKey = key.getTuple().toStringNoOID();
+                if (exportWithOid) {
+                    sKey = key.getTuple().toStringWithOID();
+                }
                 Set<String> values = mapping.get(sKey);
                 if (values == null) {
                     values = new HashSet<>();
@@ -907,6 +930,9 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
                 Set<TupleWithTable> tupleSet = tupleMapping.get(key);
                 for (TupleWithTable value : tupleSet) {
                     String sValue = value.getTuple().toStringNoOID();
+                    if (exportWithOid) {
+                        sValue = value.getTuple().toStringWithOID();
+                    }
                     values.add(sValue);
                 }
             }

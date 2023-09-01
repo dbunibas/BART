@@ -91,7 +91,7 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
     }
     
     private void findMapping(TupleMapping tupleMapping, SignatureMapCollection srcSignatureMap, List<TupleWithTable> destTuples,
-            List<TupleWithTable> extraDestTuples, List<TupleWithTable> extraSrcTuples, boolean maintainSrcTuples) {
+            List<TupleWithTable> extraDestTuples, Set<TupleWithTable> extraSrcTuples, boolean maintainSrcTuples) {
         long start = System.currentTimeMillis();
         for (TupleWithTable destTuple : destTuples) {
             if (logger.isDebugEnabled()) logger.debug("Finding a tuple that can be mapped in " + destTuple);
@@ -153,7 +153,7 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
         }
         return matchingTuples;
     }
-
+    
     //////////////////////////////////////////////////////////////////////////////////////////
     ////////      RIGHT TO LEFT
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -166,16 +166,18 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
         if (logger.isDebugEnabled()) logger.debug("Right tuples to match:\n" + SpeedyUtility.printCollection(rightTuplesToMatch));
         SignatureMapCollection rightSignatureMapCollection = signatureGenerator.generateIndexForTuples(rightTuplesToMatch);
         if (logger.isDebugEnabled()) logger.debug("Right Signature Map Collection:\n" + leftSignatureMapCollection);
+        // TODO: change to set
         List<TupleWithTable> remainingLeftTuples = new ArrayList<TupleWithTable>();
         remainingLeftTuples.addAll(leftSignatureMapCollection.getTuplesWithoutGroundValues());
         TupleMapping rtlMapping = new TupleMapping();
         rtlMapping.getValueMappings().setRightToLeftValueMapping(ltrMapping.getValueMappings().getLeftToRightValueMapping());
         rtlMapping.getValueMappings().setLeftToRightValueMapping(ltrMapping.getValueMappings().getRightToLeftValueMapping());
-        findMapping(rtlMapping, rightSignatureMapCollection, leftTuplesToMatch, remainingLeftTuples, remainingRightTuples, true);
+        Set<TupleWithTable> remainingRightTuplesSet = new HashSet<>(remainingRightTuples);
+        findMapping(rtlMapping, rightSignatureMapCollection, leftTuplesToMatch, remainingLeftTuples, remainingRightTuplesSet, true);
         if (logger.isDebugEnabled()) logger.debug("RTL Mapping:\n" + rtlMapping);
         mergeMappings(ltrMapping, rtlMapping, renamedTupleMap);
-        ltrMapping.setLeftNonMatchingTuples(remainingLeftTuples);
-        ltrMapping.setRightNonMatchingTuples(remainingRightTuples);
+        ltrMapping.setLeftNonMatchingTuples(new HashSet(remainingLeftTuples));
+        ltrMapping.setRightNonMatchingTuples(remainingRightTuplesSet);
     }
 
     private List<TupleWithTable> findLeftTuplesToMatch(TupleMapping tupleMapping, SignatureMapCollection leftSignatureMapCollection,
@@ -247,13 +249,13 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
     private void findRemainingMatches(TupleMapping ltrMapping, List<TupleWithTable> leftDB, List<TupleWithTable> rightDB) {
         List<TupleWithTable> leftTuples;
         if (ComparisonConfiguration.isFunctional()) {
-            leftTuples = ltrMapping.getLeftNonMatchingTuples();
+            leftTuples = new ArrayList(ltrMapping.getLeftNonMatchingTuples());
         } else {
             leftTuples = leftDB;
         }
         List<TupleWithTable> rightTuples;
         if (ComparisonConfiguration.isInjective()) {
-            rightTuples = ltrMapping.getRightNonMatchingTuples();
+            rightTuples = new ArrayList(ltrMapping.getRightNonMatchingTuples());
         } else {
             rightTuples = rightDB;
         }
@@ -277,20 +279,22 @@ public class ComputeInstanceSimilarityHashing implements IComputeInstanceSimilar
     private TupleMatches findTupleMatches(List<TupleWithTable> rightDB, CompatibilityMap compatibilityMap) {
         Set<TupleWithTable> matchedLeftTuples = new HashSet<TupleWithTable>();
         TupleMatches tupleMatches = new TupleMatches();
+        logger.info("FindTupleMatches- RightTuples: {}", rightDB.size());
         for (TupleWithTable rightTuple : rightDB) {
             //We associate, for each target tuple, a compatible set of source tuples
-            for (TupleWithTable leftTuples : compatibilityMap.getCompatibleTuples(rightTuple)) {
-                if (matchedLeftTuples.contains(leftTuples)) {
+//            long tstart = System.currentTimeMillis();
+            for (TupleWithTable leftTuple : compatibilityMap.getCompatibleTuples(rightTuple)) {
+                if (matchedLeftTuples.contains(leftTuple)) {
                     continue;
                 }
-                TupleMatch match = tupleMatcher.checkMatch(leftTuples, rightTuple);
+                TupleMatch match = tupleMatcher.checkMatch(leftTuple, rightTuple);
                 if (match == null) {
                     continue;
                 }
                 if (logger.isDebugEnabled()) logger.debug("Match found: " + match);
                 tupleMatches.addTupleMatch(rightTuple, match);
                 if (ComparisonConfiguration.isFunctional()) {
-                    matchedLeftTuples.add(leftTuples);
+                    matchedLeftTuples.add(leftTuple);
                 }
                 if (ComparisonConfiguration.isInjective()) {
                     break;

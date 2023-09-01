@@ -131,8 +131,8 @@ public class ComparisonScenarioGeneratorWithMappings {
             return;
         }
         for (int pos = 0; pos < sourceTuples.size(); pos++) {
-            List<TupleWithTable> nonMatchingTuplesComparisons = tupleMapping.getRightNonMatchingTuples();
-            List<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
+            Set<TupleWithTable> nonMatchingTuplesComparisons = tupleMapping.getRightNonMatchingTuples();
+            Set<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
             if (!isLeft) {
                 nonMatchingTuplesComparisons = tupleMapping.getLeftNonMatchingTuples();
                 nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
@@ -294,7 +294,7 @@ public class ComparisonScenarioGeneratorWithMappings {
         List<TupleWithTable> redundantTuples = cloneTuples(tuplesToDuplicate);
         List<TupleWithTable> otherTuples = SpeedyUtility.extractAllTuplesFromDatabaseForGeneration(otherDB);
         for (int i = 0; i < tuplesToDuplicate.size(); i++) {
-            List<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
+            Set<TupleWithTable> nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
             if (!isLeft) {
                 nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
             }
@@ -342,7 +342,7 @@ public class ComparisonScenarioGeneratorWithMappings {
             double tuplesToAddD = table.getSize() * (newRandomTuplesPerc / 100.0);
             int tuplesToAdd = (int) Math.ceil(tuplesToAddD);
             for (int i = 0; i < tuplesToAdd; i++) {
-                List<TupleWithTable> nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
+                Set<TupleWithTable> nonMatchingTuples = tupleMapping.getRightNonMatchingTuples();
                 if (isLeft) {
                     nonMatchingTuples = tupleMapping.getLeftNonMatchingTuples();
                 }

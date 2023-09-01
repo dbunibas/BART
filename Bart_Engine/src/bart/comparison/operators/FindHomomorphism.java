@@ -35,7 +35,7 @@ public class FindHomomorphism {
         List<TupleWithTable> destinationTuples = SpeedyUtility.extractAllTuplesFromDatabase(destinationDb);
         TupleMatches tupleMatches = findTupleMatches(sourceTuples, destinationTuples);
         if (tupleMatches.hasNonMatchingTuples()) {
-            result.getTupleMapping().setLeftNonMatchingTuples(tupleMatches.getNonMatchingTuples());
+            result.getTupleMapping().setLeftNonMatchingTuples(new HashSet(tupleMatches.getNonMatchingTuples()));
             return result;
         }
         sortTupleMatches(tupleMatches);
