@@ -14,9 +14,11 @@ public class ComparisonUtilityTest {
 
     private final static Logger logger = LoggerFactory.getLogger(ComparisonUtilityTest.class);
     private final static DAOMainMemoryDatabase dao = new DAOMainMemoryDatabase();
-    
+
     public static String getFolder(String folderName, String baseFolder) {
+        if(!baseFolder.startsWith("/resources")) return baseFolder + File.separator + folderName; //Absolute path
         String folder = UtilityForTests.getAbsoluteFileName(baseFolder + File.separator + folderName);
+        if (folder == null) throw new IllegalArgumentException("Unable to find folder " + baseFolder + File.separator + folderName);
         return folder;
     }
 
