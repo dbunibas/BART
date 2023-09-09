@@ -55,13 +55,22 @@ public class TestComparisonScenarioGeneratorBigInstances extends TestCase {
     private boolean exportWithOid = true;
 
     public static void main(String[] args) {
-        new TestComparisonScenarioGeneratorBigInstances().testExportAndExecuteGreedy();
+//        new TestComparisonScenarioGeneratorBigInstances().testExportAndExecuteGreedy();
+        new TestComparisonScenarioGeneratorBigInstances().testExportAndExecuteGreedySingle();
+    }
+
+    public void testExportAndExecuteGreedySingle() {
+        String dataset = "bikeshare-1k";
+        String exportPath = "/Users/enzoveltri/Desktop/instance-comparisons/";
+        IntegerOIDGenerator.setCounter(1);
+        addRedundantRowsInSource(dataset, new ComputeInstanceSimilarityHashing(useBruteForceInGreedy), true, exportPath);
+        System.out.println(results.get(0));
     }
 
     public void testExportAndExecuteGreedy() {
 //        String[] datasets = {"conference", "doctors-100", "doctors-1k"};
-        String[] datasets = {"github-10k"};
-//        String[] datasets = {"bikeshare-10k", "github-10k"};
+        String[] datasets = {"bikeshare-500k"};
+//        String[] datasets = {"bikeshare-100k", "github-100k"};
         String exportPath = "/Users/enzoveltri/Desktop/instance-comparisons/"; //TODO: change it
         ComparisonConfiguration.setUseDictionaryEncoding(true);
         for (String dataset : datasets) {

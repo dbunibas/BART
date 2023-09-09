@@ -209,6 +209,38 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         }
     }
 
+    public void testExecuteBFAndGreedyOnInstances() {
+        String pathLeft = "/Users/enzoveltri/Desktop/instance-comparisons/exp1/doctors-5k/addRandomAndRedundantRowsInSourceAndTarget/left/";
+        String pathRight = "/Users/enzoveltri/Desktop/instance-comparisons/exp1/doctors-5k/addRandomAndRedundantRowsInSourceAndTarget/right/";
+        String methodName = "addRandomAndRedundantRowsInSourceAndTarget";
+        setNonInjectiveNonFunctionalMapping();
+//        String methodName = "modifyCellsInSourceAndTarget";
+//        setInjectiveFunctionalMapping();
+
+//        String pathLeft = "/Users/enzoveltri/Desktop/instance-comparisons/exp1/nba/ver_38/";
+//        String pathRight = "/Users/enzoveltri/Desktop/instance-comparisons/exp1/nba/ver_39/";
+//        String methodName = "ver38-ver39";
+        
+        IDatabase leftDB = BartUtility.loadMainMemoryDatabase(pathLeft);
+        IDatabase rightDB = BartUtility.loadMainMemoryDatabase(pathRight);
+        IComputeInstanceSimilarity bf = new ComputeInstanceSimilarityBruteForce();
+//        IComputeInstanceSimilarity bf = new ComputeInstanceSimilarityHashing(false);
+        IComputeInstanceSimilarity greedy = new ComputeInstanceSimilarityHashing(true);
+        ComparisonConfiguration.setTwoWayValueMapping(true);
+        long startBF = System.currentTimeMillis();
+        InstanceMatchTask compareBF = bf.compare(leftDB, rightDB);
+        long timeBG = System.currentTimeMillis() - startBF;
+        long startGreedy = System.currentTimeMillis();
+        InstanceMatchTask compareGreedy = greedy.compare(leftDB, rightDB);
+        long timeGreedy = System.currentTimeMillis() - startGreedy;
+        double scoreBF = compareBF.getTupleMapping().getScore();
+        double scoreGreedy = compareGreedy.getTupleMapping().getScore();
+        generateOutput(methodName, leftDB, rightDB, compareBF.getTupleMapping(), scoreBF, scoreGreedy, 9999, timeGreedy, timeBG);
+        for (String result : this.results) {
+            System.out.println(result);
+        }
+    }
+
     public void modifyCellsInSource(String scenarioName, IComputeInstanceSimilarity similarityChecker, boolean computeSimilarity, String expPath) {
         if (similarityChecker == null) {
             similarityChecker = new ComputeInstanceSimilarityBruteForce();
@@ -819,6 +851,29 @@ public class TestComparisonScenarioGeneratorWithMappings extends TestCase {
         long tupleMappingSize = instancePair.getTupleMapping().getTupleMapping().size();
         long leftNonMatchingTuples = instancePair.getTupleMapping().getLeftNonMatchingTuples().size();
         long rightNonMatchingTuples = instancePair.getTupleMapping().getRightNonMatchingTuples().size();
+        String experiment = configuration + "\t"
+                + methodName + "\t"
+                + sourceStats + "\t"
+                + targetStats + "\t"
+                + tupleMappingSize + "\t"
+                + leftNonMatchingTuples + "\t"
+                + rightNonMatchingTuples + "\t"
+                + bruteForceScore + "\t"
+                + greedyScore + "\t"
+                + timeGenerationInstances + "\t"
+                + greedyTime + "\t"
+                + bruteForceTime;
+        experiment = experiment.replace(".", ",");
+        this.results.add(experiment);
+    }
+
+    private void generateOutput(String methodName, IDatabase sourceDB, IDatabase targetDB, TupleMapping tupleMapping, double bruteForceScore, Double greedyScore, long timeGenerationInstances, long greedyTime, long bruteForceTime) {
+        String configuration = this.cellsToChange + " | " + this.newReduntandTuples + " | " + this.newRandomTuples;
+        String sourceStats = getDBStats(sourceDB);
+        String targetStats = getDBStats(targetDB);
+        long tupleMappingSize = tupleMapping.getTupleMapping().size();
+        long leftNonMatchingTuples = tupleMapping.getLeftNonMatchingTuples().size();
+        long rightNonMatchingTuples = tupleMapping.getRightNonMatchingTuples().size();
         String experiment = configuration + "\t"
                 + methodName + "\t"
                 + sourceStats + "\t"
