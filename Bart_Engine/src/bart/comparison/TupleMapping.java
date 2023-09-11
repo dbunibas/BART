@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import speedy.model.database.ConstantValue;
 import speedy.model.database.IValue;
 import speedy.model.database.NullValue;
 import speedy.model.database.TupleWithTable;

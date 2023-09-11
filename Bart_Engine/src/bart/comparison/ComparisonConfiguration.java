@@ -27,6 +27,14 @@ public class ComparisonConfiguration implements Cloneable {
     private boolean convertSkolemInHash = false;
     private boolean forceExaustiveSearch = false;
     private boolean useDictionaryEncoding = false;
+    
+    // Brute Force optimizations
+    // NO OPTIMIZATIONS
+//    private boolean bfUseCache = false;
+//    private Integer bfMaxRecursionLevel = null;
+//  OPTIMIZATIONS ON    
+    private boolean bfUseCache = true;
+    private Integer bfMaxRecursionLevel = 10;
 
     public static boolean isTwoWayValueMapping() {
         return getInstance().twoWayValueMapping;
@@ -102,6 +110,14 @@ public class ComparisonConfiguration implements Cloneable {
 
     public static void setUseDictionaryEncoding(boolean useDictionaryEncoding) {
         getInstance().useDictionaryEncoding = useDictionaryEncoding;
+    }
+
+    public static boolean isBfUseCache() {
+        return getInstance().bfUseCache;
+    }
+
+    public static Integer getBfMaxRecursionLevel() {
+        return getInstance().bfMaxRecursionLevel;
     }
 
     public ComparisonConfiguration clone() {

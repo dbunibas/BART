@@ -11,12 +11,15 @@ import bart.comparison.ComparisonStats;
 import bart.comparison.TupleMapping;
 import bart.comparison.TupleMatch;
 import bart.comparison.TupleMatches;
+import java.util.HashMap;
+import java.util.Map;
 import speedy.model.database.TupleWithTable;
 import speedy.utility.SpeedyUtility;
 import speedy.utility.combinatorics.GenericListGeneratorIterator;
 import speedy.utility.combinatorics.GenericPowersetGenerator;
 import speedy.utility.combinatorics.GenericSizeOnePowersetGenerator;
 
+@SuppressWarnings("unchecked")
 public class FindBestTupleMapping {
 
     private final static Logger logger = LoggerFactory.getLogger(FindBestTupleMapping.class);
@@ -25,18 +28,19 @@ public class FindBestTupleMapping {
     private final GenericSizeOnePowersetGenerator<TupleMatch> sizeOnePowersetsGenerator = new GenericSizeOnePowersetGenerator<TupleMatch>();
 
     public TupleMapping findBestTupleMapping(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, TupleMatches tupleMatches) {
+        Map<List<TupleMatch>, TupleMapping> matchCache = new HashMap<>();
         long start = System.currentTimeMillis();
         try {
             if (ComparisonConfiguration.isFunctional()) {
-                return findBestFunctionalTupleMapping(sourceTuples, destinationTuples, tupleMatches);
+                return findBestFunctionalTupleMapping(sourceTuples, destinationTuples, tupleMatches, matchCache);
             }
-            return findBestNonFunctionalTupleMapping(sourceTuples, destinationTuples, tupleMatches);
+            return findBestNonFunctionalTupleMapping(sourceTuples, destinationTuples, tupleMatches, matchCache);
         } finally {
             ComparisonStats.getInstance().addStat(ComparisonStats.FIND_BEST_TUPLE_MAPPING_TIME, System.currentTimeMillis() - start);
         }
     }
 
-    private TupleMapping findBestFunctionalTupleMapping(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, TupleMatches tupleMatches) {
+    private TupleMapping findBestFunctionalTupleMapping(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, TupleMatches tupleMatches, Map<List<TupleMatch>, TupleMapping> matchCache) {
         if (logger.isDebugEnabled()) logger.debug("Finding best functional tuple mapping for\n" + SpeedyUtility.printCollection(sourceTuples) + "\n with " + tupleMatches);
         List<List<TupleMatch>> allTupleMatches = createListOfLists(sourceTuples, tupleMatches);
         if (logger.isDebugEnabled()) logger.debug("All tuple matches:\n" + SpeedyUtility.printCollection(allTupleMatches));
@@ -48,7 +52,7 @@ public class FindBestTupleMapping {
         while (iterator.hasNext()) {
             if (logger.isInfoEnabled()) logger.info("# Evaluating combination " + ++combinationNumber);
             List<TupleMatch> combination = iterator.next();
-            TupleMapping bestTupleMappingInPowerset = findBestPowerset(sourceTuples, destinationTuples, combination);
+            TupleMapping bestTupleMappingInPowerset = findBestPowerset(sourceTuples, destinationTuples, combination, matchCache);
             if (bestTupleMappingInPowerset == null) {
                 continue;
             }
@@ -69,19 +73,19 @@ public class FindBestTupleMapping {
         return bestTupleMapping;
     }
 
-    private TupleMapping findBestNonFunctionalTupleMapping(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, TupleMatches tupleMatches) {
+    private TupleMapping findBestNonFunctionalTupleMapping(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, TupleMatches tupleMatches, Map<List<TupleMatch>, TupleMapping> matchCache) {
         if (logger.isDebugEnabled()) logger.debug("Finding best non functional tuple mapping for\n" + SpeedyUtility.printCollection(sourceTuples) + "\n with " + tupleMatches);
         List<TupleMatch> allTupleMatches = mergeTupleMatches(sourceTuples, tupleMatches);
         if (logger.isDebugEnabled()) logger.debug("All tuple matches:\n" + SpeedyUtility.printCollection(allTupleMatches));
         if (logger.isInfoEnabled()) logger.info("Finding best non functional tuple mapping for matches\n" + SpeedyUtility.printCollection(allTupleMatches));
-        return findBestPowerset(sourceTuples, destinationTuples, allTupleMatches);
+        return findBestPowerset(sourceTuples, destinationTuples, allTupleMatches, matchCache);
     }
 
-    private TupleMapping findBestPowerset(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, List<TupleMatch> matches) {
+    private TupleMapping findBestPowerset(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, List<TupleMatch> matches, Map<List<TupleMatch>, TupleMapping> matchCache) {
         if (ComparisonConfiguration.isForceExaustiveSearch()) {
             return findBestPowersetExaustive(sourceTuples, destinationTuples, matches);
         } else {
-            return findBestPowersetGreedy(sourceTuples, destinationTuples, matches);
+            return findBestPowersetGreedy(sourceTuples, destinationTuples, matches, 0, matchCache);
         }
     }
 
@@ -117,20 +121,31 @@ public class FindBestTupleMapping {
         return bestTupleMapping;
     }
 
-    private TupleMapping findBestPowersetGreedy(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, List<TupleMatch> matches) {
+    private TupleMapping findBestPowersetGreedy(List<TupleWithTable> sourceTuples, List<TupleWithTable> destinationTuples, 
+            List<TupleMatch> matches, int recursionLevel, Map<List<TupleMatch>, TupleMapping> matchCache) {
+        TupleMapping cachedMappings = matchCache.get(matches);
+        if (cachedMappings != null) {
+            logger.trace("Returning cached version for matches {}", matches.hashCode());
+            return cachedMappings;
+        }
+        if(ComparisonConfiguration.getBfMaxRecursionLevel() != null && recursionLevel > ComparisonConfiguration.getBfMaxRecursionLevel()){
+            logger.info("Reached the maximum recursion level. Breaking recursion...");
+            return null;
+        }
         TupleMapping completeTupleMapping = extractTupleMapping(matches); //Checking the entire list.
         if (completeTupleMapping != null) { //If exists, this is the best mapping
             double similarityScore = scoreCalculator.computeScore(sourceTuples, destinationTuples, completeTupleMapping);
             completeTupleMapping.setScore(similarityScore);
+            if(ComparisonConfiguration.isBfUseCache()) matchCache.put(matches, completeTupleMapping);
             return completeTupleMapping;
         }
-        if (logger.isInfoEnabled()) logger.info("Generating permutations of size one for " + matches.size() + " elements");
         List<List<TupleMatch>> powersets = sizeOnePowersetsGenerator.generatePermutationsOfSizeOne(matches);//Else checking powerset of size one
         if (logger.isInfoEnabled()) logger.info("## Evaluating " + powersets.size() + " powersets");
         double bestScore = 0;
         TupleMapping bestTupleMapping = null;
         for (List<TupleMatch> powerset : powersets) {
-            TupleMapping bestMappingForPowerset = findBestPowersetGreedy(sourceTuples, destinationTuples, powerset);
+            int newLevel = recursionLevel++;
+            TupleMapping bestMappingForPowerset = findBestPowersetGreedy(sourceTuples, destinationTuples, powerset, newLevel, matchCache);
             if (bestMappingForPowerset == null) {
                 if (logger.isDebugEnabled()) logger.debug("Candidate match discarded...");
                 continue;
@@ -145,10 +160,11 @@ public class FindBestTupleMapping {
             }
             if (bestScore >= ComparisonConfiguration.getBestScoreThreshold()) {
                 if (logger.isInfoEnabled()) logger.info("- Best score: " + bestScore);
+                if(ComparisonConfiguration.isBfUseCache()) matchCache.put(matches, bestTupleMapping);
                 return bestTupleMapping;
             }
         }
-        if (logger.isInfoEnabled()) logger.info("- Best score: " + bestScore);
+        if(ComparisonConfiguration.isBfUseCache()) matchCache.put(matches, bestTupleMapping);
         return bestTupleMapping;
     }
 
